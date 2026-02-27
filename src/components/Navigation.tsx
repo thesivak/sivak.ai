@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
 const navLinks = [
@@ -9,6 +9,9 @@ const navLinks = [
   { label: "Work", href: "#work" },
   { label: "Contact", href: "#contact" },
 ];
+
+const NAV_HEIGHT = 80; // matches h-16 (64px mobile) / h-20 (80px desktop), use larger for safety
+const SCROLL_PADDING = 16;
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
@@ -19,6 +22,30 @@ export default function Navigation() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const scrollToSection = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      e.preventDefault();
+      const id = href.replace("#", "");
+      const section = document.getElementById(id);
+      if (!section) return;
+
+      // Find the first visible content element inside the section
+      // (skip gradient-line dividers and empty space)
+      const label = section.querySelector("span, h2, h3");
+      const target = label || section;
+
+      const targetTop =
+        target.getBoundingClientRect().top + window.scrollY;
+      const scrollTo = targetTop - NAV_HEIGHT - SCROLL_PADDING;
+
+      window.scrollTo({ top: scrollTo, behavior: "smooth" });
+
+      // Close mobile menu after initiating scroll
+      setMobileOpen(false);
+    },
+    []
+  );
 
   return (
     <>
@@ -35,6 +62,10 @@ export default function Navigation() {
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-16 md:h-20">
           <a
             href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
             className="font-[family-name:var(--font-syne)] font-bold text-lg tracking-tight"
           >
             sivak<span className="text-[var(--accent)]">.ai</span>
@@ -46,6 +77,7 @@ export default function Navigation() {
               <a
                 key={link.href}
                 href={link.href}
+                onClick={(e) => scrollToSection(e, link.href)}
                 className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors duration-300 tracking-wide uppercase"
               >
                 {link.label}
@@ -98,7 +130,7 @@ export default function Navigation() {
               <motion.a
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileOpen(false)}
+                onClick={(e) => scrollToSection(e, link.href)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
