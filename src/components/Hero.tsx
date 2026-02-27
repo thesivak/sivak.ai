@@ -7,15 +7,19 @@ export default function Hero() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Wait for fonts to be fully loaded before starting animations
-    // This prevents layout shifts when fonts swap mid-animation
     document.fonts.ready.then(() => {
-      // Small extra delay to ensure paint is complete
       requestAnimationFrame(() => {
         setReady(true);
       });
     });
   }, []);
+
+  // Tight, continuous sequence — no dead gaps
+  // Badge:    0.0s start, 0.5s duration  (fades in while name starts)
+  // Name 1:   0.0s start, 0.9s duration
+  // Name 2:   0.1s start, 0.9s duration
+  // Subtitle: 0.35s start, 0.7s duration (overlaps with name finishing)
+  // Explore:  0.55s start, 0.6s duration
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -26,12 +30,12 @@ export default function Hero() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[var(--accent)] opacity-[0.04] blur-[150px]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full">
-        {/* Status badge */}
+        {/* Status badge — fades in simultaneously with name */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={ready ? { opacity: 1, y: 0 } : false}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="mb-8 md:mb-12 opacity-0"
+          initial={{ opacity: 0 }}
+          animate={ready ? { opacity: 1 } : false}
+          transition={{ duration: 0.5, delay: 0 }}
+          className="mb-8 md:mb-12"
           style={ready ? undefined : { opacity: 0 }}
         >
           <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-[var(--muted)]">
@@ -45,7 +49,7 @@ export default function Hero() {
           <motion.h1
             initial={{ y: "110%" }}
             animate={ready ? { y: 0 } : false}
-            transition={{ duration: 1.1, delay: 0, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.9, delay: 0, ease: [0.16, 1, 0.3, 1] }}
             className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight will-change-transform"
             style={{ transform: "translateY(110%)" }}
           >
@@ -56,7 +60,7 @@ export default function Hero() {
           <motion.h1
             initial={{ y: "110%" }}
             animate={ready ? { y: 0 } : false}
-            transition={{ duration: 1.1, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight will-change-transform"
             style={{ transform: "translateY(110%)" }}
           >
@@ -64,12 +68,12 @@ export default function Hero() {
           </motion.h1>
         </div>
 
-        {/* Subtitle */}
+        {/* Subtitle — starts while name is still decelerating */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={ready ? { opacity: 1, y: 0 } : false}
-          transition={{ duration: 0.9, delay: 0.7 }}
-          className="mt-8 md:mt-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8 opacity-0"
+          transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-8 md:mt-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
           style={ready ? undefined : { opacity: 0 }}
         >
           <div className="max-w-xl">
@@ -83,7 +87,13 @@ export default function Hero() {
             </p>
           </div>
 
-          <div className="flex gap-6 items-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={ready ? { opacity: 1 } : false}
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="flex gap-6 items-center"
+            style={ready ? undefined : { opacity: 0 }}
+          >
             <a
               href="#about"
               className="group flex items-center gap-3 text-sm tracking-[0.15em] uppercase text-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
@@ -103,7 +113,7 @@ export default function Hero() {
                 />
               </svg>
             </a>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
 
