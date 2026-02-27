@@ -67,7 +67,7 @@ export default function Contact() {
                   LinkedIn
                 </a>
                 <a
-                  href="https://github.com/mireksivak"
+                  href="https://github.com/thesivak"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors duration-300 tracking-wide"
