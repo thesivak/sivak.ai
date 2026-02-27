@@ -66,7 +66,7 @@ export default function Navigation() {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="font-[family-name:var(--font-syne)] font-bold text-lg tracking-tight"
+            className="font-[family-name:var(--font-syne)] font-bold text-xl tracking-tight"
           >
             sivak<span className="text-[var(--accent)]">.ai</span>
           </a>
