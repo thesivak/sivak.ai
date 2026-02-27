@@ -1,8 +1,22 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 
 export default function Hero() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Wait for fonts to be fully loaded before starting animations
+    // This prevents layout shifts when fonts swap mid-animation
+    document.fonts.ready.then(() => {
+      // Small extra delay to ensure paint is complete
+      requestAnimationFrame(() => {
+        setReady(true);
+      });
+    });
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Grid background */}
@@ -15,9 +29,10 @@ export default function Hero() {
         {/* Status badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          className="mb-8 md:mb-12"
+          animate={ready ? { opacity: 1, y: 0 } : false}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="mb-8 md:mb-12 opacity-0"
+          style={ready ? undefined : { opacity: 0 }}
         >
           <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-[var(--muted)]">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -25,23 +40,25 @@ export default function Hero() {
           </span>
         </motion.div>
 
-        {/* Name */}
+        {/* Name — each line clips its own slide-up reveal */}
         <div className="overflow-hidden">
           <motion.h1
-            initial={{ y: 120 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-            className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight"
+            initial={{ y: "110%" }}
+            animate={ready ? { y: 0 } : false}
+            transition={{ duration: 1.1, delay: 0, ease: [0.16, 1, 0.3, 1] }}
+            className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight will-change-transform"
+            style={{ transform: "translateY(110%)" }}
           >
             Mirek
           </motion.h1>
         </div>
         <div className="overflow-hidden">
           <motion.h1
-            initial={{ y: 120 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 1, delay: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight"
+            initial={{ y: "110%" }}
+            animate={ready ? { y: 0 } : false}
+            transition={{ duration: 1.1, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+            className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight will-change-transform"
+            style={{ transform: "translateY(110%)" }}
           >
             Sivák<span className="text-[var(--accent)]">.</span>
           </motion.h1>
@@ -50,9 +67,10 @@ export default function Hero() {
         {/* Subtitle */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.9 }}
-          className="mt-8 md:mt-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
+          animate={ready ? { opacity: 1, y: 0 } : false}
+          transition={{ duration: 0.9, delay: 0.7 }}
+          className="mt-8 md:mt-12 flex flex-col md:flex-row md:items-end md:justify-between gap-8 opacity-0"
+          style={ready ? undefined : { opacity: 0 }}
         >
           <div className="max-w-xl">
             <p className="text-lg md:text-xl text-[var(--muted)] leading-relaxed font-light">
