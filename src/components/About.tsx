@@ -4,7 +4,7 @@ import AnimatedSection from "./AnimatedSection";
 
 export default function About() {
   return (
-    <section id="about" className="relative py-32 md:py-40">
+    <section id="about" className="relative pt-24 pb-32 md:pt-32 md:pb-40 scroll-mt-16 md:scroll-mt-20">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20">
           {/* Label */}

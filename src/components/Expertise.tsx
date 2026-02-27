@@ -105,9 +105,9 @@ function ExpertiseCard({
 
 export default function Expertise() {
   return (
-    <section id="expertise" className="relative py-32 md:py-40">
+    <section id="expertise" className="relative pt-24 pb-32 md:pt-32 md:pb-40 scroll-mt-16 md:scroll-mt-20">
       {/* Divider */}
-      <div className="gradient-line mb-32 md:mb-40" />
+      <div className="gradient-line mb-16 md:mb-20" />
 
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 mb-16 md:mb-24">
