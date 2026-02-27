@@ -10,8 +10,8 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-const NAV_HEIGHT = 80; // matches h-16 (64px mobile) / h-20 (80px desktop), use larger for safety
-const SCROLL_PADDING = 16;
+const NAV_HEIGHT = 80;
+const SCROLL_PADDING = 32;
 
 export default function Navigation() {
   const [scrolled, setScrolled] = useState(false);
