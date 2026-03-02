@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
+import { useDictionary } from "@/i18n/DictionaryContext";
 
 export default function Hero() {
+  const { t } = useDictionary();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -14,13 +16,6 @@ export default function Hero() {
     });
   }, []);
 
-  // Tight, continuous sequence — no dead gaps
-  // Badge:    0.0s start, 0.5s duration  (fades in while name starts)
-  // Name 1:   0.0s start, 0.9s duration
-  // Name 2:   0.1s start, 0.9s duration
-  // Subtitle: 0.35s start, 0.7s duration (overlaps with name finishing)
-  // Explore:  0.55s start, 0.6s duration
-
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Grid background */}
@@ -30,7 +25,7 @@ export default function Hero() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[var(--accent)] opacity-[0.04] blur-[150px]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full">
-        {/* Status badge — fades in simultaneously with name */}
+        {/* Status badge */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={ready ? { opacity: 1 } : false}
@@ -40,11 +35,11 @@ export default function Hero() {
         >
           <span className="inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase text-[var(--muted)]">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Available for consulting
+            {t.hero.available}
           </span>
         </motion.div>
 
-        {/* Name — each line clips its own slide-up reveal */}
+        {/* Name */}
         <div className="overflow-hidden">
           <motion.h1
             initial={{ y: "110%" }}
@@ -53,7 +48,7 @@ export default function Hero() {
             className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight will-change-transform"
             style={{ transform: "translateY(110%)" }}
           >
-            Mirek
+            {t.hero.firstName}
           </motion.h1>
         </div>
         <div className="overflow-hidden">
@@ -64,11 +59,11 @@ export default function Hero() {
             className="font-[family-name:var(--font-syne)] text-[clamp(4rem,14vw,12rem)] font-800 leading-[0.9] tracking-tight will-change-transform"
             style={{ transform: "translateY(110%)" }}
           >
-            Sivák<span className="text-[var(--accent)]">.</span>
+            {t.hero.lastName}<span className="text-[var(--accent)]">.</span>
           </motion.h1>
         </div>
 
-        {/* Subtitle — starts while name is still decelerating */}
+        {/* Subtitle */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={ready ? { opacity: 1, y: 0 } : false}
@@ -79,11 +74,9 @@ export default function Hero() {
           <div className="max-w-xl">
             <p className="text-lg md:text-xl text-[var(--muted)] leading-relaxed font-light">
               <span className="text-[var(--foreground)] font-medium">
-                AI Architect & Senior Engineer
+                {t.hero.subtitle}
               </span>{" "}
-              — Building intelligent systems and scalable applications for over 18
-              years. Specializing in autonomous AI agents, modern frontend
-              architecture, and the bridge between them.
+              — {t.hero.description}
             </p>
           </div>
 
@@ -98,7 +91,7 @@ export default function Hero() {
               href="#about"
               className="group flex items-center gap-3 text-sm tracking-[0.15em] uppercase text-[var(--accent)] hover:text-[var(--foreground)] transition-colors"
             >
-              Explore
+              {t.hero.explore}
               <svg
                 className="w-4 h-4 transition-transform group-hover:translate-y-1"
                 fill="none"

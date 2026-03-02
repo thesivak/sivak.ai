@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "title": "Mirek Sivák — AI Architekt & Senior Inženýr",
+    "description": "Senior Software Engineer a AI Architekt s 18 lety zkušeností ve vývoji škálovatelných aplikací a autonomních AI systémů."
+  },
+  "nav": {
+    "about": "O mně",
+    "expertise": "Expertíza",
+    "work": "Zkušenosti",
+    "contact": "Kontakt",
+    "getInTouch": "Napište mi",
+    "toggleMenu": "Přepnout menu"
+  },
+  "hero": {
+    "available": "K dispozici pro konzultace",
+    "firstName": "Mirek",
+    "lastName": "Sivák",
+    "subtitle": "AI Architekt & Senior Inženýr",
+    "description": "Vyvíjím inteligentní systémy a škálovatelné aplikace již více než 18 let. Specializuji se na autonomní AI agenty, moderní frontendovou architekturu a propojení obou světů.",
+    "explore": "Objevte více"
+  },
+  "about": {
+    "label": "O mně",
+    "heading": "Inženýrství budoucnosti na",
+    "headingHighlight": "průsečíku AI a kódu",
+    "paragraph1": "S více než dekádou zkušeností v softwarovém inženýrství jsem vybudoval vše od vysoce výkonných frontendových aplikací po full-stack platformy. Moje práce sahá od tvorby pixel-perfect rozhraní s Vue.js, Nuxt a React po návrh komplexních systémových architektur.",
+    "paragraph2Start": "Posledních pět let se zaměřuji na AI — navrhuji a nasazuji autonomní agentní systémy, buduju AI-powered workflow a pomáhám firmám integrovat inteligentní automatizaci do jejich provozu. Založil jsem",
+    "paragraph2Link": "agentuj.cz",
+    "paragraph2End": "abych pomohl českým firmám využít AI agenty ve velkém měřítku.",
+    "stat1Value": "18",
+    "stat1Label": "Let zkušeností",
+    "stat2Value": "AI",
+    "stat2Label": "Architektura",
+    "stat3Value": "CZ/EN",
+    "stat3Label": "Bilingvní",
+    "stat4Value": "3",
+    "stat4Label": "Založené firmy"
+  },
+  "expertise": {
+    "label": "Expertíza",
+    "heading": "Co přináším",
+    "headingLine2": "ke stolu",
+    "items": [
+      {
+        "number": "01",
+        "title": "AI Architektura",
+        "description": "Návrh a nasazení autonomních agentních systémů, LLM-powered workflow a inteligentních automatizačních pipeline. Od architektury po produkci.",
+        "tags": ["OpenClaw", "Claude", "LangChain", "Autonomní agenti", "RAG", "LLM Orchestrace"]
+      },
+      {
+        "number": "02",
+        "title": "Frontend Engineering",
+        "description": "Vývoj vysoce výkonných a škálovatelných frontendových aplikací s moderními frameworky. Pixel-perfect rozhraní s promyšleným UX a čistou architekturou.",
+        "tags": ["Vue.js", "Nuxt 3/4", "React", "TypeScript", "TailwindCSS"]
+      },
+      {
+        "number": "03",
+        "title": "Full-Stack Vývoj",
+        "description": "End-to-end vývoj aplikací — od API a databází po nasazení a monitoring. Budování robustních systémů, které škálují.",
+        "tags": ["Node.js", "REST API", "PostgreSQL", "CI/CD", "Cloud Infrastruktura"]
+      },
+      {
+        "number": "04",
+        "title": "AI Konzultace & Strategie",
+        "description": "Pomáhám firmám identifikovat příležitosti pro automatizaci, navrhovat strategie integrace AI a nasazovat inteligentní agenty, kteří eliminují repetitivní práci.",
+        "tags": ["Automatizace procesů", "AI Strategie", "Nasazení agentů", "CRM Integrace"]
+      }
+    ]
+  },
+  "work": {
+    "label": "Zkušenosti",
+    "heading": "Vybrané zkušenosti",
+    "roles": [
+      {
+        "company": "agentuj.cz",
+        "role": "Zakladatel",
+        "period": "2026 — Současnost",
+        "description": "Pomáhám českým firmám nasazovat a spravovat AI agenty. Od analýzy workflow po plně autonomní agentní systémy, které eliminují repetitivní práci.",
+        "type": "AI Konzultace"
+      },
+      {
+        "company": "Zapfloor",
+        "role": "Senior Frontend & AI Inženýr",
+        "period": "2024 — Současnost",
+        "description": "Vývoj aplikací pro správu pracovních prostorů s Vue.js a Nuxt. Integrace AI schopností do platformy pro inteligentní automatizaci.",
+        "type": "Produkt"
+      },
+      {
+        "company": "TheSivak s.r.o.",
+        "role": "Zakladatel",
+        "period": "2019 — Současnost",
+        "description": "Full-stack vývojová konzultantská firma dodávající škálovatelné aplikace, CRM automatizaci a vlastní integrace pro firmy napříč Evropou.",
+        "type": "Konzultace"
+      },
+      {
+        "company": "Phrase (Memsource)",
+        "role": "Frontend Inženýr",
+        "period": "Předchozí",
+        "description": "Práce na lokalizační platformě používané globálními podniky. Vývoj komplexních UI komponent pro workflow správy překladů.",
+        "type": "Enterprise SaaS"
+      }
+    ]
+  },
+  "contact": {
+    "label": "Kontakt",
+    "heading": "Pojďme vytvořit něco",
+    "headingHighlight": "výjimečného",
+    "description": "Ať už potřebujete AI strategii, škálovatelný frontend nebo autonomní agentní systém — rád se dozvím více o vašem projektu.",
+    "email": "mirek@sivak.ai",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "agentuj": "agentuj.cz"
+  },
+  "footer": {
+    "copyright": "Mirek Sivák. Všechna práva vyhrazena."
+  }
+}

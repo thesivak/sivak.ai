@@ -3,43 +3,13 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import AnimatedSection from "./AnimatedSection";
-
-const expertise = [
-  {
-    number: "01",
-    title: "AI Architecture",
-    description:
-      "Designing and deploying autonomous agent systems, LLM-powered workflows, and intelligent automation pipelines. From architecture to production.",
-    tags: ["OpenClaw", "Claude", "LangChain", "Autonomous Agents", "RAG", "LLM Orchestration"],
-  },
-  {
-    number: "02",
-    title: "Frontend Engineering",
-    description:
-      "Crafting high-performance, scalable frontend applications with modern frameworks. Pixel-perfect interfaces with thoughtful UX and clean architecture.",
-    tags: ["Vue.js", "Nuxt 3/4", "React", "TypeScript", "TailwindCSS"],
-  },
-  {
-    number: "03",
-    title: "Full-Stack Development",
-    description:
-      "End-to-end application development — from APIs and databases to deployment and monitoring. Building robust systems that scale.",
-    tags: ["Node.js", "REST APIs", "PostgreSQL", "CI/CD", "Cloud Infrastructure"],
-  },
-  {
-    number: "04",
-    title: "AI Consulting & Strategy",
-    description:
-      "Helping companies identify automation opportunities, design AI integration strategies, and deploy intelligent agents that eliminate repetitive work.",
-    tags: ["Process Automation", "AI Strategy", "Agent Deployment", "CRM Integration"],
-  },
-];
+import { useDictionary } from "@/i18n/DictionaryContext";
 
 function ExpertiseCard({
   item,
   index,
 }: {
-  item: (typeof expertise)[0];
+  item: { number: string; title: string; description: string; tags: string[] };
   index: number;
 }) {
   const ref = useRef(null);
@@ -104,6 +74,8 @@ function ExpertiseCard({
 }
 
 export default function Expertise() {
+  const { t } = useDictionary();
+
   return (
     <section id="expertise" className="relative pt-24 pb-32 md:pt-32 md:pb-40 scroll-mt-16 md:scroll-mt-20">
       {/* Divider */}
@@ -113,21 +85,21 @@ export default function Expertise() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 mb-16 md:mb-24">
           <AnimatedSection className="md:col-span-3">
             <span className="text-xs tracking-[0.2em] uppercase text-[var(--accent)]">
-              Expertise
+              {t.expertise.label}
             </span>
           </AnimatedSection>
 
           <AnimatedSection delay={0.1} className="md:col-span-9">
             <h2 className="font-[family-name:var(--font-syne)] text-3xl md:text-5xl font-700 leading-tight tracking-tight">
-              What I bring to
+              {t.expertise.heading}
               <br />
-              the table
+              {t.expertise.headingLine2}
             </h2>
           </AnimatedSection>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {expertise.map((item, i) => (
+          {t.expertise.items.map((item, i) => (
             <ExpertiseCard key={item.number} item={item} index={i} />
           ))}
         </div>

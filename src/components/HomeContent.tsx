@@ -8,7 +8,7 @@ import Work from "@/components/Work";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
-export default function Home() {
+export default function HomeContent() {
   return (
     <main>
       <Navigation />

@@ -1,8 +1,11 @@
 "use client";
 
 import AnimatedSection from "./AnimatedSection";
+import { useDictionary } from "@/i18n/DictionaryContext";
 
 export default function Contact() {
+  const { t } = useDictionary();
+
   return (
     <section id="contact" className="relative pt-24 pb-32 md:pt-32 md:pb-40 scroll-mt-16 md:scroll-mt-20">
       <div className="gradient-line mb-16 md:mb-20" />
@@ -11,24 +14,22 @@ export default function Contact() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20">
           <AnimatedSection className="md:col-span-3">
             <span className="text-xs tracking-[0.2em] uppercase text-[var(--accent)]">
-              Contact
+              {t.contact.label}
             </span>
           </AnimatedSection>
 
           <div className="md:col-span-9">
             <AnimatedSection delay={0.1}>
               <h2 className="font-[family-name:var(--font-syne)] text-3xl md:text-5xl font-700 leading-tight tracking-tight mb-6">
-                Let&apos;s build something
+                {t.contact.heading}
                 <br />
-                <span className="text-gradient">extraordinary</span>
+                <span className="text-gradient">{t.contact.headingHighlight}</span>
               </h2>
             </AnimatedSection>
 
             <AnimatedSection delay={0.2}>
               <p className="text-[var(--muted)] text-base md:text-lg leading-relaxed font-light max-w-xl mb-12">
-                Whether you need an AI strategy, a scalable frontend, or an
-                autonomous agent system — I&apos;d love to hear about your
-                project.
+                {t.contact.description}
               </p>
             </AnimatedSection>
 
@@ -38,7 +39,7 @@ export default function Contact() {
                   href="mailto:mirek@sivak.ai"
                   className="group inline-flex items-center gap-3 px-8 py-4 bg-[var(--accent)] text-[var(--background)] font-[family-name:var(--font-syne)] font-600 text-sm tracking-[0.1em] uppercase hover:bg-[var(--foreground)] transition-colors duration-300"
                 >
-                  mirek@sivak.ai
+                  {t.contact.email}
                   <svg
                     className="w-4 h-4 group-hover:translate-x-1 transition-transform"
                     fill="none"
@@ -64,7 +65,7 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors duration-300 tracking-wide"
                 >
-                  LinkedIn
+                  {t.contact.linkedin}
                 </a>
                 <a
                   href="https://github.com/thesivak"
@@ -72,7 +73,7 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors duration-300 tracking-wide"
                 >
-                  GitHub
+                  {t.contact.github}
                 </a>
                 <a
                   href="https://agentuj.cz"
@@ -80,7 +81,7 @@ export default function Contact() {
                   rel="noopener noreferrer"
                   className="text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors duration-300 tracking-wide"
                 >
-                  agentuj.cz
+                  {t.contact.agentuj}
                 </a>
               </div>
             </AnimatedSection>

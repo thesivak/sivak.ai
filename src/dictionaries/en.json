@@ -1,0 +1,117 @@
+{
+  "metadata": {
+    "title": "Mirek Sivák — AI Architect & Senior Engineer",
+    "description": "Senior Software Engineer and AI Architect with 18 years of experience building scalable applications and autonomous AI systems."
+  },
+  "nav": {
+    "about": "About",
+    "expertise": "Expertise",
+    "work": "Work",
+    "contact": "Contact",
+    "getInTouch": "Get in Touch",
+    "toggleMenu": "Toggle menu"
+  },
+  "hero": {
+    "available": "Available for consulting",
+    "firstName": "Mirek",
+    "lastName": "Sivák",
+    "subtitle": "AI Architect & Senior Engineer",
+    "description": "Building intelligent systems and scalable applications for over 18 years. Specializing in autonomous AI agents, modern frontend architecture, and the bridge between them.",
+    "explore": "Explore"
+  },
+  "about": {
+    "label": "About",
+    "heading": "Engineering the future at the",
+    "headingHighlight": "intersection of AI & code",
+    "paragraph1": "With over a decade in software engineering, I've built everything from high-performance frontend applications to full-stack platforms. My work spans from crafting pixel-perfect interfaces with Vue.js, Nuxt, and React to designing complex system architectures.",
+    "paragraph2Start": "Over the past five years, I've pivoted toward AI — designing and deploying autonomous agent systems, building AI-powered workflows, and helping companies integrate intelligent automation into their operations. I founded",
+    "paragraph2Link": "agentuj.cz",
+    "paragraph2End": "to help Czech businesses harness AI agents at scale.",
+    "stat1Value": "18",
+    "stat1Label": "Years Experience",
+    "stat2Value": "AI",
+    "stat2Label": "Architecture",
+    "stat3Value": "CZ/EN",
+    "stat3Label": "Bilingual",
+    "stat4Value": "3",
+    "stat4Label": "Companies Founded"
+  },
+  "expertise": {
+    "label": "Expertise",
+    "heading": "What I bring to",
+    "headingLine2": "the table",
+    "items": [
+      {
+        "number": "01",
+        "title": "AI Architecture",
+        "description": "Designing and deploying autonomous agent systems, LLM-powered workflows, and intelligent automation pipelines. From architecture to production.",
+        "tags": ["OpenClaw", "Claude", "LangChain", "Autonomous Agents", "RAG", "LLM Orchestration"]
+      },
+      {
+        "number": "02",
+        "title": "Frontend Engineering",
+        "description": "Crafting high-performance, scalable frontend applications with modern frameworks. Pixel-perfect interfaces with thoughtful UX and clean architecture.",
+        "tags": ["Vue.js", "Nuxt 3/4", "React", "TypeScript", "TailwindCSS"]
+      },
+      {
+        "number": "03",
+        "title": "Full-Stack Development",
+        "description": "End-to-end application development — from APIs and databases to deployment and monitoring. Building robust systems that scale.",
+        "tags": ["Node.js", "REST APIs", "PostgreSQL", "CI/CD", "Cloud Infrastructure"]
+      },
+      {
+        "number": "04",
+        "title": "AI Consulting & Strategy",
+        "description": "Helping companies identify automation opportunities, design AI integration strategies, and deploy intelligent agents that eliminate repetitive work.",
+        "tags": ["Process Automation", "AI Strategy", "Agent Deployment", "CRM Integration"]
+      }
+    ]
+  },
+  "work": {
+    "label": "Work",
+    "heading": "Selected experience",
+    "roles": [
+      {
+        "company": "agentuj.cz",
+        "role": "Founder",
+        "period": "2026 — Present",
+        "description": "Helping Czech companies deploy and manage AI agents. From workflow analysis to fully autonomous agent systems that eliminate repetitive work.",
+        "type": "AI Consulting"
+      },
+      {
+        "company": "Zapfloor",
+        "role": "Senior Frontend Engineer & AI Engineer",
+        "period": "2024 — Present",
+        "description": "Building workspace management applications with Vue.js and Nuxt. Integrating AI capabilities into the platform for intelligent workspace automation.",
+        "type": "Product"
+      },
+      {
+        "company": "TheSivak s.r.o.",
+        "role": "Founder",
+        "period": "2019 — Present",
+        "description": "Full-stack development consultancy delivering scalable applications, CRM automation, and custom integrations for businesses across Europe.",
+        "type": "Consultancy"
+      },
+      {
+        "company": "Phrase (Memsource)",
+        "role": "Frontend Engineer",
+        "period": "Previous",
+        "description": "Worked on the localization platform used by global enterprises. Built complex UI components for translation management workflows.",
+        "type": "Enterprise SaaS"
+      }
+    ]
+  },
+  "contact": {
+    "label": "Contact",
+    "heading": "Let's build something",
+    "headingHighlight": "extraordinary",
+    "description": "Whether you need an AI strategy, a scalable frontend, or an autonomous agent system — I'd love to hear about your project.",
+    "email": "mirek@sivak.ai",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "agentuj": "agentuj.cz"
+  },
+  "footer": {
+    "copyright": "Mirek Sivák. All rights reserved."
+  }
+}

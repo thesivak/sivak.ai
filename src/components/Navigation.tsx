@@ -2,20 +2,22 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-
-const navLinks = [
-  { label: "About", href: "#about" },
-  { label: "Expertise", href: "#expertise" },
-  { label: "Work", href: "#work" },
-  { label: "Contact", href: "#contact" },
-];
+import { useDictionary } from "@/i18n/DictionaryContext";
 
 const NAV_HEIGHT = 80;
 const SCROLL_PADDING = 32;
 
 export default function Navigation() {
+  const { t, lang } = useDictionary();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = [
+    { label: t.nav.about, href: "#about" },
+    { label: t.nav.expertise, href: "#expertise" },
+    { label: t.nav.work, href: "#work" },
+    { label: t.nav.contact, href: "#contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 80);
@@ -30,8 +32,6 @@ export default function Navigation() {
       const section = document.getElementById(id);
       if (!section) return;
 
-      // Find the first visible content element inside the section
-      // (skip gradient-line dividers and empty space)
       const label = section.querySelector("span, h2, h3");
       const target = label || section;
 
@@ -40,12 +40,14 @@ export default function Navigation() {
       const scrollTo = targetTop - NAV_HEIGHT - SCROLL_PADDING;
 
       window.scrollTo({ top: scrollTo, behavior: "smooth" });
-
-      // Close mobile menu after initiating scroll
       setMobileOpen(false);
     },
     []
   );
+
+  const toggleLang = lang === "en" ? "cs" : "en";
+  const toggleHref = lang === "en" ? "/cs" : "/";
+  const toggleLabel = lang === "en" ? "CZ" : "EN";
 
   return (
     <>
@@ -61,7 +63,7 @@ export default function Navigation() {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between h-16 md:h-20">
           <a
-            href="#"
+            href={lang === "en" ? "/" : "/cs"}
             onClick={(e) => {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: "smooth" });
@@ -87,7 +89,13 @@ export default function Navigation() {
               href="mailto:mirek@sivak.ai"
               className="text-sm px-5 py-2 border border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--background)] transition-all duration-300 tracking-wide uppercase"
             >
-              Get in Touch
+              {t.nav.getInTouch}
+            </a>
+            <a
+              href={toggleHref}
+              className="text-xs tracking-[0.15em] uppercase text-[var(--muted)] hover:text-[var(--foreground)] transition-colors duration-300"
+            >
+              {toggleLabel}
             </a>
           </div>
 
@@ -95,7 +103,7 @@ export default function Navigation() {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden flex flex-col gap-1.5 p-2"
-            aria-label="Toggle menu"
+            aria-label={t.nav.toggleMenu}
           >
             <span
               className={`block w-6 h-[1.5px] bg-[var(--foreground)] transition-all duration-300 ${
@@ -146,7 +154,16 @@ export default function Navigation() {
               transition={{ delay: 0.4 }}
               className="mt-4 px-8 py-3 border border-[var(--accent)] text-[var(--accent)] text-lg tracking-wide"
             >
-              Get in Touch
+              {t.nav.getInTouch}
+            </motion.a>
+            <motion.a
+              href={toggleHref}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-2 text-sm tracking-[0.15em] uppercase text-[var(--muted)] hover:text-[var(--foreground)] transition-colors duration-300"
+            >
+              {toggleLabel}
             </motion.a>
           </motion.div>
         )}
