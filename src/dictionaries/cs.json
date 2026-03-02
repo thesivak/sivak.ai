@@ -12,7 +12,7 @@
     "toggleMenu": "Přepnout menu"
   },
   "hero": {
-    "available": "K dispozici pro konzultace",
+    "available": "Otevřený novým projektům",
     "firstName": "Mirek",
     "lastName": "Sivák",
     "subtitle": "AI Architekt & Senior Inženýr",
@@ -38,8 +38,8 @@
   },
   "expertise": {
     "label": "Expertíza",
-    "heading": "Co přináším",
-    "headingLine2": "ke stolu",
+    "heading": "Co mohu",
+    "headingLine2": "nabídnout",
     "items": [
       {
         "number": "01",
@@ -69,7 +69,7 @@
   },
   "work": {
     "label": "Zkušenosti",
-    "heading": "Vybrané zkušenosti",
+    "heading": "Výběr z mých zkušeností",
     "roles": [
       {
         "company": "agentuj.cz",

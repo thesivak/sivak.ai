@@ -11,9 +11,14 @@ export function proxy(request: NextRequest) {
   );
   if (hasLocale) return;
 
-  // Rewrite root (and any non-locale paths) to default locale
+  // Detect preferred locale from Accept-Language header
+  const acceptLanguage = request.headers.get("accept-language") || "";
+  const preferredLocale = locales.find((locale) =>
+    acceptLanguage.toLowerCase().includes(locale)
+  ) || defaultLocale;
+
   const url = request.nextUrl.clone();
-  url.pathname = `/${defaultLocale}${pathname}`;
+  url.pathname = `/${preferredLocale}${pathname}`;
   return NextResponse.rewrite(url);
 }
 
