@@ -89,14 +89,14 @@
         "company": "TheSivak s.r.o.",
         "role": "Zakladatel",
         "period": "2019 — Současnost",
-        "description": "Full-stack vývojová konzultantská firma dodávající škálovatelné aplikace, CRM automatizaci a vlastní integrace pro firmy napříč Evropou.",
+        "description": "Softwarová konzultační firma zaměřená na vývoj webových aplikací, CRM automatizaci a systémové integrace pro klienty v Česku i zahraničí.",
         "type": "Konzultace"
       },
       {
         "company": "Phrase (Memsource)",
         "role": "Frontend Inženýr",
         "period": "Předchozí",
-        "description": "Práce na lokalizační platformě používané globálními podniky. Vývoj komplexních UI komponent pro workflow správy překladů.",
+        "description": "Lokalizační platforma pro globální firmy. Vývoj UI komponent pro překladový editor a správu překladových procesů.",
         "type": "Enterprise SaaS"
       }
     ]
