@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Syne } from "next/font/google";
+import Script from "next/script";
 import { locales, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/dictionaries";
 import "../globals.css";
@@ -62,6 +63,18 @@ export default async function LangLayout({
   return (
     <html lang={lang}>
       <body className={`${dmSans.variable} ${syne.variable} antialiased`}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-S98V3B32ZL"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-S98V3B32ZL');
+          `}
+        </Script>
         <div className="noise-overlay" />
         {children}
       </body>
