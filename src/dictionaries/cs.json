@@ -24,9 +24,9 @@
     "heading": "Na průsečíku AI a",
     "headingHighlight": "softwarového inženýrství",
     "paragraph1": "Za více než dekádu v softwarovém inženýrství jsem prošel od pixel-perfect frontendů v Vue.js, Nuxt a Reactu až po návrh komplexních systémových architektur a full-stack platforem.",
-    "paragraph2Start": "Posledních pět let se zaměřuji na AI — navrhuji a nasazuji autonomní agentní systémy, stavím automatizované workflow a pomáhám firmám zapojit AI do každodenního provozu. Založil jsem",
-    "paragraph2Link": "agentuj.cz",
-    "paragraph2End": ", abych pomohl českým firmám nasadit AI agenty do praxe.",
+    "paragraph2Start": "Posledních pět let se zaměřuji na AI — navrhuji a nasazuji autonomní agentní systémy, stavím automatizované workflow a pomáhám firmám zapojit",
+    "paragraph2Link": "praktickou AI automatizaci",
+    "paragraph2End": "do každodenního provozu.",
     "stat1Value": "18",
     "stat1Label": "Let zkušeností",
     "stat2Value": "AI",
@@ -72,13 +72,6 @@
     "heading": "Výběr z mých zkušeností",
     "roles": [
       {
-        "company": "agentuj.cz",
-        "role": "Zakladatel",
-        "period": "2026 — Současnost",
-        "description": "Pomáhám českým firmám nasazovat a spravovat AI agenty. Od analýzy workflow po plně autonomní agentní systémy, které eliminují repetitivní práci.",
-        "type": "AI Konzultace"
-      },
-      {
         "company": "Zapfloor",
         "role": "Senior Frontend & AI Inženýr",
         "period": "2024 — Současnost",
@@ -108,8 +101,7 @@
     "description": "Ať už potřebujete AI strategii, škálovatelný frontend nebo autonomní agentní systém — napište mi. Odpovídám do 24 hodin.",
     "email": "mirek@sivak.ai",
     "linkedin": "LinkedIn",
-    "github": "GitHub",
-    "agentuj": "agentuj.cz"
+    "github": "GitHub"
   },
   "footer": {
     "copyright": "Mirek Sivák. Všechna práva vyhrazena."

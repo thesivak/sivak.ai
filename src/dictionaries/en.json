@@ -24,9 +24,9 @@
     "heading": "Engineering the future at the",
     "headingHighlight": "intersection of AI & code",
     "paragraph1": "With over a decade in software engineering, I've built everything from high-performance frontend applications to full-stack platforms. My work spans from crafting pixel-perfect interfaces with Vue.js, Nuxt, and React to designing complex system architectures.",
-    "paragraph2Start": "Over the past five years, I've pivoted toward AI — designing and deploying autonomous agent systems, building AI-powered workflows, and helping companies integrate intelligent automation into their operations. I founded",
-    "paragraph2Link": "agentuj.cz",
-    "paragraph2End": "to help Czech businesses harness AI agents at scale.",
+    "paragraph2Start": "Over the past five years, I've pivoted toward AI — designing and deploying autonomous agent systems, building AI-powered workflows, and helping companies integrate",
+    "paragraph2Link": "practical AI automation",
+    "paragraph2End": "into their operations at scale.",
     "stat1Value": "18",
     "stat1Label": "Years Experience",
     "stat2Value": "AI",
@@ -72,13 +72,6 @@
     "heading": "Selected experience",
     "roles": [
       {
-        "company": "agentuj.cz",
-        "role": "Founder",
-        "period": "2026 — Present",
-        "description": "Helping Czech companies deploy and manage AI agents. From workflow analysis to fully autonomous agent systems that eliminate repetitive work.",
-        "type": "AI Consulting"
-      },
-      {
         "company": "Zapfloor",
         "role": "Senior Frontend Engineer & AI Engineer",
         "period": "2024 — Present",
@@ -108,8 +101,7 @@
     "description": "Whether you need an AI strategy, a scalable frontend, or an autonomous agent system — I'd love to hear about your project.",
     "email": "mirek@sivak.ai",
     "linkedin": "LinkedIn",
-    "github": "GitHub",
-    "agentuj": "agentuj.cz"
+    "github": "GitHub"
   },
   "footer": {
     "copyright": "Mirek Sivák. All rights reserved."

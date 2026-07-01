@@ -75,14 +75,6 @@ export default function Contact() {
                 >
                   {t.contact.github}
                 </a>
-                <a
-                  href="https://agentuj.cz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[var(--muted)] hover:text-[var(--accent)] transition-colors duration-300 tracking-wide"
-                >
-                  {t.contact.agentuj}
-                </a>
               </div>
             </AnimatedSection>
           </div>
