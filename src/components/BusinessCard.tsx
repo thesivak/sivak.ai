@@ -2,7 +2,13 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Dictionary } from "@/dictionaries";
-import { MARK, TRANSFORM, WORDMARK } from "@/components/Logo";
+import {
+  LOGO_VIEWBOX,
+  MARK,
+  MARK_VIEWBOX,
+  WORDMARK,
+  WORDMARK_TRANSFORM,
+} from "@/components/Logo";
 
 const EMAIL = "mirek@sivak.ai";
 const PHONE = "+420 730 515 615";
@@ -124,7 +130,7 @@ export default function BusinessCard({ t }: { t: Dictionary }) {
       <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true" focusable="false">
         <defs>
           <path id="p-mark" d={MARK} />
-          <path id="p-word" d={WORDMARK} />
+          <path id="p-word" d={WORDMARK} transform={WORDMARK_TRANSFORM} />
         </defs>
       </svg>
 
@@ -143,11 +149,9 @@ export default function BusinessCard({ t }: { t: Dictionary }) {
           <div className="flipper">
             <section className="face front" aria-label={c.front} inert={flipped} aria-hidden={flipped || undefined}>
               <h1 className="logo">
-                <svg viewBox="51 45 4557 976" role="img" aria-label="sivak.ai">
-                  <g transform={TRANSFORM} fill="currentColor">
-                    <use href="#p-mark" />
-                    <use href="#p-word" />
-                  </g>
+                <svg viewBox={LOGO_VIEWBOX} role="img" aria-label="sivak.ai" fill="currentColor">
+                  <use href="#p-mark" />
+                  <use href="#p-word" />
                 </svg>
               </h1>
               <p className="tagline">{t.tagline}</p>
@@ -172,10 +176,8 @@ export default function BusinessCard({ t }: { t: Dictionary }) {
                   <span>20</span>
                 </p>
                 <p className="rule-text">{c.rule}</p>
-                <svg className="back-mark" viewBox="51 45 1093 976" aria-hidden="true" focusable="false">
-                  <g transform={TRANSFORM} fill="currentColor">
-                    <use href="#p-mark" />
-                  </g>
+                <svg className="back-mark" viewBox={MARK_VIEWBOX} fill="currentColor" aria-hidden="true" focusable="false">
+                  <use href="#p-mark" />
                 </svg>
               </div>
 
