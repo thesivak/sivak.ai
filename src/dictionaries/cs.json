@@ -1,58 +1,56 @@
 {
   "metadata": {
     "title": "sivak.ai — AI a automatizace pro vaše podnikání",
-    "description": "Zavádíme AI do každodenní práce firem. Agenti a automatizace, které převezmou rutinu u počítače a rychle se zaplatí."
+    "description": "AI agenti převezmou nudnou práci u počítače, která zabírá nejvíc času. Váš tým se může věnovat tomu, co firmě skutečně přináší výsledky."
   },
   "langSwitch": "English",
-  "hero": {
-    "tagline": "AI a automatizace pro vaše podnikání",
-    "lead": "Nasazujeme AI agenty, kteří převezmou rutinní práci u počítače. Váš tým se může věnovat tomu, co umí jen lidé.",
-    "cta": "Domluvit schůzku",
-    "saveContact": "Uložit kontakt"
+  "tagline": "AI a automatizace pro vaše podnikání",
+  "lead": "Nasazujeme AI agenty, kteří převezmou nudnou práci u počítače — tu, která zabírá nejvíc času a vysává energii. Váš tým se může věnovat tomu, co ho baví a co firmě skutečně přináší výsledky.",
+  "person": {
+    "name": "Mirek Sivák",
+    "role": "Founder & CEO"
   },
-  "services": {
-    "label": "Co děláme",
-    "items": [
+  "card": {
+    "label": "Vizitka Sivak.ai",
+    "roleDescription": "vizitka",
+    "front": "Přední strana vizitky",
+    "back": "Zadní strana vizitky",
+    "rule": "Rutina zabírá většinu času a přináší nejméně. Převezmeme ji jako první — tam se AI zaplatí nejrychleji.",
+    "servicesLabel": "Co děláme",
+    "services": [
       {
         "title": "AI agenti v týmu",
-        "text": "Vyřizují požadavky zákazníků, kontrolují dokumenty, testují software. Agent připraví, člověk rozhodne."
+        "text": "Vyřizují požadavky a kontrolují dokumenty. Agent připraví, člověk rozhodne."
       },
       {
         "title": "Automatizace procesů",
-        "text": "Propojíme systémy, které spolu nemluví. Žádné přepisování dat z jednoho okna do druhého."
+        "text": "Propojíme systémy, které spolu nemluví. Žádné přepisování dat."
       },
       {
         "title": "Roboti pro starý software",
-        "text": "Obsluhují programy bez API — Helios, DOSové aplikace i interní systémy, které nikdo nechce přepisovat."
-      }
-    ]
-  },
-  "approach": {
-    "label": "Jak pracujeme",
-    "items": [
-      {
-        "title": "Rychlá návratnost",
-        "text": "Začínáme tam, kde AI ušetří nejvíc hodin."
-      },
-      {
-        "title": "Pod kontrolou",
-        "text": "Agent má jen nutná oprávnění a každý jeho krok je zaznamenaný."
-      },
-      {
-        "title": "Měřitelný výsledek",
-        "text": "Víte, kolik práce agent odvedl a kolik vás to ušetřilo."
+        "text": "Obsluhují programy bez API — Helios, DOSové aplikace i interní systémy."
       }
     ],
-    "case": "Pro softwarovou firmu provozujeme agenty, kteří prošetřují tikety zákazníků a testují nové verze aplikace v prohlížeči."
+    "approachLabel": "Jak pracujeme",
+    "approach": [
+      "Pravidlo 80:20",
+      "Pod kontrolou",
+      "Měřitelný výsledek"
+    ],
+    "caseLabel": "Z praxe",
+    "case": "Pro softwarovou firmu provozujeme agenty, kteří prošetřují tikety zákazníků a testují nové verze aplikace."
   },
-  "contact": {
-    "heading": "Ukažte nám, co vás zdržuje.",
-    "text": "Na první schůzce projdeme vaše procesy a řekneme vám, kde se AI vyplatí.",
-    "mailSubject": "Schůzka — AI pro naši firmu"
+  "controls": {
+    "hintClick": "Klikněte na vizitku",
+    "hintTap": "Klepněte na vizitku",
+    "flip": "Otočit",
+    "flipToBack": "Otočit vizitku na zadní stranu",
+    "flipToFront": "Otočit vizitku na přední stranu",
+    "statusBack": "Zadní strana vizitky: co děláme.",
+    "statusFront": "Přední strana vizitky: kontakt."
   },
-  "person": {
-    "name": "Mirek Sivak",
-    "role": "Founder & CEO"
-  },
+  "cta": "Domluvit schůzku",
+  "mailSubject": "Schůzka — AI pro naši firmu",
+  "saveContact": "Uložit kontakt",
   "footer": "Sivak.ai s.r.o."
 }

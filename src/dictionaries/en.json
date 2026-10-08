@@ -1,58 +1,56 @@
 {
   "metadata": {
     "title": "sivak.ai — AI and automation for your business",
-    "description": "We bring AI into everyday business work. Agents and automation that take over routine computer work and pay for themselves fast."
+    "description": "AI agents take over the dull computer work that eats most of your time, so your team can focus on what actually drives the business."
   },
   "langSwitch": "Česky",
-  "hero": {
-    "tagline": "AI and automation for your business",
-    "lead": "We deploy AI agents that take over routine computer work, so your team can focus on what only people can do.",
-    "cta": "Book a meeting",
-    "saveContact": "Save contact"
+  "tagline": "AI and automation for your business",
+  "lead": "We deploy AI agents that take over the dull computer work — the kind that eats most of your time and drains your energy. Your team can focus on what they enjoy and what actually moves the business.",
+  "person": {
+    "name": "Mirek Sivák",
+    "role": "Founder & CEO"
   },
-  "services": {
-    "label": "What we do",
-    "items": [
+  "card": {
+    "label": "Sivak.ai business card",
+    "roleDescription": "business card",
+    "front": "Front of the card",
+    "back": "Back of the card",
+    "rule": "Routine takes most of the time and delivers the least. We automate it first — that's where AI pays off fastest.",
+    "servicesLabel": "What we do",
+    "services": [
       {
         "title": "AI agents on your team",
-        "text": "They handle customer requests, check documents and test software. The agent prepares, a person decides."
+        "text": "They handle requests and check documents. The agent prepares, a person decides."
       },
       {
         "title": "Process automation",
-        "text": "We connect systems that don't talk to each other. No more retyping data from one window into another."
+        "text": "We connect systems that don't talk to each other. No more retyping data."
       },
       {
         "title": "Robots for legacy software",
-        "text": "They operate programs with no API — Helios, DOS applications and in-house systems nobody wants to rewrite."
-      }
-    ]
-  },
-  "approach": {
-    "label": "How we work",
-    "items": [
-      {
-        "title": "Fast payback",
-        "text": "We start where AI saves the most hours."
-      },
-      {
-        "title": "Under control",
-        "text": "Agents get only the permissions they need, and every step is recorded."
-      },
-      {
-        "title": "Measurable results",
-        "text": "You see how much work the agent did and what it saved you."
+        "text": "They operate programs with no API — Helios, DOS applications and in-house systems."
       }
     ],
-    "case": "For a software company, we run agents that investigate customer tickets and test new releases in a real browser."
+    "approachLabel": "How we work",
+    "approach": [
+      "The 80/20 rule",
+      "Under control",
+      "Measurable results"
+    ],
+    "caseLabel": "In practice",
+    "case": "For a software company, we run agents that investigate customer tickets and test new releases."
   },
-  "contact": {
-    "heading": "Show us what slows you down.",
-    "text": "In the first meeting we go through your processes and tell you where AI pays off.",
-    "mailSubject": "Meeting — AI for our company"
+  "controls": {
+    "hintClick": "Click the card",
+    "hintTap": "Tap the card",
+    "flip": "Flip",
+    "flipToBack": "Flip the card to the back",
+    "flipToFront": "Flip the card to the front",
+    "statusBack": "Back of the card: what we do.",
+    "statusFront": "Front of the card: contact."
   },
-  "person": {
-    "name": "Mirek Sivak",
-    "role": "Founder & CEO"
-  },
+  "cta": "Book a meeting",
+  "mailSubject": "Meeting — AI for our company",
+  "saveContact": "Save contact",
   "footer": "Sivak.ai s.r.o."
 }

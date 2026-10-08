@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Jost } from "next/font/google";
 import Script from "next/script";
@@ -13,6 +13,11 @@ const jost = Jost({
 });
 
 const baseUrl = "https://www.sivak.ai";
+
+export const viewport: Viewport = {
+  themeColor: "#E9E7E2",
+  viewportFit: "cover",
+};
 
 export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -58,7 +63,7 @@ export default async function LangLayout({
 
   return (
     <html lang={lang}>
-      <body className={`${jost.variable} antialiased`}>
+      <body className={jost.variable}>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-S98V3B32ZL"
           strategy="afterInteractive"
