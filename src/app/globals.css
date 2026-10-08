@@ -155,12 +155,19 @@ main {
     0 3px 6px rgba(20, 17, 12, .12);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  /* visibility flips at the midpoint of the turn, so the hidden side never shows through */
-  transition: opacity .45s ease, visibility 0s linear .47s;
+  transition: opacity .45s ease, visibility 0s;
 }
-.back { transform: rotateY(180deg); }
+/* Safari honours backface-visibility reliably only on faces with their own 3D transform */
+.front { transform: translateZ(.1px); }
+.back { transform: rotateY(180deg) translateZ(.1px); }
+/* The turned-away side is hidden only once the card stops moving, and shown
+   again before it starts, so Safari never repaints in the middle of a turn. */
 .card:not(.is-flipped) .back,
-.card.is-flipped .front { pointer-events: none; visibility: hidden; }
+.card.is-flipped .front {
+  pointer-events: none;
+  visibility: hidden;
+  transition-delay: 0s, .95s;
+}
 
 /* zrno papíru */
 .face::after {
@@ -515,8 +522,8 @@ footer {
   .back { transform: none; opacity: 0; }
   .card.is-flipped .front { opacity: 0; }
   .card.is-flipped .back { opacity: 1; }
-  .card:not(.is-flipped) .front,
-  .card.is-flipped .back { transition-delay: 0s; }
+  .card:not(.is-flipped) .back,
+  .card.is-flipped .front { transition-delay: 0s, .45s; }
   .face::before { display: none; }
   .ground { transform: translate3d(0, 20px, 0); }
   .stage.is-turning .ground { animation: none; }
