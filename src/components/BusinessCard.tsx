@@ -7,6 +7,7 @@ import {
   MARK,
   MARK_VIEWBOX,
   WORDMARK,
+  WORDMARK_DOTS,
   WORDMARK_TRANSFORM,
 } from "@/components/Logo";
 
@@ -130,7 +131,10 @@ export default function BusinessCard({ t }: { t: Dictionary }) {
       <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden="true" focusable="false">
         <defs>
           <path id="p-mark" d={MARK} />
-          <path id="p-word" d={WORDMARK} transform={WORDMARK_TRANSFORM} />
+          <g id="p-word">
+            <path d={WORDMARK} transform={WORDMARK_TRANSFORM} />
+            <path d={WORDMARK_DOTS} />
+          </g>
         </defs>
       </svg>
 
