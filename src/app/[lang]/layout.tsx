@@ -1,22 +1,18 @@
 import type { Metadata } from "next";
-import { DM_Sans, Syne } from "next/font/google";
+import { notFound } from "next/navigation";
+import { Jost } from "next/font/google";
 import Script from "next/script";
-import { locales, type Locale } from "@/i18n/config";
+import { isLocale, localePath, locales } from "@/i18n/config";
 import { getDictionary } from "@/dictionaries";
 import "../globals.css";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const jost = Jost({
+  variable: "--font-jost",
   subsets: ["latin", "latin-ext"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["300", "400", "500", "600"],
 });
 
-const syne = Syne({
-  variable: "--font-syne",
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700", "800"],
-  display: "swap",
-});
+const baseUrl = "https://www.sivak.ai";
 
 export async function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -27,25 +23,25 @@ export async function generateMetadata({
 }: {
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
-  const { lang: rawLang } = await params;
-  const lang = rawLang as Locale;
+  const { lang } = await params;
+  if (!isLocale(lang)) return {};
   const t = await getDictionary(lang);
-  const baseUrl = "https://www.sivak.ai";
 
   return {
+    metadataBase: new URL(baseUrl),
     title: t.metadata.title,
     description: t.metadata.description,
     openGraph: {
       title: t.metadata.title,
       description: t.metadata.description,
-      url: lang === "en" ? baseUrl : `${baseUrl}/cs`,
+      url: localePath(lang),
+      siteName: "sivak.ai",
+      locale: lang === "cs" ? "cs_CZ" : "en_US",
       type: "website",
     },
     alternates: {
-      languages: {
-        en: baseUrl,
-        cs: `${baseUrl}/cs`,
-      },
+      canonical: localePath(lang),
+      languages: { cs: "/", en: "/en", "x-default": "/" },
     },
   };
 }
@@ -57,12 +53,12 @@ export default async function LangLayout({
   children: React.ReactNode;
   params: Promise<{ lang: string }>;
 }) {
-  const { lang: rawLang } = await params;
-  const lang = rawLang as Locale;
+  const { lang } = await params;
+  if (!isLocale(lang)) notFound();
 
   return (
     <html lang={lang}>
-      <body className={`${dmSans.variable} ${syne.variable} antialiased`}>
+      <body className={`${jost.variable} antialiased`}>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-S98V3B32ZL"
           strategy="afterInteractive"
@@ -75,7 +71,6 @@ export default async function LangLayout({
             gtag('config', 'G-S98V3B32ZL');
           `}
         </Script>
-        <div className="noise-overlay" />
         {children}
       </body>
     </html>

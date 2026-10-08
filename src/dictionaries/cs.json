@@ -1,109 +1,58 @@
 {
   "metadata": {
-    "title": "Mirek Sivák — AI Architekt & Senior Inženýr",
-    "description": "Senior Software Engineer a AI Architekt s 18 lety zkušeností ve vývoji škálovatelných aplikací a autonomních AI systémů."
+    "title": "sivak.ai — AI a automatizace pro vaše podnikání",
+    "description": "Zavádíme AI do každodenní práce firem. Agenti a automatizace, které převezmou rutinu u počítače a rychle se zaplatí."
   },
-  "nav": {
-    "about": "O mně",
-    "expertise": "Zaměření",
-    "work": "Zkušenosti",
-    "contact": "Kontakt",
-    "getInTouch": "Napište mi",
-    "toggleMenu": "Přepnout menu"
-  },
+  "langSwitch": "English",
   "hero": {
-    "available": "Otevřený novým projektům",
-    "firstName": "Mirek",
-    "lastName": "Sivák",
-    "subtitle": "AI Architekt & Senior Inženýr",
-    "description": "Vyvíjím inteligentní systémy a škálovatelné aplikace již více než 18 let. Specializuji se na autonomní AI agenty, moderní frontendovou architekturu a propojení obou světů.",
-    "explore": "Zjistit více"
+    "tagline": "AI a automatizace pro vaše podnikání",
+    "lead": "Nasazujeme AI agenty, kteří převezmou rutinní práci u počítače. Váš tým se může věnovat tomu, co umí jen lidé.",
+    "cta": "Domluvit schůzku",
+    "saveContact": "Uložit kontakt"
   },
-  "about": {
-    "label": "O mně",
-    "heading": "Na průsečíku AI a",
-    "headingHighlight": "softwarového inženýrství",
-    "paragraph1": "Za více než dekádu v softwarovém inženýrství jsem prošel od pixel-perfect frontendů v Vue.js, Nuxt a Reactu až po návrh komplexních systémových architektur a full-stack platforem.",
-    "paragraph2Start": "Posledních pět let se zaměřuji na AI — navrhuji a nasazuji autonomní agentní systémy, stavím automatizované workflow a pomáhám firmám zapojit",
-    "paragraph2Link": "praktickou AI automatizaci",
-    "paragraph2End": "do každodenního provozu.",
-    "stat1Value": "18",
-    "stat1Label": "Let zkušeností",
-    "stat2Value": "AI",
-    "stat2Label": "Architektura",
-    "stat3Value": "CZ/EN",
-    "stat3Label": "Bilingvní",
-    "stat4Value": "3",
-    "stat4Label": "Vlastní firmy"
-  },
-  "expertise": {
-    "label": "Zaměření",
-    "heading": "Co mohu",
-    "headingLine2": "nabídnout",
+  "services": {
+    "label": "Co děláme",
     "items": [
       {
-        "number": "01",
-        "title": "AI Architektura",
-        "description": "Návrh a nasazení autonomních agentních systémů, automatizovaného workflow a produkčních AI pipeline — od první skici po provoz v produkci.",
-        "tags": ["OpenClaw", "Claude", "LangChain", "Autonomní agenti", "RAG", "LLM Orchestrace"]
+        "title": "AI agenti v týmu",
+        "text": "Vyřizují požadavky zákazníků, kontrolují dokumenty, testují software. Agent připraví, člověk rozhodne."
       },
       {
-        "number": "02",
-        "title": "Frontend Engineering",
-        "description": "Vývoj rychlých, škálovatelných frontendů s Vue.js, Nuxt a Reactem. Důraz na výkon, přístupnost a architekturu, která se nerozpadne při růstu.",
-        "tags": ["Vue.js", "Nuxt 3/4", "React", "TypeScript", "TailwindCSS"]
+        "title": "Automatizace procesů",
+        "text": "Propojíme systémy, které spolu nemluví. Žádné přepisování dat z jednoho okna do druhého."
       },
       {
-        "number": "03",
-        "title": "Full-Stack Vývoj",
-        "description": "End-to-end vývoj aplikací — od API a databází po nasazení a monitoring. Robustní systémy navržené pro vysokou zátěž i snadnou údržbu.",
-        "tags": ["Node.js", "REST API", "PostgreSQL", "CI/CD", "Cloud Infrastruktura"]
-      },
-      {
-        "number": "04",
-        "title": "AI Konzultace & Strategie",
-        "description": "Pomáhám firmám identifikovat příležitosti pro automatizaci, navrhovat strategie integrace AI a nasazovat inteligentní agenty, kteří eliminují repetitivní práci.",
-        "tags": ["Automatizace procesů", "AI Strategie", "Nasazení agentů", "CRM Integrace"]
+        "title": "Roboti pro starý software",
+        "text": "Obsluhují programy bez API — Helios, DOSové aplikace i interní systémy, které nikdo nechce přepisovat."
       }
     ]
   },
-  "work": {
-    "label": "Zkušenosti",
-    "heading": "Výběr z mých zkušeností",
-    "roles": [
+  "approach": {
+    "label": "Jak pracujeme",
+    "items": [
       {
-        "company": "Zapfloor",
-        "role": "Senior Frontend & AI Inženýr",
-        "period": "2024 — Současnost",
-        "description": "Vývoj aplikací pro správu pracovních prostorů s Vue.js a Nuxt. Implementace AI funkcí do platformy — automatizace a workflow pro správu prostorů.",
-        "type": "Produkt"
+        "title": "Rychlá návratnost",
+        "text": "Začínáme tam, kde AI ušetří nejvíc hodin."
       },
       {
-        "company": "TheSivak s.r.o.",
-        "role": "Zakladatel",
-        "period": "2019 — Současnost",
-        "description": "Softwarová konzultační firma zaměřená na vývoj webových aplikací, CRM automatizaci a systémové integrace pro klienty v Česku i zahraničí.",
-        "type": "Konzultace"
+        "title": "Pod kontrolou",
+        "text": "Agent má jen nutná oprávnění a každý jeho krok je zaznamenaný."
       },
       {
-        "company": "Phrase (Memsource)",
-        "role": "Frontend Inženýr",
-        "period": "Předchozí",
-        "description": "Lokalizační platforma pro globální technologické firmy. Vývoj UI komponent pro překladový editor a správu překladových procesů.",
-        "type": "Enterprise SaaS"
+        "title": "Měřitelný výsledek",
+        "text": "Víte, kolik práce agent odvedl a kolik vás to ušetřilo."
       }
-    ]
+    ],
+    "case": "Pro softwarovou firmu provozujeme agenty, kteří prošetřují tikety zákazníků a testují nové verze aplikace v prohlížeči."
   },
   "contact": {
-    "label": "Kontakt",
-    "heading": "Pojďme se pobavit",
-    "headingHighlight": "o vašem projektu",
-    "description": "Ať už potřebujete AI strategii, škálovatelný frontend nebo autonomní agentní systém — napište mi. Odpovídám do 24 hodin.",
-    "email": "mirek@sivak.ai",
-    "linkedin": "LinkedIn",
-    "github": "GitHub"
+    "heading": "Ukažte nám, co vás zdržuje.",
+    "text": "Na první schůzce projdeme vaše procesy a řekneme vám, kde se AI vyplatí.",
+    "mailSubject": "Schůzka — AI pro naši firmu"
   },
-  "footer": {
-    "copyright": "Mirek Sivák. Všechna práva vyhrazena."
-  }
+  "person": {
+    "name": "Mirek Sivak",
+    "role": "Founder & CEO"
+  },
+  "footer": "Sivak.ai s.r.o."
 }
