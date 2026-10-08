@@ -4,10 +4,10 @@
   --stage: #E9E7E2;
   --stage-hi: #F3F1EC;
   --stage-lo: #DEDBD4;
-  --ink: #1B1E1E;
+  --ink: #0B1220;
   --paper: #F2F0EB;
   --muted: #6D6962;
-  --line: rgba(27, 30, 30, .14);
+  --line: rgba(11, 18, 32, .14);
   --ease-out: cubic-bezier(.16, .84, .24, 1);
   --flip-ease: cubic-bezier(.62, -.04, .18, 1.04);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.4 -.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -64,7 +64,7 @@ a { color: inherit; }
   color: var(--muted);
   text-decoration: none;
   background: rgba(255, 255, 255, .45);
-  border: 1px solid rgba(27, 30, 30, .07);
+  border: 1px solid rgba(11, 18, 32, .07);
   border-radius: 999px;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -146,7 +146,7 @@ main {
   border-radius: 1.8cqw;
   color: var(--paper);
   background:
-    linear-gradient(158deg, #232727 0%, #1B1E1E 46%, #171A1A 100%);
+    linear-gradient(158deg, #171E2B 0%, #0B1220 46%, #090F1B 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, .07),
     inset 0 0 0 1px rgba(255, 255, 255, .025),
@@ -407,7 +407,7 @@ main {
   cursor: pointer;
   transition: background-color .2s, border-color .2s;
 }
-.flip-btn:hover { background: rgba(255, 255, 255, .8); border-color: rgba(27, 30, 30, .26); }
+.flip-btn:hover { background: rgba(255, 255, 255, .8); border-color: rgba(11, 18, 32, .26); }
 .flip-btn svg { width: 14px; height: 14px; transition: transform .6s var(--ease-out); }
 .flip-btn[aria-pressed="true"] svg { transform: rotate(-180deg); }
 
@@ -445,10 +445,10 @@ main {
 .btn-primary:hover svg { transform: translateX(3px); }
 .btn-secondary {
   color: var(--ink);
-  border: 1px solid rgba(27, 30, 30, .22);
+  border: 1px solid rgba(11, 18, 32, .22);
   background: rgba(255, 255, 255, .25);
 }
-.btn-secondary:hover { background: rgba(255, 255, 255, .7); border-color: rgba(27, 30, 30, .34); }
+.btn-secondary:hover { background: rgba(255, 255, 255, .7); border-color: rgba(11, 18, 32, .34); }
 
 footer {
   padding: 8px 16px max(18px, env(safe-area-inset-bottom));
