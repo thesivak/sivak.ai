@@ -155,11 +155,12 @@ main {
     0 3px 6px rgba(20, 17, 12, .12);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  transition: opacity .45s ease;
+  /* visibility flips at the midpoint of the turn, so the hidden side never shows through */
+  transition: opacity .45s ease, visibility 0s linear .47s;
 }
 .back { transform: rotateY(180deg); }
 .card:not(.is-flipped) .back,
-.card.is-flipped .front { pointer-events: none; }
+.card.is-flipped .front { pointer-events: none; visibility: hidden; }
 
 /* zrno papíru */
 .face::after {
@@ -239,8 +240,6 @@ main {
   font-variant-numeric: tabular-nums;
 }
 .contact a {
-  position: relative;
-  z-index: 3;
   text-decoration: none;
   color: rgba(242, 240, 235, .9);
   background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
@@ -516,6 +515,8 @@ footer {
   .back { transform: none; opacity: 0; }
   .card.is-flipped .front { opacity: 0; }
   .card.is-flipped .back { opacity: 1; }
+  .card:not(.is-flipped) .front,
+  .card.is-flipped .back { transition-delay: 0s; }
   .face::before { display: none; }
   .ground { transform: translate3d(0, 20px, 0); }
   .stage.is-turning .ground { animation: none; }
