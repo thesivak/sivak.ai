@@ -42,7 +42,7 @@
       "Measurable results"
     ],
     "caseLabel": "In practice",
-    "case": "For a software company, we run agents that investigate customer tickets and test new releases."
+    "case": "Right now, for a software company, we run agents that investigate customer tickets and test new releases."
   },
   "controls": {
     "hintClick": "Click the card",

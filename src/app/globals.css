@@ -466,7 +466,7 @@ footer {
   main { padding: 64px 16px 16px; gap: 22px; }
   .stage {
     --cw: min(440px, calc(100vw - 32px));
-    aspect-ratio: 55 / 91;
+    aspect-ratio: 55 / 93;
   }
   .face { border-radius: 3.4cqw; }
   .ground { inset: 6% 6% 0 6%; }
