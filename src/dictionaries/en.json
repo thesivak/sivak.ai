@@ -23,6 +23,10 @@
         "text": "They handle requests and check documents. The agent prepares, a person decides."
       },
       {
+        "title": "AI on top of your data",
+        "text": "We connect AI to your ERP, CRM and spreadsheets. Ask in plain language, get answers with numbers."
+      },
+      {
         "title": "Process automation",
         "text": "We connect systems that don't talk to each other. No more retyping data."
       },
@@ -52,5 +56,5 @@
   "cta": "Book a meeting",
   "mailSubject": "Meeting — AI for our company",
   "saveContact": "Save contact",
-  "footer": "Sivak.ai s.r.o."
+  "footer": "TheSivak s.r.o."
 }

@@ -83,7 +83,7 @@ main {
 }
 
 .stage {
-  --cw: clamp(560px, min(720px, calc(100vw - 48px), calc((100svh - 330px) * 1.5455)), 720px);
+  --cw: clamp(560px, min(900px, calc(100vw - 48px), calc((100svh - 390px) * 1.5455)), 900px);
   position: relative;
   width: var(--cw);
   aspect-ratio: 85 / 55;
@@ -266,7 +266,7 @@ main {
   grid-template-columns: auto 1fr auto;
   align-items: center;
   column-gap: 3.6cqw;
-  padding-bottom: 3cqw;
+  padding-bottom: 2.4cqw;
   border-bottom: 1px solid rgba(242, 240, 235, .12);
 }
 .ratio {
@@ -298,7 +298,7 @@ main {
 }
 .back-mark { align-self: start; }
 .back-label {
-  margin-top: 3cqw !important;
+  margin-top: 2.6cqw !important;
 }
 .back-label,
 .facts dt {
@@ -319,10 +319,10 @@ main {
   margin: 2cqw 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3.6cqw;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.8cqw 5cqw;
 }
-.services li { min-width: 0; }
+.services li { min-width: 0; display: grid; grid-template-columns: 4.4cqw 1fr; }
 .num {
   display: block;
   font-size: max(9.5px, 1.4cqw);
@@ -330,9 +330,11 @@ main {
   letter-spacing: .12em;
   color: rgba(242, 240, 235, .42);
   font-variant-numeric: tabular-nums;
+  padding-top: .45cqw;
 }
 .services h3 {
-  margin: 1cqw 0 .8cqw;
+  grid-column: 2;
+  margin: 0 0 .5cqw;
   font-size: max(12.5px, 2.3cqw);
   font-weight: 500;
   letter-spacing: .005em;
@@ -340,8 +342,9 @@ main {
   text-wrap: balance;
 }
 .services p {
+  grid-column: 2;
   margin: 0;
-  font-size: max(11px, 1.72cqw);
+  font-size: max(10.5px, 1.72cqw);
   font-weight: 300;
   line-height: 1.5;
   color: rgba(242, 240, 235, .72);
@@ -349,7 +352,7 @@ main {
 }
 .facts {
   margin: auto 0 0;
-  padding-top: 2.6cqw;
+  padding-top: 2.2cqw;
   border-top: 1px solid rgba(242, 240, 235, .12);
   display: grid;
   grid-template-columns: 17cqw 1fr;
@@ -462,8 +465,8 @@ footer {
 @media (max-width: 699px) {
   main { padding: 64px 16px 16px; gap: 22px; }
   .stage {
-    --cw: min(400px, calc(100vw - 32px));
-    aspect-ratio: 55 / 85;
+    --cw: min(440px, calc(100vw - 32px));
+    aspect-ratio: 55 / 91;
   }
   .face { border-radius: 3.4cqw; }
   .ground { inset: 6% 6% 0 6%; }
@@ -491,7 +494,7 @@ footer {
   .rule-text { grid-column: 1 / -1; grid-row: 2; font-size: 3.55cqw; line-height: 1.45; }
   .back-mark { grid-column: 2; grid-row: 1; align-self: center; }
   .back-label { margin-top: 4.4cqw !important; }
-  .services { grid-template-columns: 1fr; gap: 3cqw; margin-top: 3cqw; }
+  .services { grid-template-columns: 1fr; gap: 2.4cqw; margin-top: 3cqw; }
   .services li { display: grid; grid-template-columns: 8.5cqw 1fr; }
   .num { font-size: 3cqw; padding-top: .9cqw; }
   .services h3 { margin: 0 0 .6cqw; font-size: 4.4cqw; grid-column: 2; }

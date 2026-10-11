@@ -23,6 +23,10 @@
         "text": "Vyřizují požadavky a kontrolují dokumenty. Agent připraví, člověk rozhodne."
       },
       {
+        "title": "AI nad vašimi daty",
+        "text": "Napojíme AI na ERP, CRM i tabulky. Zeptáte se běžnou větou a dostanete odpověď s čísly."
+      },
+      {
         "title": "Automatizace procesů",
         "text": "Propojíme systémy, které spolu nemluví. Žádné přepisování dat."
       },
@@ -52,5 +56,5 @@
   "cta": "Domluvit schůzku",
   "mailSubject": "Schůzka — AI pro naši firmu",
   "saveContact": "Uložit kontakt",
-  "footer": "Sivak.ai s.r.o."
+  "footer": "TheSivak s.r.o."
 }
