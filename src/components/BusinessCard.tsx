@@ -160,15 +160,25 @@ export default function BusinessCard({ t }: { t: Dictionary }) {
               </h1>
               <p className="tagline">{t.tagline}</p>
 
-              <div className="front-foot">
-                <p className="person">
-                  <span className="name">{t.person.name}</span>
-                  <span className="role">{t.person.role}</span>
-                </p>
-                <p className="contact">
-                  <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-                  <a href={`tel:${PHONE.replaceAll(" ", "")}`}>{PHONE}</a>
-                </p>
+              <div className="front-bottom">
+                <div className="split">
+                  <div className="s80">
+                    <span>{c.splitRoutine}</span>
+                  </div>
+                  <div className="s20">
+                    <span>{c.splitYou}</span>
+                  </div>
+                </div>
+                <div className="front-foot">
+                  <p className="person">
+                    <span className="name">{t.person.name}</span>
+                    <span className="role">{t.person.role}</span>
+                  </p>
+                  <p className="contact">
+                    <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                    <a href={`tel:${PHONE.replaceAll(" ", "")}`}>{PHONE}</a>
+                  </p>
+                </div>
               </div>
             </section>
 

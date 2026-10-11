@@ -42,7 +42,9 @@
       "Measurable results"
     ],
     "caseLabel": "In practice",
-    "case": "Right now, for a software company, we run agents that investigate customer tickets and test new releases."
+    "case": "Right now, for a software company, we run agents that investigate customer tickets and test new releases.",
+    "splitRoutine": "80% routine → AI",
+    "splitYou": "20% you"
   },
   "controls": {
     "hintClick": "Click the card",

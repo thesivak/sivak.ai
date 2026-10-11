@@ -42,7 +42,9 @@
       "Měřitelný výsledek"
     ],
     "caseLabel": "Z praxe",
-    "case": "Aktuálně pro softwarovou firmu provozujeme agenty, kteří prošetřují tikety zákazníků a testují nové verze aplikace."
+    "case": "Aktuálně pro softwarovou firmu provozujeme agenty, kteří prošetřují tikety zákazníků a testují nové verze aplikace.",
+    "splitRoutine": "80 % rutina → AI",
+    "splitYou": "20 % vy"
   },
   "controls": {
     "hintClick": "Klikněte na vizitku",
