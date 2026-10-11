@@ -1,0 +1,45 @@
+{
+  "concept": "Průchod",
+  "selectedOn": "2026-10-11",
+  "source": {
+    "path": "design/brand/pruchod-reference.png",
+    "sha256": "5ed6d242dc6bc28abc06ea33d3c5ddb3eb82a8af8b62b4994d2b35ec5faaef86"
+  },
+  "format": "SVG paths, no embedded raster or fonts",
+  "geometrySource": "src/components/Logo.tsx",
+  "descriptor": "Accessible localized HTML, aligned below the wordmark",
+  "assets": [
+    {
+      "path": "public/brand/logo.svg",
+      "purpose": "full logo, navy",
+      "color": "#0B1220",
+      "viewBox": "0 0 993 272",
+      "bytes": 2423,
+      "sha256": "d656cb49eebdc76ea960b2cdc19f86568425af7512ad7ca7905ace1ab57f45f7"
+    },
+    {
+      "path": "public/brand/logo-light.svg",
+      "purpose": "full logo, ivory",
+      "color": "#F2F0EB",
+      "viewBox": "0 0 993 272",
+      "bytes": 2423,
+      "sha256": "98bc07b57bf0f9d8ca7fc12c7e50062e41359ba4426ccce321c0c2cc7b9be2ce"
+    },
+    {
+      "path": "public/brand/mark.svg",
+      "purpose": "symbol, navy",
+      "color": "#0B1220",
+      "viewBox": "0 0 178 272",
+      "bytes": 263,
+      "sha256": "3beeab4fe29c1074aea3e8508a0d0e9b9df9b22c69c2c8bb5950f8f50cc7c35f"
+    },
+    {
+      "path": "src/app/icon.svg",
+      "purpose": "website icon",
+      "color": "#0B1220 / #F2F0EB",
+      "viewBox": "0 0 512 512",
+      "bytes": 279,
+      "sha256": "0bf70b82f05ef08c8f01b60fa6d6556e43d9140314b363d0e444868ea9ffaab3"
+    }
+  ]
+}

@@ -197,20 +197,31 @@ main {
 
 /* ——— Líc ——— */
 .front {
+  --logo-width: 47cqw;
   padding: 7.2cqw 7.4cqw 6.6cqw;
 }
+.brand-lockup {
+  display: grid;
+  grid-template-columns: 178fr 760fr;
+  column-gap: calc(var(--logo-width) * 55 / 993);
+  align-items: center;
+  width: var(--logo-width);
+}
+.brand-copy { min-width: 0; }
 .logo { margin: 0; line-height: 0; }
+.brand-mark,
 .logo svg {
   display: block;
-  width: 47cqw;
+  width: 100%;
   height: auto;
   color: var(--paper);
   shape-rendering: geometricPrecision;
 }
 .tagline {
-  margin: 3.1cqw 0 0;
-  font-size: max(12px, 2.35cqw);
+  margin: .35cqw 0 0;
+  font-size: max(13px, 2.1cqw);
   font-weight: 400;
+  line-height: 1.35;
   letter-spacing: .015em;
   color: rgba(242, 240, 235, .74);
 }
@@ -493,9 +504,8 @@ footer {
   .face { border-radius: 3.4cqw; }
   .ground { inset: 6% 6% 0 6%; }
 
-  .front { padding: 10cqw 9cqw 9cqw; }
-  .logo svg { width: 78cqw; }
-  .tagline { margin-top: 5.4cqw; font-size: 4.7cqw; line-height: 1.4; }
+  .front { --logo-width: 78cqw; padding: 10cqw 9cqw 9cqw; }
+  .tagline { margin-top: .6cqw; font-size: max(13px, 4.4cqw); line-height: 1.4; }
   .front-bottom { left: 9cqw; right: 9cqw; bottom: 9cqw; }
   .split { margin-bottom: 9.5cqw; gap: 1.6cqw; }
   .split span { top: 2cqw; font-size: 2.7cqw; }

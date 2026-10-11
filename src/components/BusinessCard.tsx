@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Dictionary } from "@/dictionaries";
 import {
-  LOGO_VIEWBOX,
+  WORDMARK_VIEWBOX,
   MARK,
   MARK_VIEWBOX,
   WORDMARK,
-  WORDMARK_DOTS,
   WORDMARK_TRANSFORM,
 } from "@/components/Logo";
 
@@ -133,7 +132,6 @@ export default function BusinessCard({ t }: { t: Dictionary }) {
           <path id="p-mark" d={MARK} />
           <g id="p-word">
             <path d={WORDMARK} transform={WORDMARK_TRANSFORM} />
-            <path d={WORDMARK_DOTS} />
           </g>
         </defs>
       </svg>
@@ -152,13 +150,19 @@ export default function BusinessCard({ t }: { t: Dictionary }) {
         >
           <div className="flipper">
             <section className="face front" aria-label={c.front} inert={flipped} aria-hidden={flipped || undefined}>
-              <h1 className="logo">
-                <svg viewBox={LOGO_VIEWBOX} role="img" aria-label="sivak.ai" fill="currentColor">
+              <div className="brand-lockup">
+                <svg className="brand-mark" viewBox={MARK_VIEWBOX} aria-hidden="true" focusable="false" fill="currentColor">
                   <use href="#p-mark" />
-                  <use href="#p-word" />
                 </svg>
-              </h1>
-              <p className="tagline">{t.tagline}</p>
+                <div className="brand-copy">
+                  <h1 className="logo">
+                    <svg viewBox={WORDMARK_VIEWBOX} role="img" aria-label="sivak.ai" fill="currentColor">
+                      <use href="#p-word" />
+                    </svg>
+                  </h1>
+                  <p className="tagline">{t.tagline}</p>
+                </div>
+              </div>
 
               <div className="front-bottom">
                 <div className="split">
