@@ -15,7 +15,7 @@ export default async function Home({
 
   return (
     <>
-      <a className="lang-switch" href={localePath(other)} hrefLang={other}>
+      <a className="lang-switch" href={`${localePath(other)}?lang=${other}`} hrefLang={other}>
         {t.langSwitch}
       </a>
       <main>
