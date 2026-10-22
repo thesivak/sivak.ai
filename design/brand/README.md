@@ -7,8 +7,9 @@ The doorway symbol was reconstructed with straight segments and rounded outer
 corners. The lettering, including the circular dots, was converted to vector
 outlines from the approved image. The SVGs contain no embedded bitmap or fonts.
 
-The shared inline geometry lives in `src/components/Logo.tsx`. The business card
-uses it on the front and back. `src/app/icon.svg` uses the same doorway symbol.
+The shared inline geometry lives in `src/components/Logo.tsx`. The site header
+and footer use the full logo, and the contact section draws the doorway symbol as
+a hairline outline. `src/app/icon.svg` uses the same doorway symbol.
 
 Standalone exports have transparent backgrounds:
 

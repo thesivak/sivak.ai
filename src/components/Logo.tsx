@@ -7,3 +7,13 @@ export const WORDMARK_TRANSFORM = "translate(200 272) scale(0.1 -0.1)";
 export const LOGO_VIEWBOX = "0 0 993 272";
 export const MARK_VIEWBOX = "0 0 178 272";
 export const WORDMARK_VIEWBOX = "232.89 40.60 760.04 180.63";
+
+// The full logo (doorway mark and wordmark) as one inline SVG in the current text colour.
+export function BrandLogo({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox={LOGO_VIEWBOX} fill="currentColor" aria-hidden="true" focusable="false">
+      <path d={MARK} />
+      <path d={WORDMARK} transform={WORDMARK_TRANSFORM} />
+    </svg>
+  );
+}

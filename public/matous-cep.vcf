@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Čep;Matouš;;;
+FN:Matouš Čep
+ORG:TheSivak s.r.o.
+TITLE:Key account manager
+EMAIL;TYPE=INTERNET,WORK:matous@sivak.ai
+TEL;TYPE=WORK,VOICE:+420731504378
+URL:https://www.sivak.ai
+END:VCARD

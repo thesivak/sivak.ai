@@ -1,62 +1,348 @@
 {
   "metadata": {
-    "title": "sivak.ai — AI and automation for your business",
-    "description": "AI agents take over the dull computer work that eats most of your time, so your team can focus on what actually drives the business."
+    "title": "sivak.ai — AI agents for computer work",
+    "description": "We build AI agents that handle the work people do at a computer. They take over 80% of the routine, so your team can focus on the 20% that drives results."
   },
-  "langSwitch": "Česky",
-  "tagline": "AI automation for your business",
-  "lead": "We deploy AI agents that take over the dull computer work — the kind that eats most of your time and drains your energy. Your team can focus on what they enjoy and what actually moves the business.",
-  "person": {
-    "name": "Mirek Sivák",
-    "role": "Founder"
+  "skipLink": "Skip to content",
+  "langSwitch": {
+    "label": "Česky",
+    "title": "Přepnout do češtiny"
   },
-  "card": {
-    "label": "Sivak.ai business card",
-    "roleDescription": "business card",
-    "front": "Front of the card",
-    "back": "Back of the card",
-    "rule": "Routine takes most of the time and delivers the least. We automate it first — that's where AI pays off fastest.",
-    "servicesLabel": "What we do",
-    "services": [
+  "nav": {
+    "label": "Main navigation",
+    "home": "sivak.ai — home",
+    "items": [
+      { "id": "services", "label": "What we do" },
+      { "id": "process", "label": "How it works" },
+      { "id": "security", "label": "Security" },
+      { "id": "case-study", "label": "In practice" },
+      { "id": "contact", "label": "Contact" }
+    ],
+    "cta": "Book a meeting",
+    "open": "Open menu",
+    "close": "Close menu"
+  },
+  "hero": {
+    "eyebrow": "AI agents and automation",
+    "title": "AI agents that",
+    "titleAccent": "get computer work done",
+    "lead": "We build agents around your processes. They handle the work people do at a computer today — from invoices and customer support to software testing.",
+    "ratio": "They take over 80% of the routine. Your team keeps the 20% of work that drives results.",
+    "primary": "Book a meeting",
+    "secondary": "How it works",
+    "notes": ["The agent prepares, a person decides", "Every step is recorded", "ROI calculated up front"]
+  },
+  "console": {
+    "label": "Example: AI agents at work",
+    "caption": "Illustrative example",
+    "app": "sivak.ai / agents",
+    "live": "4 agents running",
+    "agentsLabel": "Agents",
+    "preparing": "Preparing the output…",
+    "states": { "running": "Working", "waiting": "Needs you", "done": "Done" },
+    "footer": ["Access: read-only", "Approval: a person", "Log: every step"],
+    "agents": [
+      {
+        "short": "Invoicing",
+        "name": "Invoicing",
+        "task": "Incoming invoices · 23 documents",
+        "steps": [
+          { "text": "Collect invoices from email", "result": "23 documents", "time": "0:04" },
+          { "text": "Extract details, verify company IDs", "result": "all valid", "time": "0:38" },
+          { "text": "Match with purchase orders", "result": "21 of 23", "time": "0:52" },
+          { "text": "Prepare accounting entries", "result": "21 entries", "time": "1:10" }
+        ],
+        "state": "waiting",
+        "outcome": "2 invoices don't match their order. Decide what to do with them.",
+        "action": "Review"
+      },
+      {
+        "short": "Support",
+        "name": "Customer support",
+        "task": "Request #4821 · “Export isn't working”",
+        "steps": [
+          { "text": "Read the request and customer history", "result": "3 earlier tickets", "time": "0:06" },
+          { "text": "Check account settings in the app", "result": "missing permission", "time": "0:41" },
+          { "text": "Find the fix in the documentation", "result": "found", "time": "0:55" },
+          { "text": "Draft a reply to the customer", "result": "draft ready", "time": "1:12" }
+        ],
+        "state": "waiting",
+        "outcome": "The reply draft is ready. Send it as is or edit it first.",
+        "action": "Approve"
+      },
+      {
+        "short": "Testing",
+        "name": "Testing",
+        "task": "New app release 4.12",
+        "steps": [
+          { "text": "Review the spec and code changes", "result": "6 criteria", "time": "0:20" },
+          { "text": "Test in a real browser", "result": "6 of 6", "time": "3:05" },
+          { "text": "Save video and screenshots", "result": "saved", "time": "3:14" },
+          { "text": "Write the test report", "result": "passed", "time": "3:30" }
+        ],
+        "state": "done",
+        "outcome": "All criteria passed. The report and video are ready.",
+        "action": "Open report"
+      },
+      {
+        "short": "Reporting",
+        "name": "Reporting",
+        "task": "Morning report for management",
+        "steps": [
+          { "text": "Load data from ERP and CRM", "result": "done", "time": "0:09" },
+          { "text": "Compare with last week", "result": "3 deviations", "time": "0:24" },
+          { "text": "Find the causes of the deviations", "result": "explained", "time": "0:47" },
+          { "text": "Send the report by email", "result": "sent", "time": "0:58" }
+        ],
+        "state": "done",
+        "outcome": "The report is in your inbox, with three deviations highlighted.",
+        "action": "Open report"
+      }
+    ]
+  },
+  "ratio": {
+    "id": "80-20-rule",
+    "eyebrow": "The 80/20 rule",
+    "title": "Routine first. That's where AI pays off fastest.",
+    "text": "Routine computer work fills most of the working day and delivers the least: retyping data, checks, looking things up, the same answers over and over. That's what agents take over first. Your people keep the 20% of work that brings 80% of the results.",
+    "routine": {
+      "share": "80%",
+      "label": "Routine, handled by agents",
+      "items": [
+        "moving data between systems",
+        "checking invoices and documents",
+        "answering repeat questions",
+        "looking up information",
+        "reports and summaries",
+        "testing and quality checks"
+      ]
+    },
+    "people": {
+      "share": "20%",
+      "label": "Stays with your people",
+      "items": ["decisions", "customer relationships", "ideas and growth"]
+    }
+  },
+  "services": {
+    "id": "services",
+    "eyebrow": "What we do",
+    "title": "We build, deploy and run your agents",
+    "lead": "We don't sell a generic chatbot. We build solutions for specific work in your company and keep looking after them after launch.",
+    "items": [
       {
         "title": "AI agents on your team",
-        "text": "They handle requests and check documents. The agent prepares, a person decides."
+        "text": "Digital colleagues for specific jobs. They handle requests, check documents and test software. The agent prepares, a person decides.",
+        "tags": ["customer support", "document checks", "app testing"]
       },
       {
         "title": "AI on top of your data",
-        "text": "We connect AI to your ERP, CRM and spreadsheets. Ask in plain language, get answers with numbers."
+        "text": "We connect AI to your ERP, CRM and spreadsheets. Ask in plain language and get answers backed by numbers.",
+        "tags": ["management reports", "contract search", "deviation alerts"]
       },
       {
         "title": "Process automation",
-        "text": "We connect systems that don't talk to each other. No more retyping data."
+        "text": "We connect systems that don't talk to each other. Data moves on its own, with no retyping from one window to another.",
+        "tags": ["email → ERP", "e-shop → accounting", "CRM → invoicing"]
       },
       {
         "title": "Robots for legacy software",
-        "text": "They operate programs with no API — Helios, DOS applications and in-house systems."
+        "text": "They operate programs with no API — Helios, DOS applications and in-house systems no one wants to rewrite.",
+        "tags": ["works through the screen", "no changes to the system", "day and night"]
+      }
+    ]
+  },
+  "useCases": {
+    "id": "examples",
+    "eyebrow": "Where agents help",
+    "title": "An agent can do the work you do at a computer today",
+    "lead": "It works in applications just like a person. It reads emails and documents, fills in forms, clicks through systems and hands the finished work over for review.",
+    "outputLabel": "Output",
+    "items": [
+      {
+        "area": "Customer support",
+        "text": "Investigates the request, looks up the customer's history and drafts a reply.",
+        "output": "reply draft"
+      },
+      {
+        "area": "Accounting",
+        "text": "Extracts incoming invoices, checks them and matches them with orders and payments.",
+        "output": "entries ready to post"
+      },
+      {
+        "area": "Sales",
+        "text": "Updates contacts in the CRM, prepares quote materials and tracks who needs a follow-up.",
+        "output": "today's to-do list"
+      },
+      {
+        "area": "Purchasing and stock",
+        "text": "Compares supplier quotes and keeps an eye on stock levels and delivery dates.",
+        "output": "draft order"
+      },
+      {
+        "area": "Management",
+        "text": "Prepares a summary from ERP and CRM every morning and flags deviations.",
+        "output": "morning report"
+      },
+      {
+        "area": "Software development",
+        "text": "Tests a new app release in a browser and backs up the result with a video.",
+        "output": "test report"
       }
     ],
-    "approachLabel": "How we work",
-    "approach": [
-      "The 80/20 rule",
-      "Under control",
-      "Measurable results"
+    "more": "Don't see your work here? If it's done at a computer, an agent can most likely do it.",
+    "moreLink": "Let's talk"
+  },
+  "process": {
+    "id": "process",
+    "eyebrow": "How it works",
+    "title": "From the first meeting to an agent at work",
+    "lead": "We start with a small step and a clear result, and expand once the agent has proven itself.",
+    "outputLabel": "Output",
+    "steps": [
+      {
+        "title": "Intro meeting",
+        "text": "We go through your processes and find the routine that takes up the most time.",
+        "output": "suitable processes"
+      },
+      {
+        "title": "ROI estimate",
+        "text": "We calculate how many hours the agent will save and when the investment pays back. You know before we start.",
+        "output": "savings estimate"
+      },
+      {
+        "title": "Pilot agent",
+        "text": "We build an agent for one process. Your people review its work while we measure the results.",
+        "output": "agent in operation"
+      },
+      {
+        "title": "Operation and growth",
+        "text": "We run, monitor and improve the agent. Once it proves itself, it takes on more work.",
+        "output": "report of work done"
+      }
+    ]
+  },
+  "control": {
+    "id": "security",
+    "eyebrow": "Under control",
+    "title": "The agent prepares. A person decides.",
+    "lead": "Agents work within clear limits. You always know what they do, what they can access and how they reached a result.",
+    "manifest": {
+      "label": "Example of an agent's permissions",
+      "file": "agent-invoicing.yaml",
+      "agent": ["agent", "invoicing"],
+      "accessKey": "access",
+      "access": [
+        ["inbox invoices@", "read"],
+        ["accounting system", "read, draft entries"],
+        ["bank", "read"]
+      ],
+      "rest": [
+        ["approved by", "accountant"],
+        ["passwords", "managed by the system"],
+        ["log", "every step"]
+      ]
+    },
+    "items": [
+      {
+        "title": "A person approves",
+        "text": "Important steps, such as replying to a customer, posting an entry or placing an order, are always confirmed by a person."
+      },
+      {
+        "title": "Only the access it needs",
+        "text": "An agent gets access only to what its job requires. Usually read-only."
+      },
+      {
+        "title": "No passwords",
+        "text": "Credentials are managed by the system. The agent never gets its hands on them."
+      },
+      {
+        "title": "Trials on a copy",
+        "text": "It tests and tries things out on a copy of your data. Live operations stay untouched."
+      },
+      {
+        "title": "Every step recorded",
+        "text": "Every action is logged, including screenshots and video. You know what the agent did and why."
+      },
+      {
+        "title": "Measurable results",
+        "text": "You see how much work the agent has done and how much time it has saved you."
+      }
+    ]
+  },
+  "case": {
+    "id": "case-study",
+    "eyebrow": "In practice",
+    "title": "A team of AI agents for a software company",
+    "lead": "For a software company, we run agents that work every day alongside the people in support, testing and development.",
+    "status": "running",
+    "agents": [
+      {
+        "name": "Customer support",
+        "text": "Investigates every new request. Reads the customer's history, checks the data in the app and drafts a reply. A person sends it.",
+        "meta": "checks for new requests every 10 minutes"
+      },
+      {
+        "name": "Testing",
+        "text": "Tries each new release in a real browser, the way a tester would. Backs up the result with screenshots and video.",
+        "meta": "verdict: pass / fail / blocked"
+      },
+      {
+        "name": "Development and code review",
+        "text": "Prepares code changes from the spec, and an independent agent reviews them. A person approves and deploys.",
+        "meta": "away from live operations"
+      },
+      {
+        "name": "Studio for colleagues",
+        "text": "Colleagues who don't code describe an idea and see it in the app right away. They hand developers a finished proposal.",
+        "meta": "from idea to proposal, no coding"
+      }
     ],
-    "caseLabel": "In practice",
-    "case": "Right now, for a software company, we run agents that investigate customer tickets and test new releases.",
-    "splitRoutine": "80% routine → AI",
-    "splitYou": "20% you"
+    "facts": ["Read-only access to company systems", "Every step recorded", "Runs day and night"]
   },
-  "controls": {
-    "hintClick": "Click the card",
-    "hintTap": "Tap the card",
-    "flip": "Flip",
-    "flipToBack": "Flip the card to the back",
-    "flipToFront": "Flip the card to the front",
-    "statusBack": "Back of the card: what we do.",
-    "statusFront": "Front of the card: contact."
+  "faq": {
+    "id": "faq",
+    "eyebrow": "Questions",
+    "title": "What companies ask us",
+    "items": [
+      {
+        "q": "Do we need to change our systems?",
+        "a": "No. The agent works in the applications you already use. Where there's no integration, it operates the program through the screen, just like a person."
+      },
+      {
+        "q": "What if the agent makes a mistake?",
+        "a": "The agent prepares, a person decides. Important steps are always approved by a person, and every action is recorded, so you know what the agent did and why."
+      },
+      {
+        "q": "How soon will we see results?",
+        "a": "We start with the process where an agent pays off fastest. From the first day of operation, we measure how much work it does and how much time it saves."
+      },
+      {
+        "q": "Is our data safe?",
+        "a": "The agent only gets access to what its job requires, usually read-only. It never sees passwords and tries things out on a copy of your data, not in live operations."
+      },
+      {
+        "q": "What kinds of companies do you work with?",
+        "a": "Companies where people spend a lot of time on routine computer work. The industry doesn't matter; what matters is how much time the routine takes."
+      }
+    ]
   },
-  "cta": "Book a meeting",
-  "mailSubject": "Meeting — AI for our company",
-  "saveContact": "Save contact",
-  "footer": "TheSivak s.r.o."
+  "contact": {
+    "id": "contact",
+    "eyebrow": "Contact",
+    "title": "Show us what's slowing you down",
+    "lead": "In the first meeting, we'll go through your processes and show you where an agent pays off fastest.",
+    "cta": "Book a meeting",
+    "mailSubject": "Meeting: AI agents for our company",
+    "saveContact": "Save contact",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone"
+  },
+  "footer": {
+    "tagline": "AI agents and automation for business.",
+    "navLabel": "Site",
+    "contactLabel": "Contact",
+    "operatedBy": "sivak.ai is operated by",
+    "idLabel": "Company ID",
+    "registry": "Registered in the Commercial Register kept by the Regional Court in Ostrava, Section C, Insert 98925."
+  }
 }

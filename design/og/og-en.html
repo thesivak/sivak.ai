@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=block&subset=latin-ext" rel="stylesheet">
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body { position: relative; background: #0B1220; color: #F2F0EB; font-family: Jost, sans-serif; -webkit-font-smoothing: antialiased; }
+  .bg { position: absolute; inset: 0; background:
+      radial-gradient(55% 75% at 86% 28%, rgba(79,125,255,.3), rgba(79,125,255,0) 70%),
+      radial-gradient(40% 50% at 0% 0%, rgba(141,178,255,.08), rgba(141,178,255,0) 70%); }
+  .grid { position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(242,240,235,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(242,240,235,.06) 1px, transparent 1px);
+      background-size: 60px 60px; background-position: -1px -1px;
+      -webkit-mask-image: radial-gradient(ellipse 70% 85% at 82% 30%, #000 20%, transparent 75%); }
+  .wrap { position: absolute; inset: 64px 76px 60px; display: flex; flex-direction: column; }
+  .logo { height: 46px; width: auto; align-self: flex-start; }
+  h1 { margin: auto 0 0; max-width: 960px; font-size: 80px; font-weight: 500; line-height: 1.02; letter-spacing: -.032em; }
+  h1 span { background: linear-gradient(95deg, #F2F0EB 0%, #C9D8FF 55%, #8DB2FF 100%);
+      -webkit-box-decoration-break: clone; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .foot { margin-top: 44px; padding-top: 26px; border-top: 1px solid rgba(242,240,235,.14);
+      display: flex; align-items: center; justify-content: space-between;
+      font-family: "IBM Plex Mono", monospace; font-size: 21px; color: rgba(242,240,235,.72); }
+  .ratio { display: flex; align-items: center; gap: 18px; }
+  .bar { display: flex; gap: 4px; width: 132px; }
+  .bar i { height: 10px; border-radius: 3px; }
+  .bar i:first-child { flex: 80; background: repeating-linear-gradient(-45deg, rgba(141,178,255,.9) 0 3px, rgba(141,178,255,.25) 3px 6px); }
+  .bar i:last-child { flex: 20; background: #F2F0EB; }
+  .url { color: #F2F0EB; letter-spacing: .02em; }
+</style>
+</head>
+<body>
+  <div class="bg"></div><div class="grid"></div>
+  <div class="wrap">
+    <img class="logo" src="../../public/brand/logo-light.svg" alt="">
+    <h1>AI agents that<br><span>get computer work done</span></h1>
+    <div class="foot">
+      <div class="ratio"><span class="bar"><i></i><i></i></span>Agents take over 80% of the routine</div>
+      <div class="url">www.sivak.ai</div>
+    </div>
+  </div>
+</body>
+</html>

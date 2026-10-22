@@ -1,62 +1,348 @@
 {
   "metadata": {
-    "title": "sivak.ai — AI a automatizace pro vaše podnikání",
-    "description": "AI agenti převezmou nudnou práci u počítače, která zabírá nejvíc času. Váš tým se může věnovat tomu, co firmě skutečně přináší výsledky."
+    "title": "sivak.ai – AI agenti pro práci u počítače",
+    "description": "Stavíme AI agenty, kteří zvládnou práci, jakou lidé dělají u počítače. Převezmou 80 % rutiny a vašemu týmu zůstane 20 % práce, která přináší výsledky."
   },
-  "langSwitch": "English",
-  "tagline": "AI automatizace pro vaše podnikání",
-  "lead": "Nasazujeme AI agenty, kteří převezmou nudnou práci u počítače — tu, která zabírá nejvíc času a vysává energii. Váš tým se může věnovat tomu, co ho baví a co firmě skutečně přináší výsledky.",
-  "person": {
-    "name": "Mirek Sivák",
-    "role": "Founder"
+  "skipLink": "Přeskočit na obsah",
+  "langSwitch": {
+    "label": "English",
+    "title": "Switch to English"
   },
-  "card": {
-    "label": "Vizitka Sivak.ai",
-    "roleDescription": "vizitka",
-    "front": "Přední strana vizitky",
-    "back": "Zadní strana vizitky",
-    "rule": "Rutina zabírá většinu času a přináší nejméně. Převezmeme ji jako první — tam se AI zaplatí nejrychleji.",
-    "servicesLabel": "Co děláme",
-    "services": [
+  "nav": {
+    "label": "Hlavní navigace",
+    "home": "sivak.ai – úvod",
+    "items": [
+      { "id": "sluzby", "label": "Co děláme" },
+      { "id": "postup", "label": "Jak to probíhá" },
+      { "id": "bezpecnost", "label": "Bezpečnost" },
+      { "id": "z-praxe", "label": "Z praxe" },
+      { "id": "kontakt", "label": "Kontakt" }
+    ],
+    "cta": "Domluvit schůzku",
+    "open": "Otevřít menu",
+    "close": "Zavřít menu"
+  },
+  "hero": {
+    "eyebrow": "AI agenti pro české firmy",
+    "title": "AI agenti, kteří",
+    "titleAccent": "odvedou práci u počítače",
+    "lead": "Stavíme agenty na míru vašim procesům. Zvládnou práci, kterou dnes lidé dělají u počítače – od faktur přes zákaznickou podporu po testování softwaru.",
+    "ratio": "Převezmou 80 % rutiny. Vašemu týmu zůstane 20 % práce, která přináší výsledky.",
+    "primary": "Domluvit schůzku",
+    "secondary": "Jak to probíhá",
+    "notes": ["Agent připraví, člověk rozhodne", "Každý krok je zaznamenaný", "Návratnost spočítáme předem"]
+  },
+  "console": {
+    "label": "Ukázka: AI agenti při práci",
+    "caption": "Ilustrační ukázka",
+    "app": "sivak.ai / agenti",
+    "live": "4 agenti v provozu",
+    "agentsLabel": "Agenti",
+    "preparing": "Výstup se připravuje…",
+    "states": { "running": "Pracuje", "waiting": "Čeká na vás", "done": "Hotovo" },
+    "footer": ["Přístup: jen čtení", "Schvaluje: člověk", "Záznam: každý krok"],
+    "agents": [
+      {
+        "short": "Fakturace",
+        "name": "Fakturace",
+        "task": "Přijaté faktury · 23 dokladů",
+        "steps": [
+          { "text": "Stáhnout faktury z e-mailu", "result": "23 dokladů", "time": "0:04" },
+          { "text": "Vytěžit údaje a ověřit IČO", "result": "v pořádku", "time": "0:38" },
+          { "text": "Spárovat s objednávkami", "result": "21 z 23", "time": "0:52" },
+          { "text": "Připravit zápis do účetnictví", "result": "21 dokladů", "time": "1:10" }
+        ],
+        "state": "waiting",
+        "outcome": "2 faktury nesedí s objednávkou. Rozhodněte, co s nimi.",
+        "action": "Zkontrolovat"
+      },
+      {
+        "short": "Podpora",
+        "name": "Zákaznická podpora",
+        "task": "Požadavek #4821 · „Nejde mi export“",
+        "steps": [
+          { "text": "Přečíst požadavek a historii zákazníka", "result": "3 starší tikety", "time": "0:06" },
+          { "text": "Ověřit nastavení účtu v aplikaci", "result": "chybí oprávnění", "time": "0:41" },
+          { "text": "Najít řešení v dokumentaci", "result": "nalezeno", "time": "0:55" },
+          { "text": "Připravit odpověď zákazníkovi", "result": "návrh hotový", "time": "1:12" }
+        ],
+        "state": "waiting",
+        "outcome": "Návrh odpovědi je připravený. Odešlete ho, nebo ho nejdřív upravte.",
+        "action": "Schválit"
+      },
+      {
+        "short": "Testování",
+        "name": "Testování",
+        "task": "Nová verze aplikace 4.12",
+        "steps": [
+          { "text": "Projít zadání a změny v kódu", "result": "6 kritérií", "time": "0:20" },
+          { "text": "Otestovat ve skutečném prohlížeči", "result": "6 z 6", "time": "3:05" },
+          { "text": "Uložit video a snímky obrazovky", "result": "uloženo", "time": "3:14" },
+          { "text": "Sepsat zprávu o testu", "result": "prošlo", "time": "3:30" }
+        ],
+        "state": "done",
+        "outcome": "Všechna kritéria prošla. Zpráva i video jsou připravené.",
+        "action": "Otevřít zprávu"
+      },
+      {
+        "short": "Přehledy",
+        "name": "Přehledy",
+        "task": "Ranní přehled pro vedení",
+        "steps": [
+          { "text": "Načíst data z ERP a CRM", "result": "hotovo", "time": "0:09" },
+          { "text": "Porovnat s minulým týdnem", "result": "3 odchylky", "time": "0:24" },
+          { "text": "Dohledat příčiny odchylek", "result": "vysvětleno", "time": "0:47" },
+          { "text": "Poslat přehled e-mailem", "result": "odesláno", "time": "0:58" }
+        ],
+        "state": "done",
+        "outcome": "Přehled je ve vaší schránce. Tři odchylky jsou zvýrazněné.",
+        "action": "Otevřít přehled"
+      }
+    ]
+  },
+  "ratio": {
+    "id": "pravidlo-80-20",
+    "eyebrow": "Pravidlo 80:20",
+    "title": "Nejdřív rutina. Tam se AI zaplatí nejrychleji.",
+    "text": "Rutina u počítače zabírá většinu pracovní doby a přináší nejméně: přepisování dat, kontroly, dohledávání, pořád stejné odpovědi. Právě tu převezmou agenti jako první. Vašim lidem zůstane 20 % práce, která přináší 80 % výsledků.",
+    "routine": {
+      "share": "80 %",
+      "label": "Rutina, kterou převezmou agenti",
+      "items": [
+        "přepisování dat mezi systémy",
+        "kontrola faktur a dokumentů",
+        "odpovědi na opakované dotazy",
+        "dohledávání informací",
+        "reporty a přehledy",
+        "testování a kontrola kvality"
+      ]
+    },
+    "people": {
+      "share": "20 %",
+      "label": "Zůstane vašim lidem",
+      "items": ["rozhodování", "vztahy se zákazníky", "nápady a rozvoj firmy"]
+    }
+  },
+  "services": {
+    "id": "sluzby",
+    "eyebrow": "Co děláme",
+    "title": "Agenty postavíme, nasadíme i provozujeme",
+    "lead": "Neprodáváme obecného chatbota. Stavíme řešení na konkrétní práci ve vaší firmě a staráme se o něj i po spuštění.",
+    "items": [
       {
         "title": "AI agenti v týmu",
-        "text": "Vyřizují požadavky a kontrolují dokumenty. Agent připraví, člověk rozhodne."
+        "text": "Digitální kolegové na konkrétní práci. Vyřizují požadavky, kontrolují dokumenty a testují software. Agent připraví, člověk rozhodne.",
+        "tags": ["zákaznická podpora", "kontrola dokumentů", "testování aplikací"]
       },
       {
         "title": "AI nad vašimi daty",
-        "text": "Napojíme AI na ERP, CRM i tabulky. Zeptáte se běžnou větou a dostanete odpověď s čísly."
+        "text": "Napojíme AI na ERP, CRM i tabulky. Zeptáte se běžnou větou a dostanete odpověď s čísly.",
+        "tags": ["přehledy pro vedení", "hledání ve smlouvách", "upozornění na odchylky"]
       },
       {
         "title": "Automatizace procesů",
-        "text": "Propojíme systémy, které spolu nemluví. Žádné přepisování dat."
+        "text": "Propojíme systémy, které spolu nemluví. Data se přenesou sama, bez přepisování z jednoho okna do druhého.",
+        "tags": ["e-mail → ERP", "e-shop → účetnictví", "CRM → fakturace"]
       },
       {
         "title": "Roboti pro starý software",
-        "text": "Obsluhují programy bez API — Helios, DOSové aplikace i interní systémy."
+        "text": "Obsluhují programy bez API – Helios, DOSové aplikace i interní systémy, které nikdo nechce přepisovat.",
+        "tags": ["práce přes obrazovku", "bez zásahu do systému", "ve dne i v noci"]
+      }
+    ]
+  },
+  "useCases": {
+    "id": "priklady",
+    "eyebrow": "Kde agenti pomáhají",
+    "title": "Agent zvládne práci, kterou dnes děláte u počítače",
+    "lead": "Pracuje v aplikacích stejně jako člověk. Čte e-maily a dokumenty, vyplňuje formuláře, kliká v systémech a hotovou práci předá ke kontrole.",
+    "outputLabel": "Výstup",
+    "items": [
+      {
+        "area": "Zákaznická podpora",
+        "text": "Prošetří požadavek, dohledá historii zákazníka a připraví odpověď.",
+        "output": "návrh odpovědi"
+      },
+      {
+        "area": "Účetnictví",
+        "text": "Vytěží přijaté faktury, zkontroluje je a spáruje s objednávkami i platbami.",
+        "output": "doklady k zaúčtování"
+      },
+      {
+        "area": "Obchod",
+        "text": "Doplní kontakty do CRM, připraví podklady k nabídce a pohlídá, komu se ozvat.",
+        "output": "úkoly na dnešek"
+      },
+      {
+        "area": "Nákup a sklad",
+        "text": "Porovná nabídky dodavatelů a hlídá zásoby i termíny dodávek.",
+        "output": "návrh objednávky"
+      },
+      {
+        "area": "Vedení firmy",
+        "text": "Každé ráno připraví přehled z ERP a CRM a upozorní na odchylky.",
+        "output": "ranní přehled"
+      },
+      {
+        "area": "Vývoj softwaru",
+        "text": "Otestuje novou verzi aplikace v prohlížeči a výsledek doloží videem.",
+        "output": "zpráva o testu"
       }
     ],
-    "approachLabel": "Jak pracujeme",
-    "approach": [
-      "Pravidlo 80:20",
-      "Pod kontrolou",
-      "Měřitelný výsledek"
+    "more": "Nevidíte tu svou práci? Pokud se dělá u počítače, agent ji nejspíš zvládne.",
+    "moreLink": "Probereme to"
+  },
+  "process": {
+    "id": "postup",
+    "eyebrow": "Jak to probíhá",
+    "title": "Od první schůzky k agentovi v provozu",
+    "lead": "Začínáme malým krokem s jasným výsledkem. Rozšiřujeme, až když se agent osvědčí.",
+    "outputLabel": "Výstup",
+    "steps": [
+      {
+        "title": "Úvodní schůzka",
+        "text": "Projdeme vaše procesy a najdeme rutinu, která zabírá nejvíc času.",
+        "output": "vhodné procesy"
+      },
+      {
+        "title": "Výpočet návratnosti",
+        "text": "Spočítáme, kolik hodin agent ušetří a kdy se investice vrátí. Víte to dřív, než začneme.",
+        "output": "odhad úspory"
+      },
+      {
+        "title": "Pilotní agent",
+        "text": "Postavíme agenta na jeden proces. Vaši lidé kontrolují jeho práci a my měříme výsledky.",
+        "output": "agent v provozu"
+      },
+      {
+        "title": "Provoz a rozšíření",
+        "text": "Agenta provozujeme, hlídáme a zlepšujeme. Když se osvědčí, převezme další práci.",
+        "output": "přehled odvedené práce"
+      }
+    ]
+  },
+  "control": {
+    "id": "bezpecnost",
+    "eyebrow": "Pod kontrolou",
+    "title": "Agent připraví. Člověk rozhodne.",
+    "lead": "Agenti pracují v jasných mantinelech. Vždy víte, co dělají, k čemu mají přístup a proč došli k výsledku.",
+    "manifest": {
+      "label": "Ukázka oprávnění agenta",
+      "file": "agent-fakturace.yaml",
+      "agent": ["agent", "fakturace"],
+      "accessKey": "přístup",
+      "access": [
+        ["e-mail faktury@", "čtení"],
+        ["účetní systém", "čtení, návrh zápisu"],
+        ["banka", "čtení"]
+      ],
+      "rest": [
+        ["schvaluje", "účetní"],
+        ["hesla", "spravuje systém"],
+        ["záznam", "každý krok"]
+      ]
+    },
+    "items": [
+      {
+        "title": "Schvaluje člověk",
+        "text": "Důležité kroky, jako odpověď zákazníkovi, zaúčtování nebo objednávku, vždy potvrdí člověk."
+      },
+      {
+        "title": "Jen nutná oprávnění",
+        "text": "Agent dostane přístup jen k tomu, co ke své práci potřebuje. Většinou jen ke čtení."
+      },
+      {
+        "title": "Hesla nevidí",
+        "text": "Přístupové údaje spravuje systém. Agent je nikdy nedostane do rukou."
+      },
+      {
+        "title": "Zkouší na kopii",
+        "text": "Testuje a zkouší na kopii dat. Ostrý provoz zůstává nedotčený."
+      },
+      {
+        "title": "Záznam každého kroku",
+        "text": "Každá akce je zaznamenaná, včetně snímků obrazovky a videa. Víte, co agent udělal a proč."
+      },
+      {
+        "title": "Měřitelný výsledek",
+        "text": "Vidíte, kolik práce agent odvedl a kolik času vám ušetřil."
+      }
+    ]
+  },
+  "case": {
+    "id": "z-praxe",
+    "eyebrow": "Z praxe",
+    "title": "Tým AI agentů pro softwarovou firmu",
+    "lead": "Pro softwarovou firmu provozujeme agenty, kteří každý den pracují vedle lidí z podpory, testování a vývoje.",
+    "status": "v provozu",
+    "agents": [
+      {
+        "name": "Zákaznická podpora",
+        "text": "Prošetří každý nový požadavek. Přečte historii zákazníka, ověří data v aplikaci a připraví odpověď. Odesílá ji člověk.",
+        "meta": "nové požadavky kontroluje každých 10 minut"
+      },
+      {
+        "name": "Testování",
+        "text": "Novou verzi aplikace vyzkouší ve skutečném prohlížeči jako tester. Výsledek doloží snímky obrazovky a videem.",
+        "meta": "výsledek: prošlo / neprošlo / nelze ověřit"
+      },
+      {
+        "name": "Vývoj a kontrola kódu",
+        "text": "Podle zadání připraví změnu v kódu a nezávislý agent ji zkontroluje. Schvaluje a nasazuje člověk.",
+        "meta": "mimo ostrý provoz"
+      },
+      {
+        "name": "Studio pro kolegy",
+        "text": "Kolegové, kteří neprogramují, popíšou nápad a hned ho vidí v aplikaci. Vývojářům předají hotový návrh.",
+        "meta": "od nápadu k návrhu bez programování"
+      }
     ],
-    "caseLabel": "Z praxe",
-    "case": "Aktuálně pro softwarovou firmu provozujeme agenty, kteří prošetřují tikety zákazníků a testují nové verze aplikace.",
-    "splitRoutine": "80 % rutina → AI",
-    "splitYou": "20 % vy"
+    "facts": ["Do firemních systémů jen ke čtení", "Každý krok zaznamenaný", "Běží ve dne i v noci"]
   },
-  "controls": {
-    "hintClick": "Klikněte na vizitku",
-    "hintTap": "Klepněte na vizitku",
-    "flip": "Otočit",
-    "flipToBack": "Otočit vizitku na zadní stranu",
-    "flipToFront": "Otočit vizitku na přední stranu",
-    "statusBack": "Zadní strana vizitky: co děláme.",
-    "statusFront": "Přední strana vizitky: kontakt."
+  "faq": {
+    "id": "otazky",
+    "eyebrow": "Otázky",
+    "title": "Na co se nás firmy ptají",
+    "items": [
+      {
+        "q": "Musíme kvůli agentům měnit své systémy?",
+        "a": "Ne. Agent pracuje v aplikacích, které už používáte. Kde chybí napojení, ovládá program přes obrazovku stejně jako člověk."
+      },
+      {
+        "q": "Co když agent udělá chybu?",
+        "a": "Agent připraví, člověk rozhodne. Důležité kroky vždy schvaluje člověk a každá akce agenta je zaznamenaná, takže víte, co udělal a proč."
+      },
+      {
+        "q": "Jak rychle uvidíme výsledek?",
+        "a": "Začínáme procesem, kde se agent zaplatí nejrychleji. Od prvního dne provozu měříme, kolik práce odvedl a kolik času ušetřil."
+      },
+      {
+        "q": "Jsou naše data v bezpečí?",
+        "a": "Agent má přístup jen k tomu, co ke své práci potřebuje, většinou jen ke čtení. Hesla nevidí a zkouší na kopii dat, ne v ostrém provozu."
+      },
+      {
+        "q": "Pro jaké firmy pracujete?",
+        "a": "Pro firmy, kde lidé tráví hodně času rutinou u počítače. Obor nerozhoduje – rozhoduje, kolik času rutina zabírá."
+      }
+    ]
   },
-  "cta": "Domluvit schůzku",
-  "mailSubject": "Schůzka — AI pro naši firmu",
-  "saveContact": "Uložit kontakt",
-  "footer": "TheSivak s.r.o."
+  "contact": {
+    "id": "kontakt",
+    "eyebrow": "Kontakt",
+    "title": "Ukažte nám, co vás zdržuje",
+    "lead": "Na první schůzce projdeme vaše procesy a ukážeme, kde se agent zaplatí nejrychleji.",
+    "cta": "Domluvit schůzku",
+    "mailSubject": "Schůzka: AI agenti pro naši firmu",
+    "saveContact": "Uložit kontakt",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Telefon"
+  },
+  "footer": {
+    "tagline": "AI agenti a automatizace pro české firmy.",
+    "navLabel": "Web",
+    "contactLabel": "Kontakt",
+    "operatedBy": "sivak.ai provozuje",
+    "idLabel": "IČO",
+    "registry": "Zapsaná v obchodním rejstříku vedeném Krajským soudem v Ostravě, oddíl C, vložka 98925."
+  }
 }
