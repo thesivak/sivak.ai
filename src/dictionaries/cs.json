@@ -24,8 +24,8 @@
   },
   "hero": {
     "eyebrow": "AI agenti pro české firmy",
-    "title": "AI agenti, kteří",
-    "titleAccent": "odvedou práci u počítače",
+    "title": "Práci u počítače svěřte",
+    "titleAccent": "AI\u00a0agentům",
     "lead": "Stavíme agenty na míru vašim procesům. Zvládnou práci, kterou dnes lidé dělají u počítače – od faktur přes zákaznickou podporu po testování softwaru.",
     "ratio": "Převezmou 80 % rutiny. Vašemu týmu zůstane 20 % práce, která přináší výsledky.",
     "primary": "Domluvit schůzku",
@@ -36,12 +36,54 @@
     "label": "Ukázka: AI agenti při práci",
     "caption": "Ilustrační ukázka",
     "app": "sivak.ai / agenti",
-    "live": "4 agenti v provozu",
+    "live": "7 agentů v provozu",
     "agentsLabel": "Agenti",
     "preparing": "Výstup se připravuje…",
     "states": { "running": "Pracuje", "waiting": "Čeká na vás", "done": "Hotovo" },
     "footer": ["Přístup: jen čtení", "Schvaluje: člověk", "Záznam: každý krok"],
     "agents": [
+      {
+        "short": "E-maily",
+        "name": "Třídění e-mailů",
+        "task": "Vaše schránka · 64 nových zpráv",
+        "steps": [
+          { "text": "Roztřídit nové e-maily", "result": "64 zpráv", "time": "0:05" },
+          { "text": "Odfiltrovat newslettery a spam", "result": "38 stranou", "time": "0:08" },
+          { "text": "Shrnout důležitá vlákna", "result": "5 shrnutí", "time": "0:29" },
+          { "text": "Připravit návrhy odpovědí", "result": "12 návrhů", "time": "0:51" }
+        ],
+        "state": "waiting",
+        "outcome": "Vaše rozhodnutí potřebují jen 3 e-maily z 64.",
+        "action": "Projít"
+      },
+      {
+        "short": "Výroba",
+        "name": "Plánování výroby",
+        "task": "Příští týden · 18 objednávek",
+        "steps": [
+          { "text": "Načíst nové objednávky z ERP", "result": "18 zakázek", "time": "0:05" },
+          { "text": "Ověřit materiál na skladě", "result": "chybí 2 položky", "time": "0:24" },
+          { "text": "Rozvrhnout zakázky na linky", "result": "3 linky", "time": "0:47" },
+          { "text": "Připravit poptávku materiálu", "result": "návrh hotový", "time": "1:02" }
+        ],
+        "state": "waiting",
+        "outcome": "Plán je hotový. Poptávka materiálu čeká na vás.",
+        "action": "Schválit"
+      },
+      {
+        "short": "Marketing",
+        "name": "Reporty kampaní",
+        "task": "Měsíční reporty · 4 klienti",
+        "steps": [
+          { "text": "Stáhnout data z Google Ads a Meta", "result": "4 účty", "time": "0:12" },
+          { "text": "Porovnat výsledky s cíli", "result": "2 pod plánem", "time": "0:26" },
+          { "text": "Navrhnout úpravy rozpočtu", "result": "3 návrhy", "time": "0:41" },
+          { "text": "Připravit reporty pro klienty", "result": "4 reporty", "time": "1:02" }
+        ],
+        "state": "waiting",
+        "outcome": "Reporty jsou hotové. Dvě kampaně jsou pod plánem.",
+        "action": "Zkontrolovat"
+      },
       {
         "short": "Fakturace",
         "name": "Fakturace",
@@ -67,7 +109,7 @@
           { "text": "Připravit odpověď zákazníkovi", "result": "návrh hotový", "time": "1:12" }
         ],
         "state": "waiting",
-        "outcome": "Návrh odpovědi je připravený. Odešlete ho, nebo ho nejdřív upravte.",
+        "outcome": "Návrh odpovědi je hotový. Odešlete ho, nebo ho upravte.",
         "action": "Schválit"
       },
       {
@@ -109,6 +151,7 @@
       "share": "80 %",
       "label": "Rutina, kterou převezmou agenti",
       "items": [
+        "třídění e-mailů",
         "přepisování dat mezi systémy",
         "kontrola faktur a dokumentů",
         "odpovědi na opakované dotazy",
@@ -159,6 +202,21 @@
     "outputLabel": "Výstup",
     "items": [
       {
+        "area": "Vedení firmy",
+        "text": "Roztřídí e-maily, shrne důležitá vlákna a každé ráno připraví přehled z ERP a CRM.",
+        "output": "ranní přehled"
+      },
+      {
+        "area": "Výroba",
+        "text": "Rozvrhne zakázky podle objednávek, ohlídá materiál na skladě a připraví poptávky.",
+        "output": "plán výroby"
+      },
+      {
+        "area": "Marketing",
+        "text": "Stáhne data z kampaní, porovná je s cíli a připraví reporty pro klienty.",
+        "output": "report pro klienta"
+      },
+      {
         "area": "Zákaznická podpora",
         "text": "Prošetří požadavek, dohledá historii zákazníka a připraví odpověď.",
         "output": "návrh odpovědi"
@@ -177,11 +235,6 @@
         "area": "Nákup a sklad",
         "text": "Porovná nabídky dodavatelů a hlídá zásoby i termíny dodávek.",
         "output": "návrh objednávky"
-      },
-      {
-        "area": "Vedení firmy",
-        "text": "Každé ráno připraví přehled z ERP a CRM a upozorní na odchylky.",
-        "output": "ranní přehled"
       },
       {
         "area": "Vývoj softwaru",
@@ -322,7 +375,7 @@
       },
       {
         "q": "Pro jaké firmy pracujete?",
-        "a": "Pro firmy, kde lidé tráví hodně času rutinou u počítače. Obor nerozhoduje – rozhoduje, kolik času rutina zabírá."
+        "a": "Pro firmy, kde lidé tráví hodně času rutinou u počítače: výroba, obchod, služby i marketingové agentury. Obor nerozhoduje – rozhoduje, kolik času rutina zabírá."
       }
     ]
   },

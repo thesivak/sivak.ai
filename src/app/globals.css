@@ -383,24 +383,38 @@ code { font: inherit; }
 .console-live { display: inline-flex; align-items: center; gap: 8px; color: var(--on-dark-2); white-space: nowrap; }
 
 .console-tabs {
+  position: relative;
   display: flex;
-  gap: 4px;
+  gap: 2px;
   padding: 10px 12px;
   border-bottom: 1px solid var(--line-dark);
   overflow-x: auto;
   scrollbar-width: none;
 }
 .console-tabs::-webkit-scrollbar { display: none; }
+/* AgentConsole marks which edges hide more tabs */
+.console-tabs[data-fade="right"] {
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 56px), transparent);
+}
+.console-tabs[data-fade="left"] {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 56px);
+  mask-image: linear-gradient(90deg, transparent, #000 56px);
+}
+.console-tabs[data-fade="both"] {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 56px, #000 calc(100% - 56px), transparent);
+}
 .console-tab {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
+  gap: 7px;
+  padding: 6px 10px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: none;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--on-dark-3);
   cursor: pointer;
@@ -503,6 +517,8 @@ code { font: inherit; }
 .task-outcome {
   display: grid;
   align-items: center;
+  /* room for two lines of result, so the console keeps its height from agent to agent */
+  min-height: calc(2.9em + 28px);
   margin-top: 16px;
   padding: 13px 14px 13px 16px;
   border: 1px dashed rgba(242, 240, 235, .14);
@@ -1278,12 +1294,9 @@ code { font: inherit; }
   .hero-actions .btn { flex: 1 1 auto; }
 
   .console-dots { display: none; }
-  .console-tabs {
-    -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent);
-    mask-image: linear-gradient(90deg, #000 82%, transparent);
-  }
   .console-main { padding: 16px; }
-  .task-head { flex-wrap: wrap; gap: 10px; }
+  /* the status chip sits above the name, so a longer chip never wraps the heading */
+  .task-head { flex-direction: column-reverse; align-items: flex-start; gap: 10px; }
   .task-step {
     grid-template-columns: 18px minmax(0, 1fr);
     grid-template-areas:
@@ -1297,6 +1310,7 @@ code { font: inherit; }
   .step-text { grid-area: text; }
   .step-result { grid-area: result; min-height: 1.45em; white-space: normal; }
   .step-time { display: none; }
+  .task-outcome { min-height: 118px; }
   .outcome-result { flex-direction: column; align-items: flex-start; gap: 12px; }
   .console-foot { gap: 4px 14px; }
 

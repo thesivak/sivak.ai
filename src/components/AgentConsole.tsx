@@ -22,6 +22,7 @@ function subscribeReduced(onChange: () => void) {
 // then hand the result to a person or report it as done.
 export default function AgentConsole({ t }: { t: ConsoleText }) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [done, setDone] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -63,6 +64,35 @@ export default function AgentConsole({ t }: { t: ConsoleText }) {
     return () => window.clearTimeout(timer);
   }, [active, done, reduced, visible, total, t.agents.length]);
 
+  // With more agents than fit, the tab strip scrolls: fade the edges that hide tabs…
+  useEffect(() => {
+    const strip = tabsRef.current;
+    if (!strip) return;
+    const updateFade = () => {
+      const left = strip.scrollLeft > 2;
+      const right = strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 2;
+      strip.dataset.fade = left && right ? "both" : left ? "left" : right ? "right" : "none";
+    };
+    updateFade();
+    strip.addEventListener("scroll", updateFade, { passive: true });
+    window.addEventListener("resize", updateFade);
+    return () => {
+      strip.removeEventListener("scroll", updateFade);
+      window.removeEventListener("resize", updateFade);
+    };
+  }, []);
+
+  // …and bring the working agent's tab to the middle, scrolling only the strip, never the page
+  useEffect(() => {
+    const strip = tabsRef.current;
+    const tab = strip?.children[active] as HTMLElement | undefined;
+    if (!strip || !tab) return;
+    strip.scrollTo({
+      left: tab.offsetLeft - (strip.clientWidth - tab.offsetWidth) / 2,
+      behavior: reduced ? "auto" : "smooth",
+    });
+  }, [active, reduced]);
+
   function select(i: number) {
     setActive(i);
     setDone(0);
@@ -84,7 +114,7 @@ export default function AgentConsole({ t }: { t: ConsoleText }) {
           </span>
         </div>
 
-        <div className="console-tabs" role="group" aria-label={t.agentsLabel}>
+        <div className="console-tabs" ref={tabsRef} role="group" aria-label={t.agentsLabel}>
           {t.agents.map((a, i) => (
             <button
               key={a.name}

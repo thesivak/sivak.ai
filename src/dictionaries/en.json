@@ -36,12 +36,54 @@
     "label": "Example: AI agents at work",
     "caption": "Illustrative example",
     "app": "sivak.ai / agents",
-    "live": "4 agents running",
+    "live": "7 agents running",
     "agentsLabel": "Agents",
     "preparing": "Preparing the output…",
     "states": { "running": "Working", "waiting": "Needs you", "done": "Done" },
     "footer": ["Access: read-only", "Approval: a person", "Log: every step"],
     "agents": [
+      {
+        "short": "Email",
+        "name": "Email triage",
+        "task": "Your inbox · 64 new messages",
+        "steps": [
+          { "text": "Sort new emails", "result": "64 messages", "time": "0:05" },
+          { "text": "Filter out newsletters and spam", "result": "38 set aside", "time": "0:08" },
+          { "text": "Summarize important threads", "result": "5 summaries", "time": "0:29" },
+          { "text": "Draft replies", "result": "12 drafts", "time": "0:51" }
+        ],
+        "state": "waiting",
+        "outcome": "Only 3 of 64 emails need your decision.",
+        "action": "Review"
+      },
+      {
+        "short": "Production",
+        "name": "Production planning",
+        "task": "Next week's jobs · 18 orders",
+        "steps": [
+          { "text": "Load new orders from the ERP", "result": "18 jobs", "time": "0:05" },
+          { "text": "Check materials in stock", "result": "2 items short", "time": "0:24" },
+          { "text": "Schedule jobs across the lines", "result": "3 lines", "time": "0:47" },
+          { "text": "Draft a material request", "result": "draft ready", "time": "1:02" }
+        ],
+        "state": "waiting",
+        "outcome": "The plan is ready; the material request needs approval.",
+        "action": "Approve"
+      },
+      {
+        "short": "Marketing",
+        "name": "Campaign reports",
+        "task": "Monthly reports · 4 clients",
+        "steps": [
+          { "text": "Pull data from Google Ads and Meta", "result": "4 accounts", "time": "0:12" },
+          { "text": "Compare results with targets", "result": "2 below plan", "time": "0:26" },
+          { "text": "Suggest budget changes", "result": "3 suggestions", "time": "0:41" },
+          { "text": "Prepare the client reports", "result": "4 reports", "time": "1:02" }
+        ],
+        "state": "waiting",
+        "outcome": "The reports are ready. Two campaigns are below plan.",
+        "action": "Review"
+      },
       {
         "short": "Invoicing",
         "name": "Invoicing",
@@ -109,6 +151,7 @@
       "share": "80%",
       "label": "Routine, handled by agents",
       "items": [
+        "sorting email",
         "moving data between systems",
         "checking invoices and documents",
         "answering repeat questions",
@@ -159,6 +202,21 @@
     "outputLabel": "Output",
     "items": [
       {
+        "area": "Management",
+        "text": "Sorts email, summarizes important threads and prepares a summary from ERP and CRM every morning.",
+        "output": "morning report"
+      },
+      {
+        "area": "Production",
+        "text": "Schedules jobs from incoming orders, keeps an eye on materials in stock and drafts purchase requests.",
+        "output": "production plan"
+      },
+      {
+        "area": "Marketing",
+        "text": "Pulls campaign data, compares it with targets and prepares client reports.",
+        "output": "client report"
+      },
+      {
         "area": "Customer support",
         "text": "Investigates the request, looks up the customer's history and drafts a reply.",
         "output": "reply draft"
@@ -177,11 +235,6 @@
         "area": "Purchasing and stock",
         "text": "Compares supplier quotes and keeps an eye on stock levels and delivery dates.",
         "output": "draft order"
-      },
-      {
-        "area": "Management",
-        "text": "Prepares a summary from ERP and CRM every morning and flags deviations.",
-        "output": "morning report"
       },
       {
         "area": "Software development",
@@ -322,7 +375,7 @@
       },
       {
         "q": "What kinds of companies do you work with?",
-        "a": "Companies where people spend a lot of time on routine computer work. The industry doesn't matter; what matters is how much time the routine takes."
+        "a": "Companies where people spend a lot of time on routine computer work: manufacturing, trade, services and marketing agencies. The industry doesn't matter; what matters is how much time the routine takes."
       }
     ]
   },
