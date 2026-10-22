@@ -9,6 +9,7 @@ import Ratio from "@/components/sections/Ratio";
 import Services from "@/components/sections/Services";
 import UseCases from "@/components/sections/UseCases";
 import Process from "@/components/sections/Process";
+import Deployment from "@/components/sections/Deployment";
 import Control from "@/components/sections/Control";
 import CaseStudy from "@/components/sections/CaseStudy";
 import Faq from "@/components/sections/Faq";
@@ -46,6 +47,7 @@ export default async function Home({
         <Services t={t.services} />
         <UseCases t={t.useCases} contactHref={contactHref} />
         <Process t={t.process} />
+        <Deployment t={t.deployment} />
         <Control t={t.control} />
         <CaseStudy t={t.case} />
         <Faq t={t.faq} />

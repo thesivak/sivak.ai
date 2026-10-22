@@ -10,7 +10,7 @@ export default function CaseStudy({ t }: { t: Dictionary["case"] }) {
       <div className="container">
         <div className="case-head reveal">
           <div className="section-head">
-            <Eyebrow index="06">{t.eyebrow}</Eyebrow>
+            <Eyebrow index="07">{t.eyebrow}</Eyebrow>
             <h2 className="section-title" id={`${t.id}-title`}>
               {t.title}
             </h2>

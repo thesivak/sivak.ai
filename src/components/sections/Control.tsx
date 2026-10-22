@@ -53,7 +53,7 @@ export default function Control({ t }: { t: Dictionary["control"] }) {
       <div className="control-glow" aria-hidden="true" />
       <div className="container">
         <div className="section-head reveal">
-          <Eyebrow index="05">{t.eyebrow}</Eyebrow>
+          <Eyebrow index="06">{t.eyebrow}</Eyebrow>
           <h2 className="section-title" id={`${t.id}-title`}>
             {t.title}
           </h2>

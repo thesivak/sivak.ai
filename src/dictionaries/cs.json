@@ -24,13 +24,17 @@
   },
   "hero": {
     "eyebrow": "AI agenti pro české firmy",
-    "title": "Práci u počítače svěřte",
+    "title": "Práci u počítače\nsvěřte",
     "titleAccent": "AI\u00a0agentům",
     "lead": "Stavíme agenty na míru vašim procesům. Zvládnou práci, kterou dnes lidé dělají u počítače – od faktur přes zákaznickou podporu po testování softwaru.",
-    "ratio": "Převezmou 80 % rutiny. Vašemu týmu zůstane 20 % práce, která přináší výsledky.",
+    "gain": {
+      "figure": "80 %",
+      "title": "času pro to, na čem skutečně záleží",
+      "text": "Agent převezme 80 % rutiny u počítače. Uvolněný čas věnujete zákazníkům, týmu a rozvoji firmy."
+    },
     "primary": "Domluvit schůzku",
     "secondary": "Jak to probíhá",
-    "notes": ["Agent připraví, člověk rozhodne", "Každý krok je zaznamenaný", "Návratnost spočítáme předem"]
+    "notes": ["Agent připraví, člověk rozhodne", "Každý krok je zaznamenaný", "Návratnost spočítáme předem", "V cloudu i na vašem serveru bez internetu"]
   },
   "console": {
     "label": "Ukázka: AI agenti při práci",
@@ -274,6 +278,30 @@
       }
     ]
   },
+  "deployment": {
+    "id": "nasazeni",
+    "eyebrow": "Kde agenti běží",
+    "title": "V cloudu i na vašem hardwaru",
+    "lead": "Kde agenti poběží, rozhodnete vy. Pokud data nesmí opustit firmu, nasadíme je na váš server s lokálními AI modely – fungují i úplně bez přístupu k internetu.",
+    "options": [
+      {
+        "title": "Cloudová řešení",
+        "text": "Agenti využívají nejvýkonnější AI modely v cloudu. Nepotřebujete vlastní hardware, takže začnete rychleji.",
+        "specs": [["model", "nejvýkonnější cloudové modely"], ["hardware", "není potřeba"], ["start", "nejrychlejší"]],
+        "fit": "Pro rychlý start a nejvyšší výkon.",
+        "badge": "",
+        "highlight": false
+      },
+      {
+        "title": "Na vašem hardwaru",
+        "text": "Agenti i AI modely běží na serveru ve vaší firmě. Data nikdy neopustí vaši síť a vše funguje i bez přístupu k internetu.",
+        "specs": [["model", "lokální, běží u vás"], ["data", "neopustí firmu"], ["internet", "není potřeba"]],
+        "fit": "Pro citlivá data, výrobu a uzavřené sítě.",
+        "badge": "i bez internetu",
+        "highlight": true
+      }
+    ]
+  },
   "control": {
     "id": "bezpecnost",
     "eyebrow": "Pod kontrolou",
@@ -372,6 +400,10 @@
       {
         "q": "Jsou naše data v bezpečí?",
         "a": "Agent má přístup jen k tomu, co ke své práci potřebuje, většinou jen ke čtení. Hesla nevidí a zkouší na kopii dat, ne v ostrém provozu."
+      },
+      {
+        "q": "Musí agent běžet v cloudu?",
+        "a": "Nemusí. Agenty stavíme v cloudu i na vašem vlastním hardwaru s lokálními modely, které fungují i bez přístupu k internetu. Data pak nikdy neopustí firmu."
       },
       {
         "q": "Pro jaké firmy pracujete?",

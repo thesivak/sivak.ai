@@ -7,7 +7,7 @@ export default function Faq({ t }: { t: Dictionary["faq"] }) {
     <section className="section light faq" id={t.id} aria-labelledby={`${t.id}-title`}>
       <div className="container faq-grid">
         <div className="section-head reveal">
-          <Eyebrow index="07">{t.eyebrow}</Eyebrow>
+          <Eyebrow index="08">{t.eyebrow}</Eyebrow>
           <h2 className="section-title" id={`${t.id}-title`}>
             {t.title}
           </h2>

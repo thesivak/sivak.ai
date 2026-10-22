@@ -24,13 +24,17 @@
   },
   "hero": {
     "eyebrow": "AI agents and automation",
-    "title": "AI agents that",
-    "titleAccent": "get computer work done",
+    "title": "Let AI agents do\n",
+    "titleAccent": "the computer work",
     "lead": "We build agents around your processes. They handle the work people do at a computer today — from invoices and customer support to software testing.",
-    "ratio": "They take over 80% of the routine. Your team keeps the 20% of work that drives results.",
+    "gain": {
+      "figure": "80%",
+      "title": "of your time for what really matters",
+      "text": "Agents take over 80% of the routine computer work. Spend the freed-up time on customers, your team and growing the business."
+    },
     "primary": "Book a meeting",
     "secondary": "How it works",
-    "notes": ["The agent prepares, a person decides", "Every step is recorded", "ROI calculated up front"]
+    "notes": ["The agent prepares, a person decides", "Every step is recorded", "ROI calculated up front", "In the cloud or offline on your server"]
   },
   "console": {
     "label": "Example: AI agents at work",
@@ -274,6 +278,30 @@
       }
     ]
   },
+  "deployment": {
+    "id": "deployment",
+    "eyebrow": "Where agents run",
+    "title": "In the cloud or on your own hardware",
+    "lead": "You decide where your agents run. If data must not leave the company, we deploy them on your own server with local AI models, which work even with no internet access at all.",
+    "options": [
+      {
+        "title": "Cloud solutions",
+        "text": "Agents use the most capable AI models in the cloud. You need no hardware of your own, so you start sooner.",
+        "specs": [["model", "most capable cloud models"], ["hardware", "none needed"], ["start", "fastest"]],
+        "fit": "For a fast start and top performance.",
+        "badge": "",
+        "highlight": false
+      },
+      {
+        "title": "On your own hardware",
+        "text": "Agents and AI models run on a server in your company. Data never leaves your network, and everything works without internet access.",
+        "specs": [["model", "local, runs on site"], ["data", "never leaves the company"], ["internet", "not needed"]],
+        "fit": "For sensitive data, manufacturing and closed networks.",
+        "badge": "works offline",
+        "highlight": true
+      }
+    ]
+  },
   "control": {
     "id": "security",
     "eyebrow": "Under control",
@@ -372,6 +400,10 @@
       {
         "q": "Is our data safe?",
         "a": "The agent only gets access to what its job requires, usually read-only. It never sees passwords and tries things out on a copy of your data, not in live operations."
+      },
+      {
+        "q": "Does the agent have to run in the cloud?",
+        "a": "No. We build agents in the cloud and on your own hardware with local models that work without internet access. Your data then never leaves the company."
       },
       {
         "q": "What kinds of companies do you work with?",

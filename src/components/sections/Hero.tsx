@@ -18,13 +18,11 @@ export default function Hero({ t, ctaHref, processHref }: { t: Dictionary; ctaHr
           </h1>
           <p className="hero-lead">{h.lead}</p>
 
-          {/* 80:20 — the hatched part is the routine agents take over, the solid part stays with people */}
-          <div className="hero-ratio">
-            <span className="mini-split" aria-hidden="true">
-              <i />
-              <i />
-            </span>
-            <p>{h.ratio}</p>
+          {/* 80:20 — the routine agents take over becomes time for what matters */}
+          <div className="hero-gain">
+            <strong className="gain-figure">{h.gain.figure}</strong>
+            <p className="gain-title">{h.gain.title}</p>
+            <p className="gain-text">{h.gain.text}</p>
           </div>
 
           <div className="hero-actions">

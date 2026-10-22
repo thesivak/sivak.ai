@@ -14,7 +14,7 @@ export default function Contact({ t }: { t: Dictionary["contact"] }) {
 
       <div className="container contact-grid">
         <div className="contact-copy reveal">
-          <Eyebrow index="08">{t.eyebrow}</Eyebrow>
+          <Eyebrow index="09">{t.eyebrow}</Eyebrow>
           <h2 className="section-title contact-title" id={`${t.id}-title`}>
             {t.title}
           </h2>
