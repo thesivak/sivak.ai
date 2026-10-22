@@ -20,7 +20,7 @@ export type Person = {
 
 // Mirek is listed with email only; the phone number belongs to the key account manager.
 export const PEOPLE: Person[] = [
-  { name: "Mirek Sivák", role: "Founder", email: "mirek@sivak.ai", vcard: "/mirek-sivak.vcf" },
+  { name: "Mirek Sivák", role: "Founder & CEO", email: "mirek@sivak.ai", vcard: "/mirek-sivak.vcf" },
   {
     name: "Matouš Čep",
     role: "Key account manager",
