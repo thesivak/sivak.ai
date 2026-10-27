@@ -1,6 +1,5 @@
 # Static assets (Cloudflare Workers static assets, https://developers.cloudflare.com/workers/static-assets/headers/).
-# Keeps every file on the workers.dev hosts (the "sivak-ai" Worker before the cutover, the preview
-# "ai-skoleni-nahled") out of search engines. Matches <worker>.<account>.workers.dev only, so
+# Keeps every file on the workers.dev host of the "sivak-ai" Worker out of search engines. Matches <worker>.<account>.workers.dev only, so
 # sivak.ai and www.sivak.ai are not affected. Responses produced by src/worker.ts don't get these
 # headers; it sets the same tag itself on workers.dev.
 https://:worker.:account.workers.dev/*

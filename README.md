@@ -61,7 +61,7 @@ page with no English campaign would be untranslated duplicate content to maintai
 | `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** with `[DOPLNIT: …]` placeholders for the legal check |
 | `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification, admin auth, CSV |
 | `migrations/` | D1 schema (`wrangler d1 migrations apply`) |
-| `wrangler.jsonc` | Worker config: assets, D1 bindings (production `sivak-ai`, preview `ai-skoleni-nahled`), vars, hourly cron, commented-out `send_email` |
+| `wrangler.jsonc` | Worker config: assets, D1 binding (`sivak-ai`), vars, hourly cron, commented-out `send_email` |
 | `docs/` | Migration inventory and parity checklist |
 | `design/` | Brand and OG image sources |
 
@@ -82,7 +82,7 @@ npm run preview                       # production build served by `wrangler dev
 npm run check && npm run lint         # astro check (TypeScript) and ESLint
 ```
 
-(`npm run preview` is local only; deploying the workers.dev preview is `npm run deploy:preview`, see below.)
+(`npm run preview` is local only.)
 `npm run preview` is the closest to production: the same Worker, the static asset routing from
 `wrangler.jsonc`, a local D1 database and the variables from `.dev.vars`. Stop it before running
 another build.
@@ -357,24 +357,6 @@ is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) is on every page, both
 The privacy policy (`src/pages/ochrana-osobnich-udaju.astro`) has one `[DOPLNIT]` left, the Google
 Analytics retention setting; once it is filled in and checked, drop the page's `noindex`.
 
-### Preview deployment (`ai-skoleni-nahled`)
-
-`wrangler.jsonc` → `env.preview` defines a second Worker, `ai-skoleni-nahled`, on workers.dev only (no
-routes). `npm run deploy:preview` builds with `CLOUDFLARE_ENV=preview` (and the Turnstile test site
-key unless `PUBLIC_TURNSTILE_SITE_KEY` is set) and deploys it. In preview:
-
-- every request goes through the Worker (`run_worker_first: true`), which adds
-  `X-Robots-Tag: noindex, nofollow` to every response, a `<meta name="robots" content="noindex,nofollow">`
-  to every page, and serves `robots.txt` as `Disallow: /`;
-- `SITE_ENV=preview`: Turnstile test keys allowed, `NOTIFY_DISABLED=1`, no e-mail;
-- **its own D1 database** `ai-skoleni-nahled` (`ea98bf57-da85-4cd6-8a0a-cea4175f9713`, WEUR), so test
-  enquiries never reach production's `sivak-ai`; rows have `source = 'ai-skoleni-preview'`. Apply the
-  migrations once with `npm run db:migrate:preview` before the first deploy;
-- secrets of its own (`npx wrangler secret put NAME --env preview`): `IP_HASH_SALT` (required, use a
-  different value than production), and `ADMIN_USER` / `ADMIN_PASSWORD` for its admin.
-
-The build prints a harmless warning that the prerender worker config has no `preview` environment.
-
 ### Database changes
 
 Never edit an applied migration: schema changes go into a new `migrations/000N_*.sql`, applied to
@@ -384,10 +366,8 @@ each database. Current: `0001_enquiries.sql`, `0002_admin_auth_failures.sql` (th
 | --- | --- |
 | local copy (`.wrangler/state`) | `npm run db:migrate:local` |
 | production `sivak-ai` | `npm run db:migrate:remote` (= `wrangler d1 migrations apply sivak-ai --remote -c wrangler.jsonc`) |
-| preview `ai-skoleni-nahled` | `npm run db:migrate:preview` (= `wrangler d1 migrations apply ai-skoleni-nahled --remote -c wrangler.jsonc --env preview`) |
 
-`-c wrangler.jsonc` makes wrangler read the source config rather than the one the last build generated
-(which may be the other environment's).
+`-c wrangler.jsonc` makes wrangler read the source config rather than the one the last build generated.
 
 ## Notes
 
