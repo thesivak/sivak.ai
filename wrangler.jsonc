@@ -2,7 +2,7 @@
 // `astro build` writes the static site to dist/client and the Worker to dist/server, plus a
 // generated dist/server/wrangler.json derived from this file, which `wrangler dev` and
 // `wrangler deploy` pick up automatically.
-// Nothing here has been provisioned yet; see README.md → "Deploy and cutover".
+// The D1 database exists; the Worker itself is not deployed yet. See README.md → "Deploy and cutover".
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "sivak-ai",
@@ -27,9 +27,9 @@
     {
       "binding": "DB",
       "database_name": "sivak-ai",
-      // TODO: replace with the id printed by `wrangler d1 create sivak-ai` (README → Deploy).
-      // Local development (`--local`, `npm run dev`, `npm run preview`) works with this placeholder.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // Created in WEUR; migrations/0001 is applied remotely. Local development (`--local`,
+      // `npm run dev`, `npm run preview`) uses a local copy in .wrangler/state, never this database.
+      "database_id": "73a4d2d1-d42a-4b19-a853-463ee16dc1dd",
       "migrations_dir": "migrations"
     }
   ],
