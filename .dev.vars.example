@@ -1,0 +1,24 @@
+# Worker variables and secrets for local development (`npm run dev`, `npm run preview`).
+# Copy to .dev.vars (gitignored) and fill in what you need. Everything is optional locally.
+# In production, set the secrets with `wrangler secret put NAME`; the non-secret values live in wrangler.jsonc → vars.
+
+# "development" skips Turnstile when its secret is missing and never sends e-mail (it logs instead).
+SITE_ENV=development
+
+# Admin at /admin/poptavky (HTTP Basic auth). Without both, the admin returns 404.
+ADMIN_USER=
+ADMIN_PASSWORD=
+
+# Cloudflare Turnstile secret key (the site key is PUBLIC_TURNSTILE_SITE_KEY in .env).
+# Cloudflare's test secret that always passes: 1x0000000000000000000000000000000AA
+TURNSTILE_SECRET_KEY=
+
+# Salt for hashing visitor IP addresses (rate limit, ip_hash column). Any long random string.
+IP_HASH_SALT=
+
+# E-mail notification. Never sent while SITE_ENV=development.
+RESEND_API_KEY=
+ENQUIRY_FROM_EMAIL=
+ENQUIRY_NOTIFY_TO=mirek@sivak.ai,matous@sivak.ai
+# 1 = never send, log only (kill switch)
+NOTIFY_DISABLED=1

@@ -1,0 +1,125 @@
+---
+import "@/styles/fonts.css";
+import { ADMIN_HEADERS, checkAdmin } from "@/lib/server/admin";
+import { serverEnv } from "@/lib/server/env";
+import { countEnquiries, listEnquiries, type StoredEnquiry } from "@/lib/server/store";
+
+export const prerender = false;
+
+// Enquiries from /ai-skoleni, newest first. Protected by HTTP Basic auth (src/lib/server/admin.ts).
+const env = serverEnv();
+const access = await checkAdmin(Astro.request, env);
+if (!access.ok) return access.response;
+for (const [key, value] of Object.entries(ADMIN_HEADERS)) Astro.response.headers.set(key, value);
+
+const SHOWN = 500;
+let enquiries: StoredEnquiry[] = [];
+let total = 0;
+let dbError: string | null = null;
+if (env.DB) {
+  try {
+    [enquiries, total] = await Promise.all([listEnquiries(env.DB, SHOWN), countEnquiries(env.DB)]);
+  } catch (error) {
+    dbError = String(error);
+  }
+}
+
+const dateFormat = new Intl.DateTimeFormat("cs-CZ", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Prague" });
+const formatDate = (iso: string) => dateFormat.format(new Date(iso));
+const campaign = (e: StoredEnquiry) => [e.utm_source, e.utm_medium, e.utm_campaign].filter(Boolean).join(" / ");
+---
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Poptávky AI školení – admin sivak.ai</title>
+    <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Poptávky AI školení</h1>
+        {env.DB && !dbError && (
+          <p>
+            {total === 0 ? "Zatím žádné poptávky." : `Celkem ${total}${total > SHOWN ? `, zobrazeno nejnovějších ${SHOWN}` : ""}.`}
+            {total > 0 && <a class="button" href="/admin/poptavky.csv" download>Stáhnout CSV</a>}
+          </p>
+        )}
+      </header>
+
+      {!env.DB && (
+        <p class="notice" role="status">
+          DB není nakonfigurovaná. Worker nemá binding <code>DB</code> (Cloudflare D1), poptávky se proto neukládají
+          – odcházejí jen e-mailem, případně do logu Workeru. Postup nastavení je v README.
+        </p>
+      )}
+      {dbError && (
+        <p class="notice" role="alert">
+          Databázi se nepodařilo přečíst. Je aplikovaná migrace <code>migrations/0001_enquiries.sql</code>?<br />
+          <small>{dbError}</small>
+        </p>
+      )}
+
+      {enquiries.length > 0 && (
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Přijato</th>
+                <th scope="col">Jméno</th>
+                <th scope="col">Firma</th>
+                <th scope="col">Kontakt</th>
+                <th scope="col">Účastníci</th>
+                <th scope="col">Poznámka / termín</th>
+                <th scope="col">Kampaň</th>
+                <th scope="col">E-mail odeslán</th>
+              </tr>
+            </thead>
+            <tbody>
+              {enquiries.map((e) => (
+                <tr>
+                  <td>{e.id}</td>
+                  <td class="nowrap">{formatDate(e.created_at)}</td>
+                  <td>{e.name}</td>
+                  <td>{e.company}</td>
+                  <td>
+                    <a href={`mailto:${e.email}`}>{e.email}</a>
+                    {e.phone && <><br /><a href={`tel:${e.phone.replace(/[^\d+]/g, "")}`}>{e.phone}</a></>}
+                  </td>
+                  <td>{e.participants ?? "–"}</td>
+                  <td class="note">{e.note ?? "–"}</td>
+                  <td>
+                    {campaign(e) || "–"}
+                    {e.gclid && <><br /><small>gclid</small></>}
+                  </td>
+                  <td class="nowrap">{e.notified_at ? formatDate(e.notified_at) : "ne"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </main>
+  </body>
+</html>
+
+<style>
+  body { margin: 0; font: 15px/1.5 var(--font-jost), system-ui, sans-serif; background: #F2F0EB; color: #0B1220; }
+  main { padding: 32px clamp(16px, 3vw, 40px); }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px 32px; margin-bottom: 24px; }
+  h1 { margin: 0; font-size: 28px; font-weight: 500; }
+  header p { display: flex; align-items: center; gap: 16px; margin: 0; }
+  .button { padding: 8px 16px; border-radius: 999px; background: #0B1220; color: #F2F0EB; text-decoration: none; font-weight: 500; }
+  .notice { max-width: 70ch; padding: 16px 20px; border: 1px solid rgba(11, 18, 32, .2); border-radius: 12px; background: #fff; }
+  .table-wrap { overflow-x: auto; border: 1px solid rgba(11, 18, 32, .15); border-radius: 12px; background: #F9F8F5; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 10px 12px; border-bottom: 1px solid rgba(11, 18, 32, .1); text-align: left; vertical-align: top; }
+  th { font: 500 12px/1.4 var(--font-plex-mono), monospace; letter-spacing: .06em; text-transform: uppercase; color: #5B6069; }
+  .nowrap { white-space: nowrap; }
+  .note { min-width: 240px; max-width: 420px; white-space: pre-wrap; }
+  a { color: inherit; }
+  code { font-family: var(--font-plex-mono), monospace; }
+</style>
