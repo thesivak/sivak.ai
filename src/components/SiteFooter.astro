@@ -38,7 +38,7 @@ const f = t.footer;
     </div>
     {/* § 435 of the Czech Civil Code: name, seat, company ID and register entry */}
     <div class="footer-legal">
-      <p>{f.operatedBy} {COMPANY.legalName}, {COMPANY.city}, {f.idLabel} {COMPANY.ico}. {f.registry}</p>
+      <p>{f.operatedBy} {COMPANY.legalName}, {COMPANY.city}, {f.idLabel}{"\u00a0"}{COMPANY.ico}. {f.registry}</p>
       <p>© {new Date().getFullYear()} {COMPANY.legalName}</p>
     </div>
   </div>
