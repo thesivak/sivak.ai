@@ -24,7 +24,8 @@ const t = await getHome(lang);
 const faq = await getFaq(lang);
 const other: Locale = lang === "cs" ? "en" : "cs";
 const homeHref = localePath(lang);
-const switchHref = `${localePath(other)}?lang=${other}`;
+// The other language's homepage; the click stores the choice (language-hint.ts)
+const switchHref = localePath(other);
 const contactHref = `#${t.contact.id}`;
 // The Next.js site wrote the Czech URLs without the trailing slash: https://www.sivak.ai
 const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
@@ -42,6 +43,7 @@ const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
   // ?v=2: the share image changed with the slogan; LinkedIn and Slack cache by URL
   ogImage={{ path: `/og/${lang}.png?v=2`, alt: t.metadata.title }}
   jsonLd={[organizationJsonLd(lang)]}
+  languageTwin={localePath(other)}
 >
   <a class="skip-link" href="#main">{t.skipLink}</a>
   {/* Absolute section links ("/#sluzby", "/en#services"): the same header works on every page */}

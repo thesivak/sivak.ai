@@ -70,7 +70,7 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <a class="skip-link" href="#main">{home.skipLink}</a>
-  <SiteHeader nav={home.nav} langSwitch={home.langSwitch} homeHref="/" ctaHref={`/#${home.contact.id}`} switchHref="/en?lang=en" switchLang="en" sectionBase="/" />
+  <SiteHeader nav={home.nav} langSwitch={home.langSwitch} homeHref="/" ctaHref={`/#${home.contact.id}`} switchHref="/en" switchLang="en" sectionBase="/" />
   <LandingSubnav items={t.nav.items} cta={t.nav.cta} ctaHref={formHref} />
   <main id="main">
     <LandingHero t={t} formHref={formHref} programHref={`#${t.program.id}`} />
@@ -83,6 +83,6 @@ const jsonLd = [
     <EnquiryForm t={t.form} />
   </main>
   {/* No e-mail addresses on the landing page: the form is the only way to get in touch */}
-  <SiteFooter lang="cs" t={{ ...home, nav }} homeHref="/" switchHref="/en?lang=en" switchLang="en" contact={{ href: formHref, label: t.nav.cta }} />
+  <SiteFooter lang="cs" t={{ ...home, nav }} homeHref="/" switchHref="/en" switchLang="en" contact={{ href: formHref, label: t.nav.cta }} />
   {adsId && <script is:inline slot="end" set:html={`gtag('config', ${JSON.stringify(adsId)});`} />}
 </Base>

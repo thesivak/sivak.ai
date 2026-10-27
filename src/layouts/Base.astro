@@ -2,6 +2,7 @@
 import "@/styles/fonts.css";
 import "@/styles/global.css";
 import CookieConsent from "@/components/CookieConsent.astro";
+import LanguageHint from "@/components/LanguageHint.astro";
 import type { Locale } from "@/i18n/config";
 import { consentHeadSnippet } from "@/lib/consent";
 import { GA_MEASUREMENT_ID, SITE_URL } from "@/lib/site";
@@ -19,9 +20,11 @@ interface Props {
   /** e.g. "noindex" for pages that should stay out of search */
   robots?: string;
   jsonLd?: object[];
+  /** URL of this page in the other language, for the "Switch to English" suggestion (pages with a twin) */
+  languageTwin?: string;
 }
 
-const { lang, title, description, canonical, alternates = [], ogImage, robots, jsonLd = [] } = Astro.props;
+const { lang, title, description, canonical, alternates = [], ogImage, robots, jsonLd = [], languageTwin } = Astro.props;
 const ogTitle = Astro.props.ogTitle ?? title;
 const ogDescription = Astro.props.ogDescription ?? description;
 const image = new URL(ogImage.path, SITE_URL).href;
@@ -80,10 +83,16 @@ const PRELOAD_FONTS = [
   </head>
   <body>
     <CookieConsent lang={lang} />
+    {languageTwin && <LanguageHint href={languageTwin} lang={lang === "cs" ? "en" : "cs"} />}
     <slot />
     {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll("<", "\\u003c")} />)}
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
     <script is:inline set:html={GTAG_SNIPPET} />
     <slot name="end" />
+    <script>
+      import { setupLanguage } from "@/components/language-hint";
+
+      setupLanguage();
+    </script>
   </body>
 </html>
