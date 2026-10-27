@@ -85,7 +85,8 @@ const PRELOAD_FONTS = [
     <CookieConsent lang={lang} />
     {languageTwin && <LanguageHint href={languageTwin} lang={lang === "cs" ? "en" : "cs"} />}
     <slot />
-    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll("<", "\\u003c")} />)}
+    {/* Plain spaces in structured data: the Czech copy's no-break spaces are only for line breaking */}
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll("\u00a0", " ").replaceAll("<", "\\u003c")} />)}
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
     <script is:inline set:html={GTAG_SNIPPET} />
     <slot name="end" />

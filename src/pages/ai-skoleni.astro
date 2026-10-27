@@ -14,7 +14,7 @@ import Faq from "@/components/sections/Faq.astro";
 import EnquiryForm from "@/components/landing/EnquiryForm.astro";
 import LandingSubnav from "@/components/landing/LandingSubnav.astro";
 import { getFaq, getHome, getLanding } from "@/lib/content";
-import { COMPANY, MIREK_LINKEDIN, PEOPLE, SITE_URL } from "@/lib/site";
+import { COMPANY, MIREK_LINKEDIN, ORGANIZATION_ID, PEOPLE, SITE_URL } from "@/lib/site";
 
 // The Google Ads landing page for "AI školení". Czech only: there is no /en/ai-skoleni (see README).
 const t = await getLanding("ai-skoleni");
@@ -37,7 +37,8 @@ const jsonLd = [
     description: plain(t.metadata.description),
     url,
     inLanguage: "cs",
-    provider: { "@type": "Organization", name: COMPANY.brand, legalName: COMPANY.legalName, url: `${SITE_URL}/` },
+    // The homepage's organisation node, by @id; no e-mail or phone on this page
+    provider: { "@type": ["Organization", "ProfessionalService"], "@id": ORGANIZATION_ID, name: COMPANY.brand, legalName: COMPANY.legalName, url: `${SITE_URL}/` },
     instructor: {
       "@type": "Person",
       name: t.trainer.name,
@@ -46,7 +47,8 @@ const jsonLd = [
       ...(MIREK_LINKEDIN ? { sameAs: [MIREK_LINKEDIN] } : {}),
     },
     offers: { "@type": "Offer", price: "35000", priceCurrency: "CZK", category: "Paid", url: `${url}#${t.price.id}` },
-    hasCourseInstance: { "@type": "CourseInstance", courseWorkload: "P1D" },
+    // FAQ "Probíhá školení u nás ve firmě, nebo online?": either, as agreed with the client
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: ["onsite", "online"], courseWorkload: "P1D" },
   },
   {
     "@context": "https://schema.org",
