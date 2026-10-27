@@ -15,18 +15,34 @@ declare global {
   }
 }
 
+// A stalled api.js request (no load, no error event) would otherwise keep every later attempt waiting
+const SCRIPT_TIMEOUT_MS = 15_000;
+
 let script: Promise<TurnstileApi> | null = null;
 
 function loadScript(): Promise<TurnstileApi> {
+  // A script that arrived after an earlier attempt gave up is still usable
+  if (window.turnstile) return Promise.resolve(window.turnstile);
   script ??= new Promise<TurnstileApi>((resolve, reject) => {
     const tag = document.createElement("script");
+    const fail = (error: Error) => {
+      clearTimeout(timer);
+      tag.onload = tag.onerror = null;
+      tag.remove();
+      reject(error);
+    };
+    const timer = setTimeout(() => fail(new Error("turnstile load timeout")), SCRIPT_TIMEOUT_MS);
     tag.src = SRC;
     tag.async = true;
-    tag.onload = () => (window.turnstile ? resolve(window.turnstile) : reject(new Error("turnstile missing")));
-    tag.onerror = () => reject(new Error("turnstile failed to load"));
+    tag.onload = () => {
+      clearTimeout(timer);
+      if (window.turnstile) resolve(window.turnstile);
+      else fail(new Error("turnstile missing"));
+    };
+    tag.onerror = () => fail(new Error("turnstile failed to load"));
     document.head.appendChild(tag);
   }).catch((error) => {
-    // A later attempt (e.g. the next submit) may try again
+    // A later attempt (e.g. the next submit) adds a fresh tag and tries again
     script = null;
     throw error;
   });
@@ -87,7 +103,8 @@ export function lazyTurnstile(form: HTMLFormElement): Turnstile | null {
 
   return {
     // One timeout covers loading api.js and producing the token, so a stalled script request also
-    // ends the wait (and the submit button comes back) after timeoutMs
+    // ends the wait (and the submit button comes back) after timeoutMs. The script load has its own
+    // timeout too (SCRIPT_TIMEOUT_MS), which clears `script` and `rendering`, so the next submit retries.
     token(timeoutMs) {
       return new Promise<string>((resolve, reject) => {
         let settled = false;
