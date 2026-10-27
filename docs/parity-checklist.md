@@ -142,6 +142,24 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | `SITE_ENV=development` → never sends | ✅ |
 | `astro check`, ESLint, `astro build` | 0 errors ✅ |
 
+## Changes after the migration (SEO round, 27 October 2026)
+
+The rows above record the parity check at migration time. Since then, deliberately:
+
+- **No language redirect.** `/` answers 200 Czech for every `Accept-Language` and cookie (was 307 →
+  `/en` for non-cs/sk browsers and for `lang=en`), without `Vary`; a "Switch to English" /
+  "Přepnout do češtiny" suggestion replaces it. The switch links point straight at the twin page (no
+  `?lang=`); `?lang=` survives only as a 308 compatibility redirect without the parameter.
+- **308 instead of 307** for `/x/`, `/x.html`, `/x/index.html`, `/index.html` and `/en/`, to the URL
+  without the slash or `.html`, query kept.
+- Homepage: title and description for search, process step 3 retitled "Pilotní projekt" / "Pilot
+  project", links to the new service pages (service cards, process, a footer "Služby" / "Services"
+  column), JSON-LD as one `@graph` (WebSite, Organization + ProfessionalService, Services).
+- Six new service pages (`/ai-agenti`, `/ai-automatizace`, `/pilotni-projekt`, `/en/…`), in the sitemap
+  with hreflang and `<lastmod>`.
+- Footer and cookie-bar titles are `<p>`, not `<h2>`; sections and the hero slide in without fading;
+  CSS is inline; gtag.js and Turnstile load after the page.
+
 ## Known differences (intentional)
 
 - The language redirect runs on `/` only (was: every path). Unknown paths 404 directly; Czech-only
