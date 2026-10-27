@@ -1,0 +1,13 @@
+---
+import TopicPage from "@/components/TopicPage.astro";
+import { getTopics, type Topic } from "@/lib/content";
+
+// Czech service pages: /ai-agenti, /ai-automatizace, /pilotni-projekt (src/content/topic/cs.yaml)
+export async function getStaticPaths() {
+  const { pages } = await getTopics("cs");
+  return pages.map((page) => ({ params: { topic: page.path.slice(1) }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: Topic };
+---
+<TopicPage lang="cs" page={page} />

@@ -712,6 +712,19 @@ code { font: inherit; }
   letter-spacing: -.015em;
 }
 .service-card p { margin-top: 12px; color: var(--ink-3); text-wrap: pretty; }
+/* Link from a service card, or from the process section, to the service's own page */
+.service-more, .p-more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--ink);
+  text-underline-offset: 4px;
+}
+.service-more { margin-top: 20px; }
+.service-more svg, .p-more svg { width: 18px; height: 18px; transition: transform .3s var(--ease); }
+.service-more:hover svg, .p-more a:hover svg { transform: translateX(3px); }
+.p-more { margin-top: clamp(32px, 4vw, 48px); }
 /* The /ai-skoleni teaser under the service cards (Czech homepage) */
 .service-training {
   display: flex;
@@ -1237,7 +1250,7 @@ code { font: inherit; }
   font-size: 15px;
   color: var(--on-dark-2);
 }
-.footer-top { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
+.footer-top { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px; }
 .footer-logo { display: inline-flex; color: var(--ivory); border-radius: 4px; }
 .footer-logo svg { width: auto; height: 28px; }
 .footer-brand p { max-width: 30ch; margin-top: 18px; }

@@ -231,6 +231,9 @@ services:
         - customer support
         - document checks
         - app testing
+      more:
+        label: More about AI agents
+        href: /en/ai-agents
     - title: AI on top of your data
       text: We connect AI to your ERP, CRM and spreadsheets. Ask in plain language and get answers backed by numbers.
       tags:
@@ -243,6 +246,9 @@ services:
         - email → ERP
         - e-shop → accounting
         - CRM → invoicing
+      more:
+        label: More about automation
+        href: /en/ai-automation
     - title: Robots for legacy software
       text: They operate programs with no API — Helios, DOS applications and in-house systems no one wants to rewrite.
       tags:
@@ -308,6 +314,9 @@ process:
     - title: Operation and growth
       text: We run, monitor and improve the agent. Once it proves itself, it takes on more work.
       output: report of work done
+  more:
+    label: How the pilot project works
+    href: /en/pilot-project
 deployment:
   id: deployment
   eyebrow: Where agents run
@@ -403,6 +412,15 @@ contact:
   emailLabel: Email
   phoneLabel: Phone
 footer:
+  services:
+    label: Services
+    items:
+      - label: AI agents
+        href: /en/ai-agents
+      - label: Process automation
+        href: /en/ai-automation
+      - label: Pilot project
+        href: /en/pilot-project
   tagline: AI agents and automation for business.
   navLabel: Site
   contactLabel: Contact

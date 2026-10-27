@@ -2,6 +2,8 @@ import type { Locale } from "@/i18n/config";
 
 // Company facts shared by the contact section, the footer and the structured data.
 export const SITE_URL = "https://www.sivak.ai";
+// The organisation's node in the homepage JSON-LD; other pages refer to it by this @id
+export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 // Mirek's LinkedIn profile: the /ai-skoleni trainer section, the homepage contact card and JSON-LD sameAs.
 // Set it back to a "/in/TODO" placeholder and every LinkedIn link disappears.

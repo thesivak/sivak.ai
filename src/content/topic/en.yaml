@@ -1,0 +1,215 @@
+# Copy of the English service pages: /en/ai-agents, /en/ai-automation, /en/pilot-project.
+# The Czech twins are in cs.yaml with the same `key`. Schema: src/content.config.ts (collection topic).
+# Rule: only rearranged copy the site already has (src/content/home/en.yaml, src/content/faq/en/*.md):
+# no new facts, figures, prices, clients or references.
+labels:
+  output: Output
+  home: Home
+pages:
+  - key: agents
+    path: /en/ai-agents
+    metadata:
+      title: AI agents for business – agent prepares, person decides | sivak.ai
+      description: Digital colleagues for specific jobs. AI agents handle requests, check documents and test software. The agent prepares, and a person decides.
+    eyebrow: What we do
+    title: AI agents on your team
+    intro:
+      - Digital colleagues for specific jobs. They handle requests, check documents and test software. The agent prepares, a person decides.
+      - It works in applications just like a person. It reads emails and documents, fills in forms, clicks through systems and hands the finished work over for review.
+    service:
+      name: AI agents on your team
+      description: Digital colleagues for specific jobs. They handle requests, check documents and test software. The agent prepares, a person decides.
+    sections:
+      - kind: cards
+        id: where-agents-help
+        eyebrow: Where agents help
+        title: An agent can do the work you do at a computer today
+        items:
+          - title: Management
+            text: Sorts email, summarizes important threads and prepares a summary from ERP and CRM every morning.
+            output: morning report
+          - title: Production
+            text: Schedules jobs from incoming orders, keeps an eye on materials in stock and drafts purchase requests.
+            output: production plan
+          - title: Marketing
+            text: Pulls campaign data, compares it with targets and prepares client reports.
+            output: client report
+          - title: Customer support
+            text: Investigates the request, looks up the customer's history and drafts a reply.
+            output: reply draft
+          - title: Accounting
+            text: Extracts incoming invoices, checks them and matches them with orders and payments.
+            output: entries ready to post
+          - title: Sales
+            text: Updates contacts in the CRM, prepares quote materials and tracks who needs a follow-up.
+            output: today's to-do list
+          - title: Purchasing and stock
+            text: Compares supplier quotes and keeps an eye on stock levels and delivery dates.
+            output: draft order
+          - title: Software development
+            text: Tests a new app release in a browser and backs up the result with a video.
+            output: test report
+      - kind: cards
+        id: under-control
+        eyebrow: Under control
+        title: The agent prepares. A person decides.
+        lead: Agents work within clear limits. You always know what they do, what they can access and how they reached a result.
+        items:
+          - title: A person approves
+            text: Important steps, such as replying to a customer, posting an entry or placing an order, are always confirmed by a person.
+          - title: Only the access it needs
+            text: An agent gets access only to what its job requires. Usually read-only.
+          - title: No passwords
+            text: Credentials are managed by the system. The agent never gets its hands on them.
+          - title: Trials on a copy
+            text: It tests and tries things out on a copy of your data. Live operations stay untouched.
+          - title: Every step recorded
+            text: Every action is logged, including screenshots and video. You know what the agent did and why.
+          - title: Measurable results
+            text: You see how much work the agent has done and how much time it has saved you.
+      - kind: cards
+        id: where-agents-run
+        eyebrow: Where agents run
+        title: In the cloud or on your own hardware
+        lead: You decide where your agents run. If data must not leave the company, we deploy them on your own server with local AI models, which work even with no internet access at all.
+        items:
+          - title: Cloud solutions
+            text: Agents use the most capable AI models in the cloud. You need no hardware of your own, so you start sooner.
+          - title: On your own hardware
+            text: Agents and AI models run on a server in your company. Data never leaves your network, and everything works without internet access.
+    faq:
+      - question: Do we need to change our systems?
+        answer: No. The agent works in the applications you already use. Where there's no integration, it operates the program through the screen, just like a person.
+      - question: What if the agent makes a mistake?
+        answer: The agent prepares, a person decides. Important steps are always approved by a person, and every action is recorded, so you know what the agent did and why.
+      - question: Is our data safe?
+        answer: The agent only gets access to what its job requires, usually read-only. It never sees passwords and tries things out on a copy of your data, not in live operations.
+      - question: Does the agent have to run in the cloud?
+        answer: No. We build agents in the cloud and on your own hardware with local models that work without internet access. Your data then never leaves the company.
+
+  - key: automation
+    path: /en/ai-automation
+    metadata:
+      title: Process automation with AI – we connect your systems | sivak.ai
+      description: We connect systems that don't talk to each other. Data moves on its own, with no retyping from one window to another. Robots run programs with no API.
+    eyebrow: What we do
+    title: Process automation
+    intro:
+      - We connect systems that don't talk to each other. Data moves on its own, with no retyping from one window to another.
+      - "Routine computer work fills most of the working day and delivers the least: retyping data, checks, looking things up, the same answers over and over. That's what agents take over first."
+    service:
+      name: Process automation
+      description: We connect systems that don't talk to each other. Data moves on its own, with no retyping from one window to another.
+    sections:
+      - kind: cards
+        id: what-we-automate
+        eyebrow: What we automate
+        title: Processes, data and legacy software
+        items:
+          - title: Process automation
+            text: We connect systems that don't talk to each other. Data moves on its own, with no retyping from one window to another.
+            tags: [email → ERP, e-shop → accounting, CRM → invoicing]
+          - title: Robots for legacy software
+            text: They operate programs with no API — Helios, DOS applications and in-house systems no one wants to rewrite.
+            tags: [works through the screen, no changes to the system, day and night]
+          - title: AI on top of your data
+            text: We connect AI to your ERP, CRM and spreadsheets. Ask in plain language and get answers backed by numbers.
+            tags: [management reports, contract search, deviation alerts]
+      - kind: tags
+        id: routine
+        eyebrow: The 80/20 rule
+        title: Routine first. That's where AI pays off fastest.
+        lead: Routine, handled by agents. Your people keep the 20% of work that brings 80% of the results.
+        tags:
+          - sorting email
+          - moving data between systems
+          - checking invoices and documents
+          - answering repeat questions
+          - looking up information
+          - reports and summaries
+          - testing and quality checks
+      - kind: cards
+        id: security
+        eyebrow: Under control
+        title: The agent prepares. A person decides.
+        lead: Agents work within clear limits. You always know what they do, what they can access and how they reached a result.
+        items:
+          - title: Only the access it needs
+            text: An agent gets access only to what its job requires. Usually read-only.
+          - title: No passwords
+            text: Credentials are managed by the system. The agent never gets its hands on them.
+          - title: Trials on a copy
+            text: It tests and tries things out on a copy of your data. Live operations stay untouched.
+          - title: Every step recorded
+            text: Every action is logged, including screenshots and video. You know what the agent did and why.
+    faq:
+      - question: Do we need to change our systems?
+        answer: No. The agent works in the applications you already use. Where there's no integration, it operates the program through the screen, just like a person.
+      - question: Is our data safe?
+        answer: The agent only gets access to what its job requires, usually read-only. It never sees passwords and tries things out on a copy of your data, not in live operations.
+      - question: Does the agent have to run in the cloud?
+        answer: No. We build agents in the cloud and on your own hardware with local models that work without internet access. Your data then never leaves the company.
+      - question: What kinds of companies do you work with?
+        answer: "Companies where people spend a lot of time on routine computer work: manufacturing, trade, services and marketing agencies. The industry doesn't matter; what matters is how much time the routine takes."
+
+  - key: pilot
+    path: /en/pilot-project
+    metadata:
+      title: Pilot project with an AI agent – small step, clear result | sivak.ai
+      description: We start with a small step and a clear result. We calculate the ROI up front, build an agent for one process, and your people review its work.
+    eyebrow: How it works
+    title: Pilot project
+    intro:
+      - We start with a small step and a clear result, and expand once the agent has proven itself.
+      - We build an agent for one process. Your people review its work while we measure the results.
+    service:
+      name: Pilot project
+      description: We start with a small step and a clear result. We build an agent for one process; your people review its work while we measure the results.
+    sections:
+      - kind: steps
+        id: process
+        eyebrow: How it works
+        title: From the first meeting to an agent at work
+        items:
+          - title: Intro meeting
+            text: We go through your processes and find the routine that takes up the most time.
+            output: suitable processes
+          - title: ROI estimate
+            text: We calculate how many hours the agent will save and when the investment pays back. You know before we start.
+            output: savings estimate
+          - title: Pilot project
+            text: We build an agent for one process. Your people review its work while we measure the results.
+            output: agent in operation
+          - title: Operation and growth
+            text: We run, monitor and improve the agent. Once it proves itself, it takes on more work.
+            output: report of work done
+      - kind: cards
+        id: roi
+        eyebrow: Return on investment
+        title: ROI calculated up front
+        items:
+          - title: ROI estimate
+            text: We calculate how many hours the agent will save and when the investment pays back. You know before we start.
+          - title: Measurable results
+            text: You see how much work the agent has done and how much time it has saved you.
+      - kind: cards
+        id: control
+        eyebrow: Under control
+        title: The agent prepares. A person decides.
+        lead: Agents work within clear limits. You always know what they do, what they can access and how they reached a result.
+        items:
+          - title: A person approves
+            text: Important steps, such as replying to a customer, posting an entry or placing an order, are always confirmed by a person.
+          - title: Trials on a copy
+            text: It tests and tries things out on a copy of your data. Live operations stay untouched.
+          - title: Every step recorded
+            text: Every action is logged, including screenshots and video. You know what the agent did and why.
+    faq:
+      - question: How soon will we see results?
+        answer: We start with the process where an agent pays off fastest. From the first day of operation, we measure how much work it does and how much time it saves.
+      - question: What if the agent makes a mistake?
+        answer: The agent prepares, a person decides. Important steps are always approved by a person, and every action is recorded, so you know what the agent did and why.
+      - question: Do we need to change our systems?
+        answer: No. The agent works in the applications you already use. Where there's no integration, it operates the program through the screen, just like a person.
+      - question: Is our data safe?
+        answer: The agent only gets access to what its job requires, usually read-only. It never sees passwords and tries things out on a copy of your data, not in live operations.

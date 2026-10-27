@@ -9,7 +9,15 @@ interface Props {
   t: {
     nav: { home: string; items: { id: string; label: string; href?: string; hreflang?: string }[] };
     langSwitch: { label: string };
-    footer: { tagline: string; navLabel: string; contactLabel: string; operatedBy: string; idLabel: string; registry: string };
+    footer: {
+      services: { label: string; items: { label: string; href: string }[] };
+      tagline: string;
+      navLabel: string;
+      contactLabel: string;
+      operatedBy: string;
+      idLabel: string;
+      registry: string;
+    };
   };
   homeHref: string;
   switchHref: string;
@@ -33,6 +41,12 @@ const f = t.footer;
         <h2>{f.navLabel}</h2>
         <ul>
           {t.nav.items.map((item) => <li><a href={item.href ?? `${sectionBase}#${item.id}`} hreflang={item.hreflang}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+      <nav class="footer-col" aria-label={f.services.label}>
+        <h2>{f.services.label}</h2>
+        <ul>
+          {f.services.items.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
         </ul>
       </nav>
       <div class="footer-col">

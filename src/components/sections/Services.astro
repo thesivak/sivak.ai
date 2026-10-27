@@ -28,6 +28,7 @@ const ICONS: IconName[] = ["agent", "data", "flow", "terminal"];
             <h3>{item.title}</h3>
             <p>{item.text}</p>
             <ul class="tags">{item.tags.map((tag) => <li>{tag}</li>)}</ul>
+            {item.more && <a class="service-more" href={item.more.href}>{item.more.label}<Icon name="arrow" /></a>}
           </li>
         ))
       }
