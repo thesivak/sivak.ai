@@ -86,19 +86,29 @@ export function lazyTurnstile(form: HTMLFormElement): Turnstile | null {
   }
 
   return {
-    async token(timeoutMs) {
-      await render();
-      if (current) return current;
+    // One timeout covers loading api.js and producing the token, so a stalled script request also
+    // ends the wait (and the submit button comes back) after timeoutMs
+    token(timeoutMs) {
       return new Promise<string>((resolve, reject) => {
-        const timer = setTimeout(() => {
-          waiting = waiting.filter((fn) => fn !== done);
-          reject(new Error("turnstile timeout"));
-        }, timeoutMs);
+        let settled = false;
         const done = (token: string) => {
+          if (settled) return;
+          settled = true;
           clearTimeout(timer);
           resolve(token);
         };
-        waiting.push(done);
+        const fail = (error: Error) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timer);
+          waiting = waiting.filter((fn) => fn !== done);
+          reject(error);
+        };
+        const timer = setTimeout(() => fail(new Error("turnstile timeout")), timeoutMs);
+        render().then(
+          () => (current ? done(current) : waiting.push(done)),
+          (error: unknown) => fail(error instanceof Error ? error : new Error("turnstile failed")),
+        );
       });
     },
     reset() {
