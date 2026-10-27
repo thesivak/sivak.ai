@@ -6,9 +6,9 @@
 
 metadata:
   title: AI školení pro firmy – jednodenní praktický workshop | sivak.ai
-  description: Jednodenní AI školení pro zaměstnance, management i CEO. ChatGPT a další nástroje, prompty, bezpečná práce s daty a úvod do AI agentů. 35 000 Kč, konečná cena.
+  description: Jednodenní AI školení pro zaměstnance, management i CEO. ChatGPT a další nástroje, prompty, automatizace, AI agenti a bezpečná práce s daty. 35 000 Kč.
   ogTitle: Jednodenní AI školení pro firmy
-  ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po bezpečnou práci s daty a AI agenty. Školí Miroslav Sivák. 35 000 Kč, konečná cena.
+  ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po automatizace a AI agenty. Školí Miroslav Sivák. 35 000 Kč za jednodenní školení pro vaši firmu.
 
 nav:
   items:
@@ -26,40 +26,17 @@ nav:
 
 hero:
   eyebrow: AI školení pro firmy
-  # Tři řádky: "pro váš tým" drží pohromadě pevné mezery
-  title: |-
-    Jednodenní
-    AI školení
-  titleAccent: pro váš tým
-  lead: Praktický den s umělou inteligencí pro zaměstnance, management i vedení firmy. Ukážeme ChatGPT a další nástroje na práci, kterou ve vaší firmě opravdu děláte, a domluvíme pravidla, aby s AI pracovali bezpečně.
+  title: Jednodenní AI školení
+  titleAccent: pro váš tým
+  lead: Praktický den pro vaše lidi – ChatGPT a další AI nástroje, automatizace rutinní práce a AI agenti. Ukážeme, jak je využít v každodenní práci a získat tak náskok před konkurencí.
+  # Karta lektora; jméno a pozice se berou z části trainer
+  trainerLabel: Školí
+  trainerNote: Vede sivak.ai, která pro firmy staví a provozuje AI agenty. Na školení ukazuje postupy, které se osvědčily v praxi.
   price:
     figure: 35 000 Kč
-    title: za celý den školení pro vaši firmu
-    text: Konečná cena – nejsme plátci DPH. Program připravíme na míru vašemu týmu.
-  primary: Nezávazně poptat
-  secondary: Program dne
-  notes:
-    - Jeden den, celý tým
-    - Program na míru vaší firmě
-    - Školí praktik, který AI agenty staví
-    - Konečná cena bez DPH navíc
-
-# Karta v hero: shrnutí, které jde rovnou přeposlat nadřízenému
-summary:
-  label: Shrnutí nabídky
-  file: ai-skoleni.txt
-  rows:
-    - [co, jednodenní AI školení]
-    - [pro koho, "zaměstnanci, management, CEO"]
-    - [rozsah, 1 den]
-    - [program, na míru vaší firmě]
-    - [lektor, "Miroslav Sivák, sivak.ai"]
-    - [cena, "35 000 Kč, konečná"]
-    - [DPH, nejsme plátci]
-    - [další krok, poptávkový formulář]
-  forward: Přeposlat shrnutí e-mailem
-  forwardSubject: "Návrh: jednodenní AI školení pro naši firmu"
-  forwardIntro: "Dobrý den, posílám nabídku jednodenního AI školení pro naši firmu:"
+    unit: za jednodenní školení pro vaši firmu
+  primary: Nezávazně poptat školení
+  secondary: Co se váš tým naučí
 
 audience:
   id: pro-koho
@@ -79,7 +56,7 @@ program:
   id: program
   eyebrow: Program dne
   title: Co se váš tým za jeden den naučí
-  lead: Málo teorie, hodně práce na příkladech z vaší firmy. Každý si nástroje vyzkouší sám.
+  lead: Od ChatGPT přes automatizace po AI agenty. Málo teorie, hodně práce na příkladech z vaší firmy – každý si nástroje vyzkouší sám.
   parts:
     - label: Dopoledne
       blocks:
@@ -113,6 +90,7 @@ program:
           text: Co přijde po chatu – agenti, kteří převezmou rutinní práci u počítače.
           points:
             - rozdíl mezi chatem a AI agentem
+            - které rutinní úlohy jde automatizovat
             - ukázky agentů z naší praxe
             - agent připraví, člověk rozhodne
         - title: Workshop na vašich úlohách a otázky
@@ -120,7 +98,7 @@ program:
           points:
             - řešení konkrétních úloh účastníků
             - otázky a odpovědi
-            - doporučení, kde ve firmě začít
+            - kde ve firmě začít, abyste získali náskok před konkurencí
   note: Orientační program. Před školením ho upravíme podle vaší firmy, složení skupiny a nástrojů, které používáte.
 
 trainer:
@@ -160,7 +138,6 @@ price:
   title: Jedna cena za celý den
   figure: 35 000 Kč
   unit: za jednodenní školení pro vaši firmu
-  vat: Konečná cena. Nejsme plátci DPH, takže k ceně nic nepřipočítáváme.
   includedLabel: V ceně
   included:
     - celodenní praktické školení
@@ -179,5 +156,3 @@ form:
   eyebrow: Poptávka
   title: Nezávazně poptejte školení
   lead: Vyplňte pár údajů. Ozveme se vám, probereme program i termín a pošleme potvrzení. Poptávka vás k ničemu nezavazuje.
-  phoneLabel: Raději telefonicky?
-  phoneHint: Matouš Čep, key account manager

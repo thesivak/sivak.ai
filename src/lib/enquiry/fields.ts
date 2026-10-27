@@ -88,7 +88,7 @@ export function validateEnquiry(raw: Record<string, unknown>): Validation {
   if (phone) {
     const digits = phone.replace(/\D/g, "").length;
     if (phone.length > LIMITS.phone.max || !PHONE_CHARS.test(phone) || digits < LIMITS.phone.minDigits || digits > LIMITS.phone.maxDigits) {
-      errors.phone = "Zadejte telefon ve tvaru +420 123 456 789, nebo pole nechte prázdné.";
+      errors.phone = "Zadejte platné telefonní číslo včetně předvolby, nebo pole nechte prázdné.";
     }
   }
 

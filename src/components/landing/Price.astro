@@ -18,7 +18,6 @@ const { t, formHref } = Astro.props;
     <div class="lp-price-card reveal">
       <p class="lp-price-figure">{t.figure}</p>
       <p class="lp-price-unit">{t.unit}</p>
-      <p class="lp-price-vat"><Icon name="shield" />{t.vat}</p>
       <h3 class="lp-price-label">{t.includedLabel}</h3>
       <ul class="lp-included">{t.included.map((item) => <li><Icon name="check" />{item}</li>)}</ul>
       <a class="btn btn-dark" href={formHref}>{t.cta}<Icon name="arrow" /></a>

@@ -3,13 +3,12 @@ import Eyebrow from "../Eyebrow.astro";
 import Icon from "../Icon.astro";
 import type { Landing } from "@/lib/content";
 import { CONSENT_TEXT, FIELD, LIMITS, TRACKING_KEYS } from "@/lib/enquiry/fields";
-import { PEOPLE, PRIVACY_POLICY_URL, initials, telHref } from "@/lib/site";
+import { PRIVACY_POLICY_URL } from "@/lib/site";
 
 interface Props {
   t: Landing["form"];
 }
 const { t } = Astro.props;
-const contact = PEOPLE.find((person) => person.phone)!;
 
 // Public keys are read at build time; without them the widget / conversion simply isn't there
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
@@ -31,17 +30,6 @@ const fields = [
       <Eyebrow index="07">{t.eyebrow}</Eyebrow>
       <h2 class="section-title contact-title" id={`${t.id}-title`}>{t.title}</h2>
       <p class="section-lead">{t.lead}</p>
-      <div class="person lp-phone">
-        <span class="avatar" aria-hidden="true">{initials(contact.name)}</span>
-        <div class="person-body">
-          <h3>{t.phoneLabel}</h3>
-          <p class="person-role">{t.phoneHint}</p>
-          <ul class="person-links">
-            <li><a href={telHref(contact.phone!)}><Icon name="phone" /><span class="sr-only">Telefon: </span>{contact.phone}</a></li>
-            <li><a href={`mailto:${contact.email}`}><Icon name="mail" /><span class="sr-only">E-mail: </span>{contact.email}</a></li>
-          </ul>
-        </div>
-      </div>
     </div>
 
     <div class="lp-form-card">
@@ -106,7 +94,7 @@ const fields = [
       <div class="lp-success" data-success hidden tabindex="-1">
         <span class="lp-success-icon"><Icon name="check" /></span>
         <h3>Děkujeme, poptávku jsme přijali</h3>
-        <p>Ozveme se vám co nejdříve a probereme program i termín. Pokud spěcháte, zavolejte na <a href={telHref(contact.phone!)}>{contact.phone}</a>.</p>
+        <p>Ozveme se vám co nejdříve a probereme program i termín.</p>
       </div>
     </div>
   </div>

@@ -161,18 +161,11 @@ const landing = defineCollection({
       title: text,
       titleAccent: text,
       lead: text,
-      price: z.object({ figure: text, title: text, text: text }),
+      trainerLabel: text,
+      trainerNote: text,
+      price: z.object({ figure: text, unit: text }),
       primary: text,
       secondary: text,
-      notes: z.array(text),
-    }),
-    summary: z.object({
-      label: text,
-      file: text,
-      rows: z.array(pair),
-      forward: text,
-      forwardSubject: text,
-      forwardIntro: text,
     }),
     audience: z.object({ ...section, lead: text, items: z.array(card), note: text }),
     program: z.object({
@@ -194,7 +187,6 @@ const landing = defineCollection({
       ...section,
       figure: text,
       unit: text,
-      vat: text,
       includedLabel: text,
       included: z.array(text),
       cta: text,
@@ -203,8 +195,6 @@ const landing = defineCollection({
     form: z.object({
       ...section,
       lead: text,
-      phoneLabel: text,
-      phoneHint: text,
     }),
   }),
 });
