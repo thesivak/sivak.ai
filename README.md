@@ -80,6 +80,7 @@ npm run preview                       # production build served by `wrangler dev
 npm run check && npm run lint         # astro check (TypeScript) and ESLint
 ```
 
+(`npm run preview` is local only; deploying the workers.dev preview is `npm run deploy:preview`, see below.)
 `npm run preview` is the closest to production: the same Worker, the static asset routing from
 `wrangler.jsonc`, a local D1 database and the variables from `.dev.vars`. Stop it before running
 another build.
@@ -111,7 +112,7 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 
 | Name | Kind | Purpose |
 | --- | --- | --- |
-| `SITE_ENV` | var | `production` (wrangler.jsonc) or `development` (.dev.vars). Anything but `development` counts as production. |
+| `SITE_ENV` | var | `production` (wrangler.jsonc), `preview` (env.preview) or `development` (.dev.vars). Anything else counts as production. |
 | `ENQUIRY_NOTIFY_TO` | var | Comma-separated recipients, default `mirek@sivak.ai,matous@sivak.ai` |
 | `ENQUIRY_FROM_EMAIL` | var | Sender, on a domain verified for the chosen e-mail channel (TODO) |
 | `NOTIFY_DISABLED` | var | `1` = kill switch: never send, log only |
@@ -132,9 +133,13 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 3. **Validation** (`src/lib/enquiry/fields.ts`, the same code the browser runs): name, company,
    e-mail and consent required; phone optional but checked; participants 1–500; length limits.
 4. **Turnstile** siteverify. Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged
-   warning **only when `SITE_ENV=development`**; in production the form answers 503 until it is set.
+   warning **only outside production** (`SITE_ENV=development` or `preview`); in production the form
+   answers 503 until it is set. Cloudflare's test keys (`1x00000000000000000000AA` /
+   `1x0000000000000000000000000000000AA`) work in development and preview and are refused in
+   production (503 + error log).
 5. **D1** insert with consent time, consent wording version (`CONSENT_VERSION`), `utm_*`, `gclid`,
-   landing URL, user agent and IP hash. Without the `DB` binding the enquiry is not stored (error
+   landing URL, user agent and IP hash; `source` is `ai-skoleni`, or `ai-skoleni-preview` /
+   `ai-skoleni-development` outside production. Without the `DB` binding the enquiry is not stored (error
    log in production) and the e-mail/log is the only copy.
 6. **Notification** (after the response, `waitUntil`): see below.
 
@@ -151,15 +156,23 @@ Same-origin is enforced by Astro's `security.checkOrigin` (cross-site form posts
 
 `src/lib/server/notify.ts` picks the first available channel:
 
-1. **Cloudflare Email Service** — the `EMAIL` `send_email` binding
-   (`env.EMAIL.send({ from, to, replyTo, subject, html, text })`). Sending to verified destination
-   addresses is free, also on Workers Free, but requires the sivak.ai zone on Cloudflare DNS and
-   both recipients verified as Email Routing destination addresses. Enable it by uncommenting
-   `send_email` in `wrangler.jsonc` after the DNS cutover.
-2. **Resend** HTTP API — `RESEND_API_KEY`, with `ENQUIRY_FROM_EMAIL` on a domain verified in Resend.
+1. **Cloudflare Email Service** (recommended) — the `EMAIL` `send_email` binding
+   (`env.EMAIL.send({ from, to, replyTo, subject, html, text })`). sivak.ai is already onboarded
+   for Cloudflare Email Sending (the `cf-bounce` MX/SPF/DKIM records exist and another Worker in the
+   account already sends this way), so the sender can be e.g. `web@sivak.ai` or `noreply@sivak.ai`.
+   - Sending to **verified destination addresses is free**, also on Workers Free. Verify
+     `mirek@sivak.ai` and `matous@sivak.ai` in the dashboard under Email → Email Routing →
+     Destination addresses (each gets a confirmation e-mail). **Only verify — do not enable Email
+     Routing and do not change MX**: inbound mail for sivak.ai stays on Google Workspace.
+   - Sending to arbitrary recipients would need Workers Paid ($5/month, 3,000 e-mails/month
+     included); this site only ever writes to the two verified addresses.
+   - To switch it on: set `ENQUIRY_FROM_EMAIL`, uncomment `send_email` in `wrangler.jsonc` (it lists
+     the two addresses in `allowed_destination_addresses`) and deploy.
+2. **Resend** HTTP API (fallback) — `RESEND_API_KEY`, with `ENQUIRY_FROM_EMAIL` on a domain
+   verified in Resend.
 3. **Log only** — the enquiry summary goes to the Worker log (Observability).
 
-Nothing is sent when `SITE_ENV=development` (local dev logs instead), when `NOTIFY_DISABLED=1`, or
+Nothing is sent outside production (`SITE_ENV=development` or `preview` log instead), when `NOTIFY_DISABLED=1`, or
 while `ENQUIRY_FROM_EMAIL`/`ENQUIRY_NOTIFY_TO` are empty. User input is HTML-escaped in the e-mail;
 Reply-To is the enquirer's address.
 
@@ -177,44 +190,66 @@ one-time PIN or Google login). Keep Basic auth as the second layer.
 
 ## Deploy and cutover from Vercel
 
-Nothing below has been done yet. All commands need a logged-in `wrangler` (`npx wrangler login`)
-on the sivak.ai Cloudflare account.
+State on 27 October 2026: the sivak.ai zone is **already active on Cloudflare DNS** (Free plan). The
+apex `A 76.76.21.21` and `www CNAME cname.vercel-dns.com` (both DNS-only) still point to Vercel; MX is
+Google Workspace; sivak.ai is onboarded for Cloudflare Email Sending; Email Routing (inbound) is off
+and must stay off. The D1 database `sivak-ai` (`73a4d2d1-d42a-4b19-a853-463ee16dc1dd`, WEUR) exists and
+`migrations/0001_enquiries.sql` is applied. The Worker is not deployed yet.
 
-1. **D1**: `npx wrangler d1 create sivak-ai` → put the printed `database_id` into `wrangler.jsonc`
-   (replacing the zero UUID), then `npm run db:migrate:remote`.
-2. **Turnstile**: Cloudflare dashboard → Turnstile → Add widget for `www.sivak.ai` (and `sivak.ai`,
-   plus the `*.workers.dev` preview hostname if wanted), mode Managed. Site key →
-   `PUBLIC_TURNSTILE_SITE_KEY` (build variable), secret → `npx wrangler secret put TURNSTILE_SECRET_KEY`.
-3. **Secrets**: `npx wrangler secret put` for `ADMIN_USER`, `ADMIN_PASSWORD`, `IP_HASH_SALT`
-   (and `RESEND_API_KEY` if Resend is used).
-4. **E-mail**: either
-   - Cloudflare Email Service (after step 8): Email → Email Routing → enable for sivak.ai, add and
-     verify `mirek@sivak.ai` and `matous@sivak.ai` as destination addresses, onboard the domain for
-     Email Sending, uncomment `send_email` in `wrangler.jsonc`, set `ENQUIRY_FROM_EMAIL` (e.g.
-     `poptavky@sivak.ai`); or
-   - Resend: add and verify the sending domain (DNS records), create an API key, set
-     `RESEND_API_KEY` and `ENQUIRY_FROM_EMAIL`.
-   Until then enquiries are stored in D1 and visible in the admin; notifications only go to the log.
-5. **Google Ads**: Google Ads → Goals → Conversions → create a "Submit lead form" action (website,
+Commands need a logged-in `wrangler` on the sivak.ai account.
+
+1. **Turnstile**: dashboard → Turnstile → Add widget for `www.sivak.ai` and `sivak.ai`, mode Managed.
+   Site key → `PUBLIC_TURNSTILE_SITE_KEY` (build variable); secret →
+   `npx wrangler secret put TURNSTILE_SECRET_KEY`. Production refuses the test keys.
+2. **Secrets**: `npx wrangler secret put` for `ADMIN_USER`, `ADMIN_PASSWORD`, `IP_HASH_SALT`
+   (and `RESEND_API_KEY` only if Resend is used).
+3. **E-mail** (Cloudflare Email Service, see "E-mail notification"): verify `mirek@sivak.ai` and
+   `matous@sivak.ai` as destination addresses (verification only, no routing, no MX change), set
+   `ENQUIRY_FROM_EMAIL` (e.g. `web@sivak.ai`) in `wrangler.jsonc`, uncomment `send_email`. Until then
+   enquiries are stored in D1 and visible in the admin, and notifications only go to the log.
+4. **Google Ads**: Google Ads → Goals → Conversions → create a "Submit lead form" action (website,
    manual tag) → Tag setup → "Use Google tag" shows `send_to: 'AW-XXXXXXXXX/YYYYYYYY'`. Set
-   `PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=YYYYYYYY`.
-   **The customer ID 285-124-8637 shown in the Ads UI is not the tag ID** and does not work here.
-   The Ads tag is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) stays on every page.
-6. **Content TODOs**: `MIREK_LINKEDIN_URL` and the privacy policy (`src/pages/ochrana-osobnich-udaju.astro`,
-   currently a noindex placeholder) in `src/lib/site.ts`.
-7. **Worker**: Workers & Pages → Create → Import a repository (Workers Builds) with build command
-   `npm run build`, deploy command `npx wrangler deploy`, Node version 24 (`NODE_VERSION=24` build
-   variable), and the `PUBLIC_*` build variables. Or deploy from a machine: `npm run deploy`.
-   Check the `*.workers.dev` URL: `/`, `/en`, `/ai-skoleni`, a test enquiry, the admin.
-8. **DNS cutover** (if sivak.ai is not on Cloudflare DNS yet): add the zone to Cloudflare, copy all
-   existing records (especially MX/SPF/DKIM for mail!), switch the nameservers at the registrar, wait
-   for the zone to be active. Then Worker → Settings → Domains & Routes → add custom domains
-   `www.sivak.ai` and `sivak.ai` (Cloudflare creates the DNS records and certificates; remove the old
-   Vercel A/CNAME records). Redirect the apex to `www` (Rules → Redirect Rules: `sivak.ai/*` →
-   `https://www.sivak.ai/${1}`, 301) to match the canonical URLs.
-9. **Access** for `/admin/*` (see above).
-10. **Vercel**: after the Cloudflare site has served traffic for a while, remove the domains from
-    the Vercel project and delete it.
+   `PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=YYYYYYYY` as build
+   variables. **The customer ID 285-124-8637 shown in the Ads UI is not the tag ID** and does not
+   work here. The Ads tag is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) stays on every page.
+5. **Content TODOs** in `src/lib/site.ts`: `MIREK_LINKEDIN_URL`, and the privacy policy behind
+   `PRIVACY_POLICY_URL` (`src/pages/ochrana-osobnich-udaju.astro` is a noindex placeholder).
+6. **Deploy the Worker** `sivak-ai`: `npm run deploy` (build + `wrangler deploy`), or Workers Builds
+   (connect the repository; build command `npm run build`, deploy command `npx wrangler deploy`,
+   `NODE_VERSION=24` and the `PUBLIC_*` build variables). Check its `*.workers.dev` URL.
+7. **Cutover** — no DNS move is needed. Worker → Settings → Domains & Routes → add the **Custom
+   Domains** `sivak.ai` and `www.sivak.ai`. Cloudflare replaces the Vercel `A`/`CNAME` records with
+   the Worker and issues certificates; MX and the e-mail records are untouched. Then make the apex
+   redirect to `www` to match the canonical URLs (Rules → Redirect Rules → custom filter
+   `http.host eq "sivak.ai"`, dynamic target `concat("https://www.sivak.ai", http.request.uri.path)`,
+   301, preserve query string). Check `/`, `/en`, `/ai-skoleni`, a test enquiry
+   and the admin on the real domain.
+8. **Access** for `/admin/*` (see "Admin").
+9. **Vercel**: remove `sivak.ai` and `www.sivak.ai` from the Vercel project's domains, then, once
+   all is well, delete the project.
+
+Rollback before step 9: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
+`CNAME www cname.vercel-dns.com` (DNS-only).
+
+### Preview deployment (`sivak-ai-preview`)
+
+`wrangler.jsonc` → `env.preview` defines a second Worker, `sivak-ai-preview`, on workers.dev only (no
+routes). `npm run deploy:preview` builds with `CLOUDFLARE_ENV=preview` (and the Turnstile test site
+key unless `PUBLIC_TURNSTILE_SITE_KEY` is set) and deploys it. In preview:
+
+- every request goes through the Worker (`run_worker_first: true`), which adds
+  `X-Robots-Tag: noindex, nofollow` to every response, a `<meta name="robots" content="noindex,nofollow">`
+  to every page, and serves `robots.txt` as `Disallow: /`;
+- `SITE_ENV=preview`: Turnstile test keys allowed, `NOTIFY_DISABLED=1`, no e-mail;
+- the same D1 database; enquiries are stored with `source = 'ai-skoleni-preview'`
+  (clean up with `DELETE FROM enquiries WHERE source <> 'ai-skoleni'`).
+
+The build prints a harmless warning that the prerender worker config has no `preview` environment.
+
+### Database changes
+
+Never edit an applied migration: schema changes go into a new `migrations/0002_*.sql`, applied with
+`npm run db:migrate:local` and, for production, `npm run db:migrate:remote`.
 
 ## Notes
 

@@ -40,14 +40,15 @@
     // "production" makes the form refuse to skip Turnstile; .dev.vars sets "development"
     "SITE_ENV": "production",
     "ENQUIRY_NOTIFY_TO": "mirek@sivak.ai,matous@sivak.ai",
-    // TODO: an address on a domain verified in Resend or Cloudflare Email Service
+    // TODO: sender on sivak.ai (already onboarded for Cloudflare Email Sending), e.g. "web@sivak.ai"
     "ENQUIRY_FROM_EMAIL": "",
     "NOTIFY_DISABLED": "0"
   },
 
-  // Cloudflare Email Service (send_email binding). Preferred over Resend when bound: the Worker sends
-  // the enquiry notification to verified destination addresses. Requires sivak.ai on Cloudflare DNS
-  // and both addresses verified as Email Routing destinations. Enable after the DNS cutover:
+  // Cloudflare Email Service (send_email binding), the recommended notifier; preferred over Resend when
+  // bound. sivak.ai is already onboarded for Email Sending. Sending to verified destination addresses is
+  // free: verify mirek@ and matous@ in the dashboard (Email Routing → Destination addresses) WITHOUT
+  // enabling routing or touching MX (mail stays on Google). Then set ENQUIRY_FROM_EMAIL and uncomment:
   // "send_email": [
   //   {
   //     "name": "EMAIL",
