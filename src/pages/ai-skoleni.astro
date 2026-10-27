@@ -13,7 +13,7 @@ import Price from "@/components/landing/Price.astro";
 import Faq from "@/components/sections/Faq.astro";
 import EnquiryForm from "@/components/landing/EnquiryForm.astro";
 import { getFaq, getHome, getLanding } from "@/lib/content";
-import { COMPANY, MIREK_LINKEDIN_URL, PEOPLE, SITE_URL } from "@/lib/site";
+import { COMPANY, MIREK_LINKEDIN, PEOPLE, SITE_URL } from "@/lib/site";
 
 // The Google Ads landing page for "AI školení". Czech only: there is no /en/ai-skoleni (see README).
 const t = await getLanding("ai-skoleni");
@@ -40,7 +40,7 @@ const jsonLd = [
       name: t.trainer.name,
       jobTitle: founder.role,
       worksFor: { "@type": "Organization", name: COMPANY.brand },
-      ...(MIREK_LINKEDIN_URL.includes("TODO") ? {} : { sameAs: [MIREK_LINKEDIN_URL] }),
+      ...(MIREK_LINKEDIN ? { sameAs: [MIREK_LINKEDIN] } : {}),
     },
     offers: { "@type": "Offer", price: "35000", priceCurrency: "CZK", category: "Paid", url: `${url}#${t.price.id}` },
     hasCourseInstance: { "@type": "CourseInstance", courseWorkload: "P1D" },

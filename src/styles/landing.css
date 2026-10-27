@@ -358,6 +358,10 @@
 .lp-success-icon svg { width: 24px; height: 24px; }
 .lp-success h3 { font-size: 24px; font-weight: 500; line-height: 1.25; }
 .lp-success p { color: var(--ink-2); }
+.lp-unavailable { display: grid; gap: 12px; }
+.lp-unavailable h3 { font-size: 24px; font-weight: 500; line-height: 1.25; }
+.lp-unavailable p { color: var(--ink-2); }
+.lp-unavailable a { color: inherit; font-weight: 500; }
 
 /* ——— Tablet and phone ——— */
 

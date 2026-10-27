@@ -2,7 +2,7 @@
 import Eyebrow from "../Eyebrow.astro";
 import Icon from "../Icon.astro";
 import type { Landing } from "@/lib/content";
-import { MIREK_LINKEDIN_URL, initials } from "@/lib/site";
+import { MIREK_LINKEDIN, initials } from "@/lib/site";
 
 interface Props {
   t: Landing["trainer"];
@@ -22,7 +22,7 @@ const { t } = Astro.props;
       <div>
         <p class="lp-person-name">{t.name}</p>
         <p class="person-role">{t.role}</p>
-        <a class="btn btn-dark btn-sm lp-linkedin" href={MIREK_LINKEDIN_URL} rel="noopener" target="_blank">{t.linkedinLabel}<Icon name="arrow" /></a>
+        {MIREK_LINKEDIN && <a class="btn btn-dark btn-sm lp-linkedin" href={MIREK_LINKEDIN} rel="noopener" target="_blank">{t.linkedinLabel}<Icon name="arrow" /></a>}
       </div>
     </div>
   </div>

@@ -3,7 +3,7 @@ import Eyebrow from "../Eyebrow.astro";
 import Icon from "../Icon.astro";
 import type { Landing } from "@/lib/content";
 import { CONSENT_TEXT, FIELD, LIMITS, TRACKING_KEYS } from "@/lib/enquiry/fields";
-import { PRIVACY_POLICY_URL } from "@/lib/site";
+import { ENQUIRY_CONTACT_EMAIL, PRIVACY_POLICY_URL } from "@/lib/site";
 
 interface Props {
   t: Landing["form"];
@@ -11,7 +11,12 @@ interface Props {
 const { t } = Astro.props;
 
 // Public keys are read at build time; without them the widget / conversion simply isn't there
-const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
+// A built site without the Turnstile site key could never send a token, and the server (with its
+// secret, required in production) would refuse every enquiry: show a contact notice instead of the form.
+// Only `astro dev` keeps the form without the widget; there the server has no secret and skips the check.
+const formAvailable = Boolean(turnstileSiteKey) || import.meta.env.DEV;
+if (!formAvailable) console.warn("[enquiry] PUBLIC_TURNSTILE_SITE_KEY is not set: /ai-skoleni shows a contact notice instead of the form");
 const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
 const adsLabel = import.meta.env.PUBLIC_GOOGLE_ADS_CONVERSION_LABEL;
 const conversion = adsId && adsLabel ? `${adsId}/${adsLabel}` : "";
@@ -33,7 +38,13 @@ const fields = [
     </div>
 
     <div class="lp-form-card">
-      <form class="lp-form" method="post" action="/api/poptavka" data-enquiry-form data-conversion={conversion || undefined} aria-describedby="form-required">
+      {!formAvailable && (
+        <div class="lp-unavailable" role="note">
+          <h3>Formulář je dočasně nedostupný</h3>
+          <p>Napište nám prosím na <a href={`mailto:${ENQUIRY_CONTACT_EMAIL}`}>{ENQUIRY_CONTACT_EMAIL}</a> – kdo se zúčastní a kdy by se vám školení hodilo. Ozveme se vám co nejdříve.</p>
+        </div>
+      )}
+      {formAvailable && <form class="lp-form" method="post" action="/api/poptavka" data-enquiry-form data-conversion={conversion || undefined} aria-describedby="form-required">
         <p class="lp-form-required" id="form-required">Pole označená * jsou povinná.</p>
         <div class="lp-fields">
           {
@@ -80,7 +91,7 @@ const fields = [
 
         <div class="lp-consent">
           <input id="f-consent" name={FIELD.consent} type="checkbox" value="on" required aria-describedby="consent-error" />
-          <label for="f-consent">{CONSENT_TEXT} <a href={PRIVACY_POLICY_URL} target="_blank">Zásady zpracování osobních údajů</a><span aria-hidden="true"> *</span></label>
+          <label for="f-consent">{CONSENT_TEXT} Podrobnosti: <a href={PRIVACY_POLICY_URL} target="_blank">Zásady zpracování osobních údajů</a><span aria-hidden="true"> *</span></label>
           <p class="lp-error" id="consent-error"></p>
         </div>
 
@@ -90,7 +101,7 @@ const fields = [
           <button class="btn btn-light" type="submit">Odeslat poptávku<Icon name="arrow" /></button>
           <p class="lp-status" role="status" aria-live="polite" data-status></p>
         </div>
-      </form>
+      </form>}
       <div class="lp-success" data-success hidden tabindex="-1">
         <span class="lp-success-icon"><Icon name="check" /></span>
         <h3>Děkujeme, poptávku jsme přijali</h3>

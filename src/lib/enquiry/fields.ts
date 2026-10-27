@@ -24,10 +24,13 @@ export const LIMITS = {
   tracking: { max: 200 },
 } as const;
 
-// Bump the version whenever the consent wording changes; each enquiry stores the version it was given.
-export const CONSENT_VERSION = "2026-10-27";
+// Bump the version whenever the wording changes; each enquiry stores the version it was given.
+// The box confirms the visitor has read how the data is processed. It is not a GDPR consent: the legal
+// basis is art. 6(1)(b), steps taken at their request before a contract (see /ochrana-osobnich-udaju).
+// v2: was "Souhlasím se zpracováním osobních údajů uvedených ve formuláři za účelem vyřízení mé poptávky."
+export const CONSENT_VERSION = "2026-10-27-v2";
 export const CONSENT_TEXT =
-  "Souhlasím se zpracováním osobních údajů uvedených ve formuláři za účelem vyřízení mé poptávky.";
+  "Beru na vědomí, že údaje z formuláře zpracujete za účelem vyřízení mé poptávky.";
 
 // Campaign parameters copied from the landing URL into hidden fields
 export const TRACKING_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid"] as const;
@@ -103,7 +106,7 @@ export function validateEnquiry(raw: Record<string, unknown>): Validation {
   }
 
   if (note.length > LIMITS.note.max) errors.note = `Zkraťte prosím poznámku na nejvýše ${LIMITS.note.max} znaků.`;
-  if (!consent) errors.consent = "Bez souhlasu se zpracováním údajů poptávku nemůžeme přijmout.";
+  if (!consent) errors.consent = "Potvrďte prosím, že jste se seznámili se zpracováním osobních údajů.";
 
   for (const key of Object.keys(errors) as FieldName[]) if (!errors[key]) delete errors[key];
   if (Object.keys(errors).length > 0) return { ok: false, errors };

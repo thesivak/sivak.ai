@@ -1,7 +1,8 @@
 # Texty landing page /ai-skoleni (jen česky). Otázky a odpovědi jsou v src/content/faq/ai-skoleni/*.md.
 # Schéma: src/content.config.ts. Pevné mezery za jednopísmennými předložkami doplní web sám.
-# Pravidla obsahu: žádná vymyšlená čísla, reference ani citace klientů. Fakta o Mirkovi a sivak.ai
-# jen ta, která stojí i na hlavní stránce (src/content/home/cs.yaml).
+# Pravidla obsahu: žádná vymyšlená čísla, reference ani citace klientů. O Mirkovi a sivak.ai jen
+# ověřená fakta: Miroslav Sivák je Founder & CEO sivak.ai; sivak.ai staví AI agenty pro firmy;
+# reference Factory přesně tak, jak je popsaná v části reference. Nic dalšího bez Mirkova ověření.
 # "35 000 Kč" je zapsané s pevnými mezerami, aby se částka nezalomila.
 
 metadata:
@@ -31,7 +32,7 @@ hero:
   lead: Praktický den pro vaše lidi – ChatGPT a další AI nástroje, automatizace rutinní práce a AI agenti. Ukážeme, jak je využít v každodenní práci a získat tak náskok před konkurencí.
   # Karta lektora; jméno a pozice se berou z části trainer
   trainerLabel: Školí
-  trainerNote: Vede sivak.ai, která pro firmy staví a provozuje AI agenty. Na školení ukazuje postupy, které se osvědčily v praxi.
+  trainerNote: Vede sivak.ai, která staví AI agenty pro firmy.
   price:
     figure: 35 000 Kč
     unit: za jednodenní školení pro vaši firmu
@@ -104,17 +105,16 @@ program:
 trainer:
   id: lektor
   eyebrow: Kdo školí
-  title: Školí někdo, kdo AI agenty sám staví
+  title: Školí zakladatel sivak.ai
   name: Miroslav Sivák
   role: Founder & CEO, sivak.ai
   bio:
-    - Mirek vede sivak.ai – firmu, která pro české firmy staví AI agenty na práci u počítače, nasazuje je a provozuje. Pro softwarovou firmu například provozuje agenty, kteří připravují odpovědi zákaznické podpory a testují nové verze aplikace.
-    - Na školení proto neukazuje teorii z prezentací, ale postupy, které se osvědčily v provozu. A stejně otevřeně mluví o tom, kde má AI své limity a kde musí rozhodnout člověk.
+    - Mirek je zakladatel a CEO sivak.ai, která staví AI agenty pro firmy. Pro technologický startup v Belgii postavila Factory – tým AI agentů na míru jeho práci.
+    - Na školení ukazuje, jak AI zadávat práci, jak kontrolovat, co připraví, a kde musí rozhodnout člověk.
   facts:
     - Founder & CEO sivak.ai
-    - Staví a provozuje AI agenty pro firmy
-    - Agenti v cloudu i na vlastním serveru firmy
-    - "Zásada: agent připraví, člověk rozhodne"
+    - sivak.ai staví AI agenty pro firmy
+    - "Reference: Factory, tým AI agentů pro technologický startup v Belgii"
   linkedinLabel: Profil na LinkedInu
 
 reference:
