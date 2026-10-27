@@ -3,7 +3,7 @@ import Eyebrow from "../Eyebrow.astro";
 import Icon from "../Icon.astro";
 import type { Landing } from "@/lib/content";
 import { CONSENT_TEXT, FIELD, LIMITS, TRACKING_KEYS } from "@/lib/enquiry/fields";
-import { ENQUIRY_CONTACT_EMAIL, PRIVACY_POLICY_URL } from "@/lib/site";
+import { PRIVACY_POLICY_URL } from "@/lib/site";
 
 interface Props {
   t: Landing["form"];
@@ -13,10 +13,10 @@ const { t } = Astro.props;
 // Public keys are read at build time; without them the widget / conversion simply isn't there
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
 // A built site without the Turnstile site key could never send a token, and the server (with its
-// secret, required in production) would refuse every enquiry: show a contact notice instead of the form.
+// secret, required in production) would refuse every enquiry: show a notice instead of the form.
 // Only `astro dev` keeps the form without the widget; there the server has no secret and skips the check.
 const formAvailable = Boolean(turnstileSiteKey) || import.meta.env.DEV;
-if (!formAvailable) console.warn("[enquiry] PUBLIC_TURNSTILE_SITE_KEY is not set: /ai-skoleni shows a contact notice instead of the form");
+if (!formAvailable) console.warn("[enquiry] PUBLIC_TURNSTILE_SITE_KEY is not set: /ai-skoleni shows a notice instead of the form");
 const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
 const adsLabel = import.meta.env.PUBLIC_GOOGLE_ADS_CONVERSION_LABEL;
 const conversion = adsId && adsLabel ? `${adsId}/${adsLabel}` : "";
@@ -41,7 +41,7 @@ const fields = [
       {!formAvailable && (
         <div class="lp-unavailable" role="note">
           <h3>Formulář je dočasně nedostupný</h3>
-          <p>Napište nám prosím na <a href={`mailto:${ENQUIRY_CONTACT_EMAIL}`}>{ENQUIRY_CONTACT_EMAIL}</a> – kdo se zúčastní a kdy by se vám školení hodilo. Ozveme se vám co nejdříve.</p>
+          <p>Omlouváme se, poptávku teď nelze odeslat. Zkuste to prosím znovu později.</p>
         </div>
       )}
       {formAvailable && <form class="lp-form" method="post" action="/api/poptavka" data-enquiry-form data-conversion={conversion || undefined} aria-describedby="form-required">

@@ -1,5 +1,4 @@
 import { FIELD, TRACKING_KEYS, validateEnquiry, type FieldErrors } from "@/lib/enquiry/fields";
-import { ENQUIRY_CONTACT_EMAIL } from "@/lib/site";
 import { hmacSha256Hex } from "./crypto";
 import { siteMode, type ServerEnv } from "./env";
 import { errorCode } from "./log";
@@ -17,22 +16,22 @@ import { TEST_TOKEN, isTestSecret, verifyTurnstile } from "./turnstile";
 // Production and the public preview ("strict") refuse submissions rather than run without IP_HASH_SALT
 // or a working rate limit; only SITE_ENV=development may skip them (with a logged warning).
 // Logs carry the enquiry id, a reason and error codes, never what the visitor typed, their IP or user agent.
+// Messages name no e-mail address: on /ai-skoleni the form is the only contact path.
 
 export const THANK_YOU_PATH = "/ai-skoleni/odeslano";
 const FORM_PATH = "/ai-skoleni#poptavka";
 export const MAX_BODY = 32 * 1024;
-const CONTACT = ENQUIRY_CONTACT_EMAIL;
 
 type Context = { env: ServerEnv; waitUntil: (promise: Promise<unknown>) => void };
 type Failure = { status: number; message: string; errors?: FieldErrors };
 
 const MESSAGES = {
   invalid: "Zkontrolujte prosím zvýrazněná pole.",
-  tooMany: `Odeslali jste příliš mnoho poptávek za krátkou dobu. Zkuste to prosím za pár minut, nebo napište na ${CONTACT}.`,
+  tooMany: "Odeslali jste příliš mnoho poptávek za krátkou dobu. Zkuste to prosím znovu za pár minut.",
   robot: "Nepodařilo se ověřit, že nejste robot. Zkuste formulář odeslat znovu.",
-  unavailable: `Formulář je teď nedostupný. Napište nám prosím na ${CONTACT}.`,
+  unavailable: "Formulář je teď dočasně nedostupný. Zkuste to prosím znovu později.",
   tooLarge: "Poptávka je příliš dlouhá. Zkraťte prosím poznámku.",
-  failed: `Poptávku se teď nepodařilo uložit. Zkuste to prosím za chvíli znovu, nebo napište na ${CONTACT}.`,
+  failed: "Poptávku se teď nepodařilo uložit. Zkuste to prosím znovu později.",
   ok: "Děkujeme, poptávku jsme přijali. Ozveme se vám co nejdříve.",
 };
 
@@ -216,7 +215,6 @@ function htmlResponse(failure: Failure | null): Response {
 <p>${escapeHtml(failure.message)}</p>
 ${errors.length ? `<ul>${errors.map((e) => `<li>${escapeHtml(e)}</li>`).join("")}</ul>` : ""}
 <p>Vraťte se tlačítkem Zpět v prohlížeči – vyplněné údaje by tam měly zůstat – nebo <a href="${FORM_PATH}">otevřete formulář znovu</a>.</p>
-<p>Případně nám napište na <a href="mailto:${CONTACT}">${CONTACT}</a>.</p>
 </main></body></html>`;
   return new Response(html, {
     status: failure.status,

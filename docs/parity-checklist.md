@@ -121,12 +121,13 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | Secret set, no token → 400 | curl ✅ |
 | Admin: no credentials → 401 with `WWW-Authenticate`; wrong → 401; right → list; `X-Robots-Tag: noindex`, `no-store` | curl ✅ |
 | CSV: UTF-8 BOM, quoted cells, `=HYPERLINK(…)` and `+…` prefixed with `'`, multi-line note kept | curl ✅ |
-| No D1 binding (any mode) → 503 with the contact e-mail and a config-error log, nothing claims success | separate `wrangler dev` config without D1 ✅ |
+| No D1 binding (any mode) → 503 "zkuste to prosím znovu později" and a config-error log, nothing claims success | separate `wrangler dev` config without D1 ✅ |
 | D1 without tables: rate limit fails → 503 in production and preview; development lets it through, then the failed insert → 503 | `wrangler dev` with an empty local D1 ✅ |
 | Production without `IP_HASH_SALT`, without a Turnstile secret, or with the test secret → 503 + config-error log; development without the salt → stored with `ip_hash` NULL, no rate limit | `--var` overrides ✅ |
 | Preview build (`CLOUDFLARE_ENV=preview`, test keys, `IP_HASH_SALT` set) → row in the local `ai-skoleni-nahled` DB with `source = 'ai-skoleni-preview'`, none in `sivak-ai`; noindex header | ✅ |
-| Build without `PUBLIC_TURNSTILE_SITE_KEY` → "Formulář je dočasně nedostupný" + contact e-mail instead of the form, build warning | ✅ |
+| Build without `PUBLIC_TURNSTILE_SITE_KEY` → "Formulář je dočasně nedostupný" notice instead of the form, build warning | ✅ |
 | Logs: only id, reason and error class/code, no personal data | `wrangler dev` output reviewed ✅ |
+| No `@sivak.ai` / `mailto:` in `/ai-skoleni`, `/ai-skoleni/odeslano` or the form's server messages; homepage footer keeps the addresses | grep of `dist/` ✅ |
 | Production, no admin secrets → admin 404 | `SITE_ENV=production` config ✅ |
 | Production + `EMAIL` binding (wrangler's local simulation, nothing sent): Email Service preferred over Resend, user input HTML-escaped | ✅ |
 | Production + Resend with an invalid key and `.invalid` recipients: API rejects (401) | ✅ (no e-mail could be delivered); since then the log carries only id, channel and `HTTP_401` (not re-run) |

@@ -42,8 +42,8 @@ export const PEOPLE: Person[] = [
 
 const [FOUNDER, ACCOUNT_MANAGER] = PEOPLE;
 
-// Where the enquiry form sends people when it can't take their enquiry, and the privacy contact
-export const ENQUIRY_CONTACT_EMAIL = ACCOUNT_MANAGER.email;
+// The controller contact in the privacy policy. Not shown on /ai-skoleni, where the form is the only contact.
+export const PRIVACY_CONTACT_EMAIL = ACCOUNT_MANAGER.email;
 
 // Meeting requests go to the key account manager, with the founder in copy.
 export function meetingHref(subject: string): string {

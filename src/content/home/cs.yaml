@@ -290,7 +290,7 @@ process:
     - title: Výpočet návratnosti
       text: Spočítáme, kolik hodin agent ušetří a kdy se investice vrátí. Víte to dřív, než začneme.
       output: odhad úspory
-    - title: Pilotní agent
+    - title: První agent
       text: Postavíme agenta na jeden proces. Vaši lidé kontrolují jeho práci a my měříme výsledky.
       output: agent v provozu
     - title: Provoz a rozšíření

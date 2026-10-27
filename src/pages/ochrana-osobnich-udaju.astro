@@ -2,7 +2,7 @@
 import Base from "@/layouts/Base.astro";
 import BrandLogo from "@/components/BrandLogo.astro";
 import { czechSpacingHtml } from "@/lib/czech";
-import { ENQUIRY_CONTACT_EMAIL, GA_MEASUREMENT_ID } from "@/lib/site";
+import { GA_MEASUREMENT_ID, PRIVACY_CONTACT_EMAIL } from "@/lib/site";
 import { LIMIT, WINDOW_MS } from "@/lib/server/rate-limit";
 import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 
@@ -20,7 +20,7 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 // verify), the e-mail provider, and the basis for the Google cookies: the site has no cookie banner,
 // and Czech law (§ 89(3) of Act 127/2005) asks for consent to cookies that aren't strictly necessary.
 // The form's checkbox is an acknowledgement, not consent (CONSENT_VERSION in fields.ts).
-const contact = ENQUIRY_CONTACT_EMAIL;
+const contact = PRIVACY_CONTACT_EMAIL;
 const ads = Boolean(import.meta.env.PUBLIC_GOOGLE_ADS_ID);
 const windowMinutes = WINDOW_MS / 60_000;
 const mail = `<a href="mailto:${contact}">${contact}</a>`;

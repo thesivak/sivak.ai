@@ -111,7 +111,7 @@ in Workers Builds):
 
 | Name | Purpose |
 | --- | --- |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Turnstile widget on the form. Empty in a build = contact notice instead of the form (build warning). |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Turnstile widget on the form. Empty in a build = "dočasně nedostupný" notice instead of the form (build warning). |
 | `PUBLIC_GOOGLE_ADS_ID` | Google Ads tag ID, `AW-…`. Empty = no Ads tag and no conversion. |
 | `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Label of the conversion action (`send_to` = `AW-…/label`). |
 
@@ -134,8 +134,10 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 ## The enquiry form
 
 `POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order. The visitor sees "přijali" (200 or
-the 303 to the thank-you page) **only once the row is stored in D1**; every refusal is an error with
-`matous@sivak.ai` as the way out.
+the 303 to the thank-you page) **only once the row is stored in D1**; every refusal is an error asking to try again later.
+**No e-mail address appears anywhere on `/ai-skoleni`** (messages, notice, success state, thank-you page,
+footer: `SiteFooter`'s `contact` prop swaps the addresses for a link to the form there; the homepage
+footer is unchanged). The form is the only contact path; only the privacy policy names a contact e-mail.
 
 1. **Configuration**, before the body is read: no `DB` binding → 503 (every mode). Production and
    preview also refuse with 503 without `IP_HASH_SALT`; production without `TURNSTILE_SECRET_KEY` or with

@@ -11,8 +11,10 @@ interface Props {
   homeHref: string;
   switchHref: string;
   switchLang: string;
+  /** Replaces the e-mail addresses in the contact column (the landing page, where the form is the only contact) */
+  contact?: { href: string; label: string };
 }
-const { t, homeHref, switchHref, switchLang } = Astro.props;
+const { t, homeHref, switchHref, switchLang, contact } = Astro.props;
 const f = t.footer;
 ---
 <footer class="site-footer">
@@ -31,7 +33,9 @@ const f = t.footer;
       <div class="footer-col">
         <h2>{f.contactLabel}</h2>
         <ul>
-          {PEOPLE.map((person) => <li><a href={`mailto:${person.email}`}>{person.email}</a></li>)}
+          {contact
+            ? <li><a href={contact.href}>{contact.label}</a></li>
+            : PEOPLE.map((person) => <li><a href={`mailto:${person.email}`}>{person.email}</a></li>)}
           <li><a href={switchHref} hreflang={switchLang} lang={switchLang}>{t.langSwitch.label}</a></li>
         </ul>
       </div>

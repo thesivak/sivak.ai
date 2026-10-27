@@ -289,7 +289,7 @@ process:
     - title: ROI estimate
       text: We calculate how many hours the agent will save and when the investment pays back. You know before we start.
       output: savings estimate
-    - title: Pilot agent
+    - title: First agent
       text: We build an agent for one process. Your people review its work while we measure the results.
       output: agent in operation
     - title: Operation and growth
