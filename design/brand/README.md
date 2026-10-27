@@ -9,7 +9,9 @@ outlines from the approved image. The SVGs contain no embedded bitmap or fonts.
 
 The shared inline geometry lives in `src/components/logo.ts`. The site header
 and footer use the full logo, and the contact section draws the doorway symbol as
-a hairline outline. `public/icon.svg` uses the same doorway symbol.
+a hairline outline. The website icons (`public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`,
+`icon-192.png`, `icon-512.png`, ivory mark on navy) use the same doorway symbol; they are linked from
+`src/layouts/Base.astro` with `?v=2` and listed in `public/site.webmanifest`.
 
 Standalone exports have transparent backgrounds:
 

@@ -34,12 +34,44 @@
       "sha256": "3beeab4fe29c1074aea3e8508a0d0e9b9df9b22c69c2c8bb5950f8f50cc7c35f"
     },
     {
-      "path": "public/icon.svg",
-      "purpose": "website icon",
+      "path": "public/favicon.svg",
+      "purpose": "website icon (SVG favicon, rounded square, enlarged mark)",
       "color": "#0B1220 / #F2F0EB",
       "viewBox": "0 0 512 512",
-      "bytes": 279,
-      "sha256": "0bf70b82f05ef08c8f01b60fa6d6556e43d9140314b363d0e444868ea9ffaab3"
+      "bytes": 282,
+      "sha256": "7bf738979bda91ecb6936d2d1d38e02e234ee8bd52806a4e0f68890bb48ffede"
+    },
+    {
+      "path": "public/favicon.ico",
+      "purpose": "website icon for browsers without SVG favicons",
+      "color": "#0B1220 / #F2F0EB",
+      "sizes": "16, 32, 48",
+      "bytes": 1923,
+      "sha256": "4d02d445662a823215051431be0253f716d9814350adeef3f32b6c97c2612045"
+    },
+    {
+      "path": "public/apple-touch-icon.png",
+      "purpose": "iOS home screen icon (square, no rounding)",
+      "color": "#0B1220 / #F2F0EB",
+      "sizes": "180",
+      "bytes": 1646,
+      "sha256": "3fe1f9ac45ddd5f8ccf08ccd128c746784f6754cc2f605c367f2aa5ce8ee297c"
+    },
+    {
+      "path": "public/icon-192.png",
+      "purpose": "web app manifest icon",
+      "color": "#0B1220 / #F2F0EB",
+      "sizes": "192",
+      "bytes": 3635,
+      "sha256": "ffd7bd0cb6b0ed4f2f4509252af74f3294d1aab3e343ed5798b33c14ee07a080"
+    },
+    {
+      "path": "public/icon-512.png",
+      "purpose": "web app manifest icon",
+      "color": "#0B1220 / #F2F0EB",
+      "sizes": "512",
+      "bytes": 10057,
+      "sha256": "29ca8afe66a029b51e7d53ab2464e978aaa721876d7ee2928c880a63162d56ee"
     }
   ]
 }

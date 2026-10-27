@@ -147,4 +147,4 @@ needed on Cloudflare.
 
 - `design/brand/*` (logo sources and reference), `design/og/*` (OG image sources)
 - `public/brand/*`, `public/og/*`, `public/*.vcf`
-- `src/app/icon.svg` (moves to `public/icon.svg`)
+- `src/app/icon.svg` (moved to `public/icon.svg`; replaced on 27 October 2026 by `public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` and `site.webmanifest`)

@@ -40,8 +40,8 @@ Every item from `docs/migration-inventory.md`, old behaviour vs new, and how it 
 | unknown path, English browser | 307 → `/en/<path>` → 404 | 404 directly | curl — intentional: the language redirect now applies to `/` only, so Czech-only pages such as `/ai-skoleni` are never sent to a non-existent English URL |
 | `/sitemap.xml` | 2 URLs | same 2 URLs, byte-identical, plus `https://www.sivak.ai/ai-skoleni` (priority 0.9) | diff ✅ |
 | `/robots.txt` | `Allow: /` + sitemap | same plus `Disallow: /api/` (and `Disallow: /admin/` until the admin was removed on 27 October 2026) | diff ✅ |
-| `/icon.svg` | 200 `image/svg+xml` | 200, byte-identical | cmp ✅ |
-| `/favicon.ico` | 404 | 404 | curl ✅ |
+| `/icon.svg` | 200 `image/svg+xml` | 200, byte-identical at migration time; **since replaced** (27 October 2026) by `/favicon.svg`, `/favicon.ico` (16/32/48), `/apple-touch-icon.png`, `/icon-192.png`, `/icon-512.png` and `/site.webmanifest`, linked with `?v=2` | cmp ✅ |
+| `/favicon.ico` | 404 | 404 at migration time; now 200 (see the row above) | curl ✅ |
 | `/og/cs.png`, `/og/en.png` | 200 | 200, byte-identical | cmp ✅ |
 | `/mirek-sivak.vcf`, `/matous-cep.vcf` | 200 `text/x-vcard` | 200 `text/x-vcard`, byte-identical | cmp ✅ |
 | `/brand/logo.svg`, `logo-light.svg`, `mark.svg` | 200 | 200, byte-identical | cmp ✅ |
@@ -63,7 +63,7 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | hreflang `cs`, `en`, `x-default` | identical ✅ |
 | `og:title`, `og:description`, `og:url`, `og:site_name`, `og:locale`, `og:image` (+ width, height, alt), `og:type` | identical ✅ |
 | `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image` | identical ✅ |
-| icon | `<link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml">` (was `/icon.svg?icon.c607bc5c.svg`; the query was Next's cache buster) |
+| icon | `<link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml">` at migration time (was `/icon.svg?icon.c607bc5c.svg`; the query was Next's cache buster). Since 27 October 2026: `favicon.ico?v=2` (48x48), `favicon.svg?v=2`, `apple-touch-icon.png?v=2` and `site.webmanifest?v=2` |
 | font preloads | the same 6 latin / latin-ext woff2 files, now under `/fonts/` |
 | JSON-LD `Organization` | identical string at migration time ✅; since then `founder.sameAs` = Mirek's LinkedIn profile (deliberate) |
 | `<meta name="next-size-adjust">`, Next's hidden `<div>` and RSC payload scripts | gone (Next internals) |
