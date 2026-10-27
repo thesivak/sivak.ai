@@ -38,19 +38,19 @@ const f = t.footer;
         <p>{f.tagline}</p>
       </div>
       <nav class="footer-col" aria-label={f.navLabel}>
-        <h2>{f.navLabel}</h2>
+        <p class="footer-col-title">{f.navLabel}</p>
         <ul>
           {t.nav.items.map((item) => <li><a href={item.href ?? `${sectionBase}#${item.id}`} hreflang={item.hreflang}>{item.label}</a></li>)}
         </ul>
       </nav>
       <nav class="footer-col" aria-label={f.services.label}>
-        <h2>{f.services.label}</h2>
+        <p class="footer-col-title">{f.services.label}</p>
         <ul>
           {f.services.items.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
         </ul>
       </nav>
       <div class="footer-col">
-        <h2>{f.contactLabel}</h2>
+        <p class="footer-col-title">{f.contactLabel}</p>
         <ul>
           {contact
             ? <li><a href={contact.href}>{contact.label}</a></li>

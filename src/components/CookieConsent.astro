@@ -14,7 +14,7 @@ const { lang } = Astro.props;
 const t = lang === "cs" ? czechSpacing(CONSENT_TEXT.cs) : CONSENT_TEXT[lang];
 ---
 <div class="cc" role="dialog" aria-modal="false" aria-labelledby="cc-title" aria-describedby="cc-text" tabindex="-1" hidden data-cookie-consent>
-  <h2 class="cc-title" id="cc-title">{t.title}</h2>
+  <p class="cc-title" id="cc-title">{t.title}</p>
   <p class="cc-text" id="cc-text">{t.text} <a href={PRIVACY_POLICY_URL}>{t.policy}</a></p>
   <fieldset class="cc-settings" id="cc-settings" hidden data-cc-settings>
     <legend class="sr-only">{t.categories}</legend>

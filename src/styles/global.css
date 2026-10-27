@@ -1254,7 +1254,7 @@ code { font: inherit; }
 .footer-logo { display: inline-flex; color: var(--ivory); border-radius: 4px; }
 .footer-logo svg { width: auto; height: 28px; }
 .footer-brand p { max-width: 30ch; margin-top: 18px; }
-.footer-col h2 {
+.footer-col-title {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 500;
@@ -1299,7 +1299,8 @@ code { font: inherit; }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @keyframes fade-in { from { opacity: 0; } }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } }
-@keyframes reveal { from { opacity: 0; transform: translateY(32px); } }
+/* Slide only, no fade: text that is half scrolled into view keeps its full contrast (WCAG 1.4.3) */
+@keyframes reveal { from { transform: translateY(32px); } }
 @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 
 @media (prefers-reduced-motion: no-preference) {
