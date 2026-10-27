@@ -1,7 +1,7 @@
 # Texty landing page /ai-skoleni (jen česky). Otázky a odpovědi jsou v src/content/faq/ai-skoleni/*.md.
 # Schéma: src/content.config.ts. Pevné mezery za jednopísmennými předložkami doplní web sám.
 # Pravidla obsahu: žádná vymyšlená čísla, reference ani citace klientů. O Mirkovi a sivak.ai jen
-# ověřená fakta: Miroslav Sivák je Founder & CEO sivak.ai; sivak.ai staví AI agenty pro firmy;
+# ověřená fakta: Mirek Sivák je Founder & CEO sivak.ai; sivak.ai staví AI agenty pro firmy;
 # reference Factory přesně tak, jak je popsaná v části reference. Nic dalšího bez Mirkova ověření.
 # "35 000 Kč" je zapsané s pevnými mezerami, aby se částka nezalomila.
 
@@ -9,7 +9,7 @@ metadata:
   title: AI školení pro firmy – jednodenní praktický workshop | sivak.ai
   description: Jednodenní AI školení pro zaměstnance, management i CEO. ChatGPT a další nástroje, prompty, automatizace, AI agenti a bezpečná práce s daty. 35 000 Kč.
   ogTitle: Jednodenní AI školení pro firmy
-  ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po automatizace a AI agenty. Školí Miroslav Sivák. 35 000 Kč za jednodenní školení pro vaši firmu.
+  ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po automatizace a AI agenty. Školí Mirek Sivák. 35 000 Kč za jednodenní školení pro vaši firmu.
 
 nav:
   items:
@@ -106,7 +106,7 @@ trainer:
   id: lektor
   eyebrow: Kdo školí
   title: Školí zakladatel sivak.ai
-  name: Miroslav Sivák
+  name: Mirek Sivák
   role: Founder & CEO, sivak.ai
   bio:
     - Mirek je zakladatel a CEO sivak.ai, která staví AI agenty pro firmy. Pro technologický startup v Belgii postavila Factory – tým AI agentů na míru jeho práci.

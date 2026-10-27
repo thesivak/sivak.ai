@@ -106,7 +106,7 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | Check | Result |
 | --- | --- |
 | `/ai-skoleni` at 1440 and 375 px | screenshots reviewed; layout fixed where needed (agenda grid, stylesheet order) |
-| `/ai-skoleni` hero (v2) at 1440, 960 and 390 px: headline, trainer card (Miroslav Sivák), price 35 000 Kč, one button to the form; at 390 px headline, trainer and button fit the first screen | headless Chromium screenshots ✅ |
+| `/ai-skoleni` hero (v2) at 1440, 960 and 390 px: headline, trainer card (Mirek Sivák), price 35 000 Kč, one button to the form; at 390 px headline, trainer and button fit the first screen | headless Chromium screenshots ✅ |
 | `/ai-skoleni` has no phone number: no call card next to the form, none in the success message, `/ai-skoleni/odeslano` or the JSON-LD; the enquiry form is the only contact path | grep of the built HTML ✅ |
 | Landing `<head>`: title (63 chars), description (151), canonical, OG/Twitter with `/og/ai-skoleni.png`, `Course` + `FAQPage` JSON-LD | ✅ |
 | Form with JS: empty submit → field errors, `aria-invalid`, focus on first error, status in `aria-live`; phone checked on blur | Playwright ✅ |
