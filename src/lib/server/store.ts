@@ -32,7 +32,7 @@ export const COLUMNS: (keyof StoredEnquiry)[] = [
   "user_agent", "ip_hash", "notified_at",
 ];
 
-export type Meta = { createdAt: string; userAgent: string | null; ipHash: string; source: string };
+export type Meta = { createdAt: string; userAgent: string | null; ipHash: string | null; source: string };
 
 export async function insertEnquiry(db: D1Database, enquiry: Enquiry, meta: Meta): Promise<number> {
   const t = enquiry.tracking;
@@ -51,7 +51,8 @@ export async function insertEnquiry(db: D1Database, enquiry: Enquiry, meta: Meta
       t.gclid ?? null, enquiry.landingUrl, meta.userAgent?.slice(0, 500) ?? null, meta.ipHash,
     )
     .first<{ id: number }>();
-  return row?.id ?? 0;
+  if (!row?.id) throw new Error("insert returned no id");
+  return row.id;
 }
 
 export async function markNotified(db: D1Database, id: number, at: string): Promise<void> {
@@ -67,4 +68,14 @@ export async function listEnquiries(db: D1Database, limit?: number): Promise<Sto
 
 export async function countEnquiries(db: D1Database): Promise<number> {
   return (await db.prepare("SELECT COUNT(*) AS n FROM enquiries").first<{ n: number }>())?.n ?? 0;
+}
+
+// Enquiries are kept for 24 months (privacy policy). Anything that leads to a contract is copied into
+// the contract records before then; this table is only the form's inbox. Run by the hourly cron.
+export const ENQUIRY_RETENTION_MONTHS = 24;
+
+export async function pruneEnquiries(db: D1Database, now = new Date()): Promise<number> {
+  const cutoff = new Date(now);
+  cutoff.setUTCMonth(cutoff.getUTCMonth() - ENQUIRY_RETENTION_MONTHS);
+  return (await db.prepare("DELETE FROM enquiries WHERE created_at < ?").bind(cutoff.toISOString()).run()).meta.changes;
 }

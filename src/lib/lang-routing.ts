@@ -15,10 +15,16 @@ function browserLocale(header: string | null): Locale {
   return langs.some((lang) => CZECH_READERS.includes(lang)) ? "cs" : "en";
 }
 
+/** The cookie's value, or undefined when it is missing or malformed (e.g. `lang=%`): then there is no preference. */
 function readCookie(header: string | null, name: string): string | undefined {
   for (const pair of header?.split(";") ?? []) {
     const [key, ...value] = pair.trim().split("=");
-    if (key === name) return decodeURIComponent(value.join("="));
+    if (key !== name) continue;
+    try {
+      return decodeURIComponent(value.join("="));
+    } catch {
+      return undefined;
+    }
   }
 }
 

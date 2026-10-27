@@ -1,3 +1,5 @@
+import { errorCode } from "./log";
+
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
 // Cloudflare's published test keys (https://developers.cloudflare.com/turnstile/troubleshooting/testing/).
@@ -28,10 +30,10 @@ export async function verifyTurnstile(secret: string | undefined, token: string,
     const res = await fetch(SITEVERIFY, { method: "POST", body });
     const data = (await res.json()) as { success?: boolean; "error-codes"?: string[] };
     if (data.success) return { ok: true, skipped: false };
-    console.warn("Turnstile rejected the token", data["error-codes"]);
+    console.warn("[enquiry] Turnstile rejected the token", { errors: data["error-codes"] ?? [] });
     return { ok: false, reason: "invalid" };
   } catch (error) {
-    console.error("Turnstile siteverify failed", error);
+    console.error("[enquiry] Turnstile siteverify failed", { error: errorCode(error) });
     return { ok: false, reason: "unavailable" };
   }
 }

@@ -14,7 +14,8 @@
     "lint": "eslint .",
     "preview": "astro build && wrangler dev --local --port 8787",
     "db:migrate:local": "astro build && wrangler d1 migrations apply sivak-ai --local",
-    "db:migrate:remote": "wrangler d1 migrations apply sivak-ai --remote",
+    "db:migrate:remote": "wrangler d1 migrations apply sivak-ai --remote -c wrangler.jsonc",
+    "db:migrate:preview": "wrangler d1 migrations apply ai-skoleni-nahled --remote -c wrangler.jsonc --env preview",
     "deploy": "astro build && wrangler deploy",
     "deploy:preview": "CLOUDFLARE_ENV=preview PUBLIC_TURNSTILE_SITE_KEY=${PUBLIC_TURNSTILE_SITE_KEY:-1x00000000000000000000AA} astro build && wrangler deploy"
   },

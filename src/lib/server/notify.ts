@@ -1,19 +1,22 @@
 import type { Enquiry } from "@/lib/enquiry/fields";
 import { flag, isProduction, type ServerEnv } from "./env";
+import { errorCode } from "./log";
 
 // Tells mirek@ and matous@ about a new enquiry. Channels, in order of preference:
 //   1. Cloudflare Email Service — the `EMAIL` send_email binding (commented out in wrangler.jsonc)
 //   2. Resend HTTP API — RESEND_API_KEY
-//   3. Log only
-// Nothing is ever sent outside production (SITE_ENV=development or preview log instead), when NOTIFY_DISABLED=1,
+//   3. None: the enquiry is only in D1 (admin /admin/poptavky)
+// Nothing is ever sent outside production (SITE_ENV=development or preview), when NOTIFY_DISABLED=1,
 // or without a sender address (ENQUIRY_FROM_EMAIL) and recipients (ENQUIRY_NOTIFY_TO).
+// It is only called once the enquiry is stored. The log gets the enquiry id and a reason or error code,
+// never the visitor's details or the message.
 
 export type NotifyResult = { channel: "cloudflare" | "resend" | "log"; sent: boolean; reason?: string };
 
 const ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 export const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPES[c]);
 
-function rows(enquiry: Enquiry, id: number | null): [string, string][] {
+function rows(enquiry: Enquiry, id: number): [string, string][] {
   const t = enquiry.tracking;
   const campaign = [t.utm_source, t.utm_medium, t.utm_campaign, t.utm_term, t.utm_content].filter(Boolean).join(" / ");
   return [
@@ -25,11 +28,11 @@ function rows(enquiry: Enquiry, id: number | null): [string, string][] {
     ["Poznámka / termín", enquiry.note ?? "–"],
     ["Kampaň (utm)", campaign || "–"],
     ["gclid", t.gclid ? "ano" : "ne"],
-    ["Číslo poptávky", id ? `#${id}` : "neuloženo (DB není nakonfigurovaná)"],
+    ["Číslo poptávky", `#${id}`],
   ];
 }
 
-export function buildMessage(enquiry: Enquiry, id: number | null) {
+export function buildMessage(enquiry: Enquiry, id: number) {
   const subject = `Poptávka AI školení: ${enquiry.company} (${enquiry.name})`.replace(/[\r\n]+/g, " ").slice(0, 200);
   const list = rows(enquiry, id);
   const text = `Nová poptávka jednodenního AI školení z www.sivak.ai/ai-skoleni\n\n${list
@@ -48,7 +51,7 @@ export function buildMessage(enquiry: Enquiry, id: number | null) {
   return { subject, text, html };
 }
 
-export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number | null): Promise<NotifyResult> {
+export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number): Promise<NotifyResult> {
   const recipients = (env.ENQUIRY_NOTIFY_TO ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const from = env.ENQUIRY_FROM_EMAIL?.trim();
   const channel = env.EMAIL ? "cloudflare" : env.RESEND_API_KEY ? "resend" : "log";
@@ -63,13 +66,12 @@ export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number
           ? "ENQUIRY_FROM_EMAIL or ENQUIRY_NOTIFY_TO is empty"
           : null;
 
-  const message = buildMessage(enquiry, id);
   if (skip) {
-    // Mock delivery: the summary goes to the Worker log. Without a database this is the only copy, so it's complete.
-    console.log(`[enquiry] e-mail not sent (${skip})`, id ? { id, subject: message.subject } : message.text);
+    console.log("[enquiry] e-mail not sent", { id, reason: skip });
     return { channel: "log", sent: false, reason: skip };
   }
 
+  const message = buildMessage(enquiry, id);
   try {
     if (channel === "cloudflare") {
       await env.EMAIL!.send({ from: from!, to: recipients, replyTo: enquiry.email, subject: message.subject, text: message.text, html: message.html });
@@ -79,11 +81,13 @@ export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number
         headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
         body: JSON.stringify({ from, to: recipients, reply_to: enquiry.email, subject: message.subject, text: message.text, html: message.html }),
       });
-      if (!res.ok) throw new Error(`Resend responded ${res.status}: ${(await res.text()).slice(0, 300)}`);
+      // Only the status: the response body may quote the addresses or the subject
+      if (!res.ok) throw new Error(`Resend responded HTTP_${res.status}`);
     }
     return { channel, sent: true };
   } catch (error) {
-    console.error(`[enquiry] e-mail via ${channel} failed`, id ? { id } : message.text, error);
-    return { channel, sent: false, reason: String(error) };
+    const code = errorCode(error);
+    console.error("[enquiry] e-mail failed", { id, channel, error: code });
+    return { channel, sent: false, reason: code };
   }
 }

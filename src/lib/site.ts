@@ -3,10 +3,11 @@ import type { Locale } from "@/i18n/config";
 // Company facts shared by the contact section, the footer and the structured data.
 export const SITE_URL = "https://www.sivak.ai";
 
-// TODO: doplnit LinkedIn URL
+// TODO: doplnit LinkedIn URL. While it is the placeholder, no LinkedIn link is shown anywhere.
 export const MIREK_LINKEDIN_URL = "https://www.linkedin.com/in/TODO";
+export const MIREK_LINKEDIN: string | null = MIREK_LINKEDIN_URL.includes("/in/TODO") ? null : MIREK_LINKEDIN_URL;
 
-// TODO: replace the placeholder page with the final privacy policy (or point this at it)
+// Draft privacy policy, waiting for the legal check (see the comment in the page)
 export const PRIVACY_POLICY_URL = "/ochrana-osobnich-udaju";
 
 // Google Analytics 4, on every page as on the Next.js site
@@ -40,6 +41,9 @@ export const PEOPLE: Person[] = [
 ];
 
 const [FOUNDER, ACCOUNT_MANAGER] = PEOPLE;
+
+// Where the enquiry form sends people when it can't take their enquiry, and the privacy contact
+export const ENQUIRY_CONTACT_EMAIL = ACCOUNT_MANAGER.email;
 
 // Meeting requests go to the key account manager, with the founder in copy.
 export function meetingHref(subject: string): string {

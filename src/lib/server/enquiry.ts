@@ -1,6 +1,8 @@
 import { FIELD, TRACKING_KEYS, validateEnquiry, type FieldErrors } from "@/lib/enquiry/fields";
-import { sha256Hex } from "./crypto";
+import { ENQUIRY_CONTACT_EMAIL } from "@/lib/site";
+import { hmacSha256Hex } from "./crypto";
 import { siteMode, type ServerEnv } from "./env";
+import { errorCode } from "./log";
 import { escapeHtml, notifyEnquiry } from "./notify";
 import { allowAttempt } from "./rate-limit";
 import { insertEnquiry, markNotified } from "./store";
@@ -9,32 +11,63 @@ import { TEST_TOKEN, isTestSecret, verifyTurnstile } from "./turnstile";
 // POST /api/poptavka — the /ai-skoleni form.
 // With JavaScript the form sends `Accept: application/json` and shows the answer in place;
 // without it the browser posts the form and gets a redirect to the thank-you page (or an error page).
+//
+// Order: configuration, body size, rate limit (cheap, before anything is parsed), parsing and validation,
+// Turnstile, the D1 insert. The visitor only hears "accepted" once the row is stored.
+// Production and the public preview ("strict") refuse submissions rather than run without IP_HASH_SALT
+// or a working rate limit; only SITE_ENV=development may skip them (with a logged warning).
+// Logs carry the enquiry id, a reason and error codes, never what the visitor typed, their IP or user agent.
 
 export const THANK_YOU_PATH = "/ai-skoleni/odeslano";
 const FORM_PATH = "/ai-skoleni#poptavka";
-const MAX_BODY = 32 * 1024;
-const FALLBACK_CONTACT = "matous@sivak.ai";
+export const MAX_BODY = 32 * 1024;
+const CONTACT = ENQUIRY_CONTACT_EMAIL;
 
 type Context = { env: ServerEnv; waitUntil: (promise: Promise<unknown>) => void };
 type Failure = { status: number; message: string; errors?: FieldErrors };
 
 const MESSAGES = {
   invalid: "Zkontrolujte prosím zvýrazněná pole.",
-  tooMany: `Odeslali jste příliš mnoho poptávek za krátkou dobu. Zkuste to prosím za pár minut, nebo napište na ${FALLBACK_CONTACT}.`,
+  tooMany: `Odeslali jste příliš mnoho poptávek za krátkou dobu. Zkuste to prosím za pár minut, nebo napište na ${CONTACT}.`,
   robot: "Nepodařilo se ověřit, že nejste robot. Zkuste formulář odeslat znovu.",
-  unavailable: `Formulář je teď nedostupný. Napište nám prosím na ${FALLBACK_CONTACT}.`,
+  unavailable: `Formulář je teď nedostupný. Napište nám prosím na ${CONTACT}.`,
   tooLarge: "Poptávka je příliš dlouhá. Zkraťte prosím poznámku.",
-  failed: `Poptávku se nepodařilo uložit. Zkuste to prosím znovu, nebo napište na ${FALLBACK_CONTACT}.`,
+  failed: `Poptávku se teď nepodařilo uložit. Zkuste to prosím za chvíli znovu, nebo napište na ${CONTACT}.`,
   ok: "Děkujeme, poptávku jsme přijali. Ozveme se vám co nejdříve.",
 };
 
-async function readFields(request: Request): Promise<Record<string, string>> {
-  const type = request.headers.get("content-type") ?? "";
+/** Reads the body, but never more than `max` bytes: null when it is larger, whatever Content-Length says. */
+async function readBody(request: Request, max: number): Promise<Uint8Array<ArrayBuffer> | null> {
+  if (!request.body) return new Uint8Array();
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > max) {
+      await reader.cancel().catch(() => {});
+      return null;
+    }
+    chunks.push(value);
+  }
+  const body = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    body.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return body;
+}
+
+async function parseFields(body: Uint8Array<ArrayBuffer>, type: string): Promise<Record<string, string>> {
   if (type.includes("application/json")) {
-    const data = (await request.json()) as Record<string, unknown>;
+    const data = JSON.parse(new TextDecoder().decode(body)) as Record<string, unknown>;
     return Object.fromEntries(Object.entries(data).map(([k, v]) => [k, typeof v === "string" ? v : String(v ?? "")]));
   }
-  const form = await request.formData();
+  // urlencoded or multipart; the original Content-Type carries the multipart boundary
+  const form = await new Response(body, { headers: { "Content-Type": type } }).formData();
   const fields: Record<string, string> = {};
   form.forEach((value, key) => {
     if (typeof value === "string") fields[key] = value;
@@ -60,12 +93,61 @@ function fillTrackingFromReferer(fields: Record<string, string>, referer: string
 export async function handleEnquiry(request: Request, { env, waitUntil }: Context): Promise<Response> {
   const wantsJson = (request.headers.get("accept") ?? "").includes("application/json");
   const respond = (result: Failure | null) => (wantsJson ? jsonResponse(result) : htmlResponse(result));
+  const mode = siteMode(env);
+  const production = mode === "production";
+  const strict = mode !== "development";
+
+  // Configuration: without it nothing could be stored (or stored safely), so the body isn't even read
+  const db = env.DB;
+  if (!db) {
+    console.error("[enquiry] config error: the D1 binding DB is missing; refusing the submission", { mode });
+    return respond({ status: 503, message: MESSAGES.unavailable });
+  }
+  const salt = env.IP_HASH_SALT?.trim();
+  if (!salt && strict) {
+    console.error("[enquiry] config error: IP_HASH_SALT is not set; refusing the submission", { mode });
+    return respond({ status: 503, message: MESSAGES.unavailable });
+  }
+  const turnstileSecret = env.TURNSTILE_SECRET_KEY?.trim();
+  if (production && !turnstileSecret) {
+    console.error("[enquiry] config error: TURNSTILE_SECRET_KEY is not set in production; refusing the submission");
+    return respond({ status: 503, message: MESSAGES.unavailable });
+  }
+  if (production && isTestSecret(turnstileSecret)) {
+    // Test keys would let any bot through
+    console.error("[enquiry] config error: Turnstile test secret in production; refusing the submission");
+    return respond({ status: 503, message: MESSAGES.unavailable });
+  }
 
   if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY) return respond({ status: 413, message: MESSAGES.tooLarge });
+  let body: Uint8Array<ArrayBuffer> | null;
+  try {
+    body = await readBody(request, MAX_BODY);
+  } catch {
+    return respond({ status: 400, message: MESSAGES.invalid });
+  }
+  if (!body) return respond({ status: 413, message: MESSAGES.tooLarge });
+
+  // Keyed hash of the IP: the rate limit and the ip_hash column. Without the key (development only) neither.
+  const ip = request.headers.get("cf-connecting-ip");
+  const ipHash = salt ? (await hmacSha256Hex(salt, ip ?? "unknown")).slice(0, 32) : null;
+  if (ipHash) {
+    try {
+      if (!(await allowAttempt(db, ipHash))) return respond({ status: 429, message: MESSAGES.tooMany });
+    } catch (error) {
+      if (strict) {
+        console.error("[enquiry] rate limit failed; refusing the submission", { error: errorCode(error) });
+        return respond({ status: 503, message: MESSAGES.failed });
+      }
+      console.warn("[enquiry] rate limit failed; let through in development only", { error: errorCode(error) });
+    }
+  } else {
+    console.warn("[enquiry] config warning: IP_HASH_SALT is not set: no rate limit and no ip_hash (development only)");
+  }
 
   let fields: Record<string, string>;
   try {
-    fields = await readFields(request);
+    fields = await parseFields(body, request.headers.get("content-type") ?? "");
   } catch {
     return respond({ status: 400, message: MESSAGES.invalid });
   }
@@ -76,59 +158,42 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
     return respond(null);
   }
 
-  const ip = request.headers.get("cf-connecting-ip");
-  const mode = siteMode(env);
-  const production = mode === "production";
-  if (!env.IP_HASH_SALT && production) console.warn("[enquiry] IP_HASH_SALT is not set; using the built-in salt");
-  const ipHash = (await sha256Hex(`${env.IP_HASH_SALT ?? "sivak.ai/ai-skoleni"}:${ip ?? "unknown"}`)).slice(0, 32);
-
-  try {
-    if (!(await allowAttempt(env.DB, ipHash))) return respond({ status: 429, message: MESSAGES.tooMany });
-  } catch (error) {
-    // A broken rate-limit table must not cost us the enquiry
-    console.error("[enquiry] rate limit check failed", error);
-  }
-
   fillTrackingFromReferer(fields, request.headers.get("referer"));
   const result = validateEnquiry(fields);
   if (!result.ok) return respond({ status: 400, message: MESSAGES.invalid, errors: result.errors });
 
   const token = fields[FIELD.turnstile] ?? "";
-  if (!env.TURNSTILE_SECRET_KEY) {
-    if (production) {
-      console.error("[enquiry] TURNSTILE_SECRET_KEY is not set in production; refusing the submission");
-      return respond({ status: 503, message: MESSAGES.unavailable });
-    }
+  if (!turnstileSecret) {
     console.warn(`[enquiry] TURNSTILE_SECRET_KEY is not set: Turnstile check skipped (SITE_ENV=${mode}, allowed outside production only)`);
-  } else if (production && (isTestSecret(env.TURNSTILE_SECRET_KEY) || token === TEST_TOKEN)) {
-    // Test keys would let any bot through
-    console.error("[enquiry] Turnstile test keys are not allowed in production; refusing the submission");
+  } else if (production && token === TEST_TOKEN) {
+    // The page was built with the test site key
+    console.error("[enquiry] config error: Turnstile test token in production; refusing the submission");
     return respond({ status: 503, message: MESSAGES.unavailable });
   } else {
-    const check = await verifyTurnstile(env.TURNSTILE_SECRET_KEY, token, ip);
+    const check = await verifyTurnstile(turnstileSecret, token, ip);
     if (!check.ok) return respond({ status: check.reason === "unavailable" ? 503 : 400, message: MESSAGES.robot });
   }
 
   const enquiry = result.value;
   const createdAt = new Date().toISOString();
-  let id: number | null = null;
-  if (env.DB) {
-    try {
-      // Preview shares the database: its rows are marked so they can be told apart (and deleted)
-      const source = mode === "production" ? "ai-skoleni" : `ai-skoleni-${mode}`;
-      id = await insertEnquiry(env.DB, enquiry, { createdAt, userAgent: request.headers.get("user-agent"), ipHash, source });
-    } catch (error) {
-      console.error("[enquiry] storing failed", error);
-      return respond({ status: 500, message: MESSAGES.failed });
-    }
-  } else {
-    (production ? console.error : console.warn)("[enquiry] D1 binding DB is missing: the enquiry is not stored");
+  let id: number;
+  try {
+    // Preview and development have their own databases; the source still says where a row came from
+    const source = production ? "ai-skoleni" : `ai-skoleni-${mode}`;
+    id = await insertEnquiry(db, enquiry, { createdAt, userAgent: request.headers.get("user-agent"), ipHash, source });
+  } catch (error) {
+    console.error("[enquiry] storing failed; the visitor was asked to retry", { error: errorCode(error) });
+    return respond({ status: 503, message: MESSAGES.failed });
   }
+  console.log("[enquiry] stored", { id });
 
+  // The row is stored: from here on it's a success, even if the e-mail fails
   waitUntil(
-    notifyEnquiry(env, enquiry, id).then(async (sent) => {
-      if (sent.sent && id && env.DB) await markNotified(env.DB, id, new Date().toISOString());
-    }),
+    notifyEnquiry(env, enquiry, id)
+      .then(async (sent) => {
+        if (sent.sent) await markNotified(db, id, new Date().toISOString());
+      })
+      .catch((error) => console.error("[enquiry] notification bookkeeping failed", { id, error: errorCode(error) })),
   );
 
   return respond(null);
@@ -151,7 +216,7 @@ function htmlResponse(failure: Failure | null): Response {
 <p>${escapeHtml(failure.message)}</p>
 ${errors.length ? `<ul>${errors.map((e) => `<li>${escapeHtml(e)}</li>`).join("")}</ul>` : ""}
 <p>Vraťte se tlačítkem Zpět v prohlížeči – vyplněné údaje by tam měly zůstat – nebo <a href="${FORM_PATH}">otevřete formulář znovu</a>.</p>
-<p>Případně nám napište na <a href="mailto:${FALLBACK_CONTACT}">${FALLBACK_CONTACT}</a>.</p>
+<p>Případně nám napište na <a href="mailto:${CONTACT}">${CONTACT}</a>.</p>
 </main></body></html>`;
   return new Response(html, {
     status: failure.status,

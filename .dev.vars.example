@@ -5,6 +5,7 @@
 # "development" (local) or "preview" (the noindexed workers.dev copy, see wrangler.jsonc env.preview):
 # Turnstile may be skipped when its secret is missing or use the test keys, and e-mail is never sent (logged instead).
 # "production" (the default in wrangler.jsonc) requires real Turnstile keys.
+# Outside development a failing rate limit refuses the submission (503); development lets it through.
 SITE_ENV=development
 
 # Admin at /admin/poptavky (HTTP Basic auth). Without both, the admin returns 404.
@@ -15,8 +16,13 @@ ADMIN_PASSWORD=
 # Cloudflare's test secret that always passes: 1x0000000000000000000000000000000AA
 TURNSTILE_SECRET_KEY=
 
-# Salt for hashing visitor IP addresses (rate limit, ip_hash column). Any long random string.
+# HMAC key for the visitor IP hash (rate limit, ip_hash column), e.g. `openssl rand -hex 32`.
+# Required in production and preview: without it the form answers 503 and stores nothing.
+# With SITE_ENV=development it may be empty: then there is no rate limit and ip_hash is NULL (logged warning).
 IP_HASH_SALT=
+
+# The D1 binding DB is required in every mode: without it the form answers 503 (never a fake success).
+# Create the local tables with `npm run db:migrate:local`.
 
 # E-mail notification. Never sent while SITE_ENV=development.
 RESEND_API_KEY=

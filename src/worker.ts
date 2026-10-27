@@ -1,5 +1,8 @@
 import { handle } from "@astrojs/cloudflare/handler";
 import { routeLanguage } from "@/lib/lang-routing";
+import { errorCode } from "@/lib/server/log";
+import { pruneAttempts } from "@/lib/server/rate-limit";
+import { pruneEnquiries } from "@/lib/server/store";
 
 // The Worker entry: the language redirects first, then Astro, which serves the prerendered
 // pages from the asset store and renders the on-demand routes (/api/*, /admin/*).
@@ -20,6 +23,19 @@ export default {
     // "/" depends on the browser language and the cookie, so caches must keep the variants apart
     if (pathname === "/") response.headers.append("Vary", "Accept-Language, Cookie");
     return preview ? noindex(response) : response;
+  },
+
+  // Hourly cron (wrangler.jsonc → triggers): deletes what the privacy policy says we no longer keep,
+  // rate-limit attempts older than a day and enquiries older than 24 months
+  async scheduled(_controller, env) {
+    if (!env.DB) return;
+    try {
+      const attempts = await pruneAttempts(env.DB);
+      const enquiries = await pruneEnquiries(env.DB);
+      console.log("[retention] pruned", { attempts, enquiries });
+    } catch (error) {
+      console.error("[retention] pruning failed", { error: errorCode(error) });
+    }
   },
 } satisfies ExportedHandler<Env>;
 

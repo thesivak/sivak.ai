@@ -34,8 +34,9 @@
     }
   ],
 
-  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, RESEND_API_KEY, ADMIN_PASSWORD, …) are set
-  // with `wrangler secret put` in production and in .dev.vars locally — see .dev.vars.example.
+  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, IP_HASH_SALT, ADMIN_USER, ADMIN_PASSWORD,
+  // RESEND_API_KEY) are set with `wrangler secret put` in production and in .dev.vars locally — see
+  // .dev.vars.example. No Turnstile test key belongs here: production refuses them.
   "vars": {
     // "production" makes the form refuse to skip Turnstile; .dev.vars sets "development"
     "SITE_ENV": "production",
@@ -58,6 +59,10 @@
 
   "observability": { "enabled": true },
 
+  // Hourly retention cleanup (src/worker.ts → scheduled): rate-limit attempts after a day,
+  // enquiries after 24 months, as the privacy policy says
+  "triggers": { "crons": ["0 * * * *"] },
+
   "env": {
     // Noindexed copy for review on workers.dev: `npm run deploy:preview` builds with
     // CLOUDFLARE_ENV=preview and deploys the Worker "ai-skoleni-nahled". Bindings and vars are not
@@ -74,14 +79,19 @@
         // and answers robots.txt with "Disallow: /". Fine for a preview, too slow for production.
         "run_worker_first": true
       },
+      // Its own database (WEUR), so test enquiries never reach production's. Migrations:
+      // `npm run db:migrate:preview` (see README → Database changes)
       "d1_databases": [
         {
           "binding": "DB",
-          "database_name": "sivak-ai",
-          "database_id": "73a4d2d1-d42a-4b19-a853-463ee16dc1dd",
+          "database_name": "ai-skoleni-nahled",
+          "database_id": "ea98bf57-da85-4cd6-8a0a-cea4175f9713",
           "migrations_dir": "migrations"
         }
       ],
+      "triggers": { "crons": ["0 * * * *"] },
+      // Secrets of this Worker (`wrangler secret put NAME --env preview`): IP_HASH_SALT (required,
+      // the form refuses submissions without it), ADMIN_USER and ADMIN_PASSWORD (for the admin)
       "vars": {
         // Turnstile test keys allowed, no e-mail, enquiries stored with source "ai-skoleni-preview"
         "SITE_ENV": "preview",
