@@ -71,6 +71,8 @@ const jsonLd = [
   ogImage={{ path: "/og/ai-skoleni.png", alt: t.metadata.ogTitle }}
   jsonLd={jsonLd}
 >
+  {/* The form's Turnstile loads late (on interaction); the connection is ready by then */}
+  <link slot="head" rel="preconnect" href="https://challenges.cloudflare.com" />
   <a class="skip-link" href="#main">{home.skipLink}</a>
   <SiteHeader nav={home.nav} langSwitch={home.langSwitch} homeHref="/" ctaHref={`/#${home.contact.id}`} switchHref="/en" switchLang="en" sectionBase="/" />
   <LandingSubnav items={t.nav.items} cta={t.nav.cta} ctaHref={formHref} />

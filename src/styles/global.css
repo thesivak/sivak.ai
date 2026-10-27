@@ -1298,7 +1298,8 @@ code { font: inherit; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @keyframes fade-in { from { opacity: 0; } }
-@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
+/* Slide only, no fade: the hero text is painted at once, so it is the page's LCP element */
+@keyframes rise { from { transform: translateY(16px); } }
 /* Slide only, no fade: text that is half scrolled into view keeps its full contrast (WCAG 1.4.3) */
 @keyframes reveal { from { transform: translateY(32px); } }
 @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }

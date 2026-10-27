@@ -1,19 +1,22 @@
 // Progressive enhancement of the /ai-skoleni enquiry form.
 // Without JavaScript the browser validates the inputs and posts the form; the server redirects to a thank-you page.
 // With it: the same validation as the server, messages next to the fields, submission without leaving the page,
-// and the Google Ads conversion after a successful submit.
+// and the Google Ads conversion after a successful submit. Turnstile loads only once the visitor gets to the
+// form (turnstile.ts); the submit waits for its token.
 import { TRACKING_STORAGE_KEY as STORAGE_KEY, readConsent } from "@/lib/consent";
 import { TRACKING_KEYS, validateEnquiry, type FieldErrors, type FieldName } from "@/lib/enquiry/fields";
+import { lazyTurnstile } from "./turnstile";
 
 declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
-    turnstile?: { reset: (widget?: string | HTMLElement) => void };
   }
 }
 
 const FIELDS: FieldName[] = ["name", "company", "email", "phone", "participants", "note", "consent"];
+// How long a submit waits for Turnstile, e.g. while the visitor answers an interactive check
+const TOKEN_WAIT_MS = 60_000;
 
 // Campaign parameters from the URL the visitor landed on. Kept for the session (in case they browse
 // first) only with marketing consent: that storage isn't strictly necessary. Without it the values still
@@ -52,6 +55,7 @@ function values(form: HTMLFormElement): Record<string, string> {
 }
 
 export function enhanceEnquiryForm(form: HTMLFormElement) {
+  const turnstile = lazyTurnstile(form);
   const status = form.querySelector<HTMLElement>("[data-status]")!;
   const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
   const success = form.parentElement!.querySelector<HTMLElement>("[data-success]")!;
@@ -113,8 +117,17 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
 
     button.disabled = true;
     form.setAttribute("aria-busy", "true");
-    status.textContent = "Odesíláme poptávku…";
     try {
+      if (turnstile) {
+        status.textContent = "Ověřujeme, že nejste robot…";
+        try {
+          await turnstile.token(TOKEN_WAIT_MS);
+        } catch {
+          status.textContent = "Nepodařilo se ověřit, že nejste robot. Zkuste formulář odeslat znovu.";
+          return;
+        }
+      }
+      status.textContent = "Odesíláme poptávku…";
       const res = await fetch(form.action, {
         method: "POST",
         body: new FormData(form),
@@ -125,7 +138,7 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
         showErrors(answer.errors ?? {});
         status.textContent = answer.message ?? "Poptávku se nepodařilo odeslat. Zkuste to prosím znovu.";
         focusFirstError(answer.errors ?? {});
-        window.turnstile?.reset();
+        turnstile?.reset();
         return;
       }
 
@@ -140,7 +153,7 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
       success.focus();
     } catch {
       status.textContent = "Spojení se nezdařilo. Zkontrolujte připojení k internetu a zkuste to znovu.";
-      window.turnstile?.reset();
+      turnstile?.reset();
     } finally {
       button.disabled = false;
       form.removeAttribute("aria-busy");

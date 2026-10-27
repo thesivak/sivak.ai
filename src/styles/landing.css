@@ -380,7 +380,8 @@
 .lp-consent label { font-weight: 400; line-height: 1.5; }
 .lp-consent a { text-underline-offset: 3px; }
 .lp-consent .lp-error { grid-column: 2; }
-.cf-turnstile { margin-top: 20px; }
+/* The rendered widget (size "flexible") is about 73px high: reserved before it loads */
+.lp-turnstile { min-height: 73px; margin-top: 20px; }
 .lp-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 24px; }
 .lp-submit .btn-light { background: var(--navy-900); color: var(--ivory); box-shadow: 0 10px 30px -14px rgba(11, 18, 32, .6); }
 .lp-submit .btn-light:hover { background: var(--navy-700); }

@@ -15,7 +15,8 @@ export default defineConfig({
   output: "static",
   // "/en" and "/ai-skoleni", never "/en/": pages are written as en.html, ai-skoleni.html…
   trailingSlash: "never",
-  build: { format: "file", inlineStylesheets: "never" },
+  // CSS inline in every page: no render-blocking stylesheet request (about 10 kB gzipped per page)
+  build: { format: "file", inlineStylesheets: "always" },
   adapter: cloudflare({ imageService: "passthrough" }),
   // No Astro sessions: they would provision a KV namespace the site does not need
   session: false,
