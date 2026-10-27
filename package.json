@@ -15,7 +15,8 @@
     "preview": "astro build && wrangler dev --local --port 8787",
     "db:migrate:local": "astro build && wrangler d1 migrations apply sivak-ai --local",
     "db:migrate:remote": "wrangler d1 migrations apply sivak-ai --remote -c wrangler.jsonc",
-    "deploy": "astro build && wrangler deploy"
+    "deploy": "astro build && wrangler deploy",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.2",
@@ -26,6 +27,7 @@
     "@astrojs/check": "^0.9.12",
     "@cloudflare/workers-types": "^5.20261027.1",
     "@eslint/js": "^10.0.1",
+    "esbuild": "^0.28.2",
     "eslint": "^10.13.0",
     "eslint-plugin-astro": "^3.2.1",
     "typescript": "^6.0.3",

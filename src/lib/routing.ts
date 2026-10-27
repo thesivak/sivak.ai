@@ -1,5 +1,6 @@
 import { defaultLocale, isLocale } from "@/i18n/config";
 import { pageIn } from "@/i18n/pages";
+import { safePath } from "@/lib/safe-path";
 
 // Canonical URLs, answered by the Worker before the static assets (wrangler.jsonc → run_worker_first).
 // The asset server would redirect these variants with 307 (html_handling "auto-trailing-slash"), which
@@ -14,24 +15,26 @@ export const LANG_COOKIE = "lang";
 const YEAR = 60 * 60 * 24 * 365;
 
 function redirect(url: URL, headers: HeadersInit = {}): Response {
-  // A relative Location, as the Next.js site sent
-  return new Response(null, { status: 308, headers: { Location: url.pathname + url.search, ...headers } });
+  // A relative Location, as the Next.js site sent; never "//host" or "/\host" (open redirect)
+  return new Response(null, { status: 308, headers: { Location: safePath(url.pathname) + url.search, ...headers } });
 }
 
 /** Returns the redirect to the canonical URL, or null when the request already is canonical. */
 export function canonicalRedirect(request: Request): Response | null {
   const url = new URL(request.url);
   const original = url.pathname + url.search;
-  let { pathname } = url;
+  // "//host/" and "/\host/" would become a protocol-relative Location: one leading "/" only
+  let pathname = safePath(url.pathname);
 
   // Czech used to have a /cs prefix internally: /cs/… → /…
   if (pathname === `/${defaultLocale}` || pathname.startsWith(`/${defaultLocale}/`)) {
-    pathname = pathname.slice(defaultLocale.length + 1) || "/";
+    pathname = safePath(pathname.slice(defaultLocale.length + 1));
   }
-  // /x.html → /x, /x/index.html → /x, /index.html → /
-  if (pathname.endsWith(".html")) pathname = pathname.slice(0, -".html".length).replace(/\/index$/, "/");
   // /x/ → /x: the URLs never end with a slash (Next.js answered 308 here too)
-  if (pathname.length > 1) pathname = pathname.replace(/\/+$/, "") || "/";
+  const stripSlash = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") || "/" : path);
+  pathname = stripSlash(pathname);
+  // /x.html → /x, /x/index.html → /x, /index.html → /, /en/index.html/ → /en (one hop)
+  if (pathname.endsWith(".html")) pathname = stripSlash(pathname.slice(0, -".html".length).replace(/\/index$/, "/"));
 
   const headers: Record<string, string> = {};
   const chosen = url.searchParams.get("lang");
