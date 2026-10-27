@@ -5,7 +5,7 @@ import { flag, isProduction, type ServerEnv } from "./env";
 //   1. Cloudflare Email Service — the `EMAIL` send_email binding (commented out in wrangler.jsonc)
 //   2. Resend HTTP API — RESEND_API_KEY
 //   3. Log only
-// Nothing is ever sent outside production (SITE_ENV=development logs instead), when NOTIFY_DISABLED=1,
+// Nothing is ever sent outside production (SITE_ENV=development or preview log instead), when NOTIFY_DISABLED=1,
 // or without a sender address (ENQUIRY_FROM_EMAIL) and recipients (ENQUIRY_NOTIFY_TO).
 
 export type NotifyResult = { channel: "cloudflare" | "resend" | "log"; sent: boolean; reason?: string };

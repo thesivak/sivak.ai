@@ -32,7 +32,7 @@ export const COLUMNS: (keyof StoredEnquiry)[] = [
   "user_agent", "ip_hash", "notified_at",
 ];
 
-export type Meta = { createdAt: string; userAgent: string | null; ipHash: string };
+export type Meta = { createdAt: string; userAgent: string | null; ipHash: string; source: string };
 
 export async function insertEnquiry(db: D1Database, enquiry: Enquiry, meta: Meta): Promise<number> {
   const t = enquiry.tracking;
@@ -41,11 +41,11 @@ export async function insertEnquiry(db: D1Database, enquiry: Enquiry, meta: Meta
       `INSERT INTO enquiries (created_at, source, name, company, email, phone, participants, note,
          consent, consent_at, consent_text_version, utm_source, utm_medium, utm_campaign, utm_term, utm_content,
          gclid, landing_url, user_agent, ip_hash)
-       VALUES (?, 'ai-skoleni', ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
        RETURNING id`,
     )
     .bind(
-      meta.createdAt, enquiry.name, enquiry.company, enquiry.email, enquiry.phone, enquiry.participants, enquiry.note,
+      meta.createdAt, meta.source, enquiry.name, enquiry.company, enquiry.email, enquiry.phone, enquiry.participants, enquiry.note,
       meta.createdAt, CONSENT_VERSION,
       t.utm_source ?? null, t.utm_medium ?? null, t.utm_campaign ?? null, t.utm_term ?? null, t.utm_content ?? null,
       t.gclid ?? null, enquiry.landingUrl, meta.userAgent?.slice(0, 500) ?? null, meta.ipHash,

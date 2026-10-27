@@ -81,7 +81,7 @@ const campaign = (e: StoredEnquiry) => [e.utm_source, e.utm_medium, e.utm_campai
             <tbody>
               {enquiries.map((e) => (
                 <tr>
-                  <td>{e.id}</td>
+                  <td>{e.id}{e.source !== "ai-skoleni" && <><br /><small>{e.source}</small></>}</td>
                   <td class="nowrap">{formatDate(e.created_at)}</td>
                   <td>{e.name}</td>
                   <td>{e.company}</td>

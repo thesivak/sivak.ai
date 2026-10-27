@@ -1,10 +1,10 @@
 import { FIELD, TRACKING_KEYS, validateEnquiry, type FieldErrors } from "@/lib/enquiry/fields";
 import { sha256Hex } from "./crypto";
-import { isProduction, type ServerEnv } from "./env";
+import { siteMode, type ServerEnv } from "./env";
 import { escapeHtml, notifyEnquiry } from "./notify";
 import { allowAttempt } from "./rate-limit";
 import { insertEnquiry, markNotified } from "./store";
-import { verifyTurnstile } from "./turnstile";
+import { TEST_TOKEN, isTestSecret, verifyTurnstile } from "./turnstile";
 
 // POST /api/poptavka — the /ai-skoleni form.
 // With JavaScript the form sends `Accept: application/json` and shows the answer in place;
@@ -77,7 +77,8 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
   }
 
   const ip = request.headers.get("cf-connecting-ip");
-  const production = isProduction(env);
+  const mode = siteMode(env);
+  const production = mode === "production";
   if (!env.IP_HASH_SALT && production) console.warn("[enquiry] IP_HASH_SALT is not set; using the built-in salt");
   const ipHash = (await sha256Hex(`${env.IP_HASH_SALT ?? "sivak.ai/ai-skoleni"}:${ip ?? "unknown"}`)).slice(0, 32);
 
@@ -92,14 +93,19 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
   const result = validateEnquiry(fields);
   if (!result.ok) return respond({ status: 400, message: MESSAGES.invalid, errors: result.errors });
 
+  const token = fields[FIELD.turnstile] ?? "";
   if (!env.TURNSTILE_SECRET_KEY) {
     if (production) {
       console.error("[enquiry] TURNSTILE_SECRET_KEY is not set in production; refusing the submission");
       return respond({ status: 503, message: MESSAGES.unavailable });
     }
-    console.warn("[enquiry] TURNSTILE_SECRET_KEY is not set: Turnstile check skipped (allowed outside production only)");
+    console.warn(`[enquiry] TURNSTILE_SECRET_KEY is not set: Turnstile check skipped (SITE_ENV=${mode}, allowed outside production only)`);
+  } else if (production && (isTestSecret(env.TURNSTILE_SECRET_KEY) || token === TEST_TOKEN)) {
+    // Test keys would let any bot through
+    console.error("[enquiry] Turnstile test keys are not allowed in production; refusing the submission");
+    return respond({ status: 503, message: MESSAGES.unavailable });
   } else {
-    const check = await verifyTurnstile(env.TURNSTILE_SECRET_KEY, fields[FIELD.turnstile] ?? "", ip);
+    const check = await verifyTurnstile(env.TURNSTILE_SECRET_KEY, token, ip);
     if (!check.ok) return respond({ status: check.reason === "unavailable" ? 503 : 400, message: MESSAGES.robot });
   }
 
@@ -108,7 +114,9 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
   let id: number | null = null;
   if (env.DB) {
     try {
-      id = await insertEnquiry(env.DB, enquiry, { createdAt, userAgent: request.headers.get("user-agent"), ipHash });
+      // Preview shares the database: its rows are marked so they can be told apart (and deleted)
+      const source = mode === "production" ? "ai-skoleni" : `ai-skoleni-${mode}`;
+      id = await insertEnquiry(env.DB, enquiry, { createdAt, userAgent: request.headers.get("user-agent"), ipHash, source });
     } catch (error) {
       console.error("[enquiry] storing failed", error);
       return respond({ status: 500, message: MESSAGES.failed });
