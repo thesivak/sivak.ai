@@ -60,10 +60,10 @@
 
   "env": {
     // Noindexed copy for review on workers.dev: `npm run deploy:preview` builds with
-    // CLOUDFLARE_ENV=preview and deploys the Worker "sivak-ai-preview". Bindings and vars are not
+    // CLOUDFLARE_ENV=preview and deploys the Worker "ai-skoleni-nahled". Bindings and vars are not
     // inherited from the top level, so they are repeated here.
     "preview": {
-      "name": "sivak-ai-preview",
+      "name": "ai-skoleni-nahled",
       "workers_dev": true,
       "routes": [],
       "assets": {

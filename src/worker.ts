@@ -23,7 +23,7 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
-// Preview (sivak-ai-preview on workers.dev): never indexed, whatever the page says
+// Preview (ai-skoleni-nahled on workers.dev): never indexed, whatever the page says
 function noindex(response: Response): Response {
   response.headers.set("X-Robots-Tag", "noindex, nofollow");
   if (!response.headers.get("content-type")?.includes("text/html")) return response;

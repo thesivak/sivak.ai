@@ -231,9 +231,9 @@ Commands need a logged-in `wrangler` on the sivak.ai account.
 Rollback before step 9: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
 `CNAME www cname.vercel-dns.com` (DNS-only).
 
-### Preview deployment (`sivak-ai-preview`)
+### Preview deployment (`ai-skoleni-nahled`)
 
-`wrangler.jsonc` → `env.preview` defines a second Worker, `sivak-ai-preview`, on workers.dev only (no
+`wrangler.jsonc` → `env.preview` defines a second Worker, `ai-skoleni-nahled`, on workers.dev only (no
 routes). `npm run deploy:preview` builds with `CLOUDFLARE_ENV=preview` (and the Turnstile test site
 key unless `PUBLIC_TURNSTILE_SITE_KEY` is set) and deploys it. In preview:
 
