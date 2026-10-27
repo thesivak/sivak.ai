@@ -43,7 +43,8 @@ const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
   jsonLd={[organizationJsonLd(lang)]}
 >
   <a class="skip-link" href="#main">{t.skipLink}</a>
-  <SiteHeader nav={t.nav} langSwitch={t.langSwitch} homeHref={homeHref} ctaHref={contactHref} switchHref={switchHref} switchLang={other} />
+  {/* Absolute section links ("/#sluzby", "/en#services"): the same header works on every page */}
+  <SiteHeader nav={t.nav} langSwitch={t.langSwitch} homeHref={homeHref} ctaHref={`${homeHref}${contactHref}`} switchHref={switchHref} switchLang={other} sectionBase={homeHref} />
   <main id="main">
     <Hero t={t} ctaHref={contactHref} processHref={`#${t.process.id}`} />
     <Ratio t={t.ratio} />
@@ -56,5 +57,5 @@ const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
     <Faq t={t.faq} items={faq} index="08" />
     <Contact t={t.contact} />
   </main>
-  <SiteFooter lang={lang} t={t} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
+  <SiteFooter lang={lang} t={t} sectionBase={homeHref} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
 </Base>

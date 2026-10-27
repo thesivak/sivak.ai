@@ -39,9 +39,14 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: var(--header-h);
   background: var(--navy-900);
 }
+/* Under the sticky header (68px, 64px on tablets and phones): section links ("/#sluzby"), also on
+   arrival with a hash, land with the heading in view, and keyboard focus is never scrolled under it.
+   Pages with more sticky chrome raise --sticky-h (the /ai-skoleni section bar). */
+:root { --sticky-h: var(--header-h); }
+section[id], [id]:target { scroll-margin-top: var(--sticky-h); }
+:focus { scroll-margin-top: calc(var(--sticky-h) + 16px); }
 body {
   margin: 0;
   font-family: var(--sans);

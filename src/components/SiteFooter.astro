@@ -7,17 +7,19 @@ import { COMPANY, PEOPLE } from "@/lib/site";
 interface Props {
   lang: Locale;
   t: {
-    nav: { home: string; items: { id: string; label: string; href?: string }[] };
+    nav: { home: string; items: { id: string; label: string; href?: string; hreflang?: string }[] };
     langSwitch: { label: string };
     footer: { tagline: string; navLabel: string; contactLabel: string; operatedBy: string; idLabel: string; registry: string };
   };
   homeHref: string;
   switchHref: string;
   switchLang: string;
+  /** Prefix of the section links (see SiteHeader); empty = links to sections of this page */
+  sectionBase?: string;
   /** Replaces the e-mail addresses in the contact column (the landing page, where the form is the only contact) */
   contact?: { href: string; label: string };
 }
-const { lang, t, homeHref, switchHref, switchLang, contact } = Astro.props;
+const { lang, t, homeHref, switchHref, switchLang, contact, sectionBase = "" } = Astro.props;
 const f = t.footer;
 ---
 <footer class="site-footer">
@@ -30,7 +32,7 @@ const f = t.footer;
       <nav class="footer-col" aria-label={f.navLabel}>
         <h2>{f.navLabel}</h2>
         <ul>
-          {t.nav.items.map((item) => <li><a href={item.href ?? `#${item.id}`}>{item.label}</a></li>)}
+          {t.nav.items.map((item) => <li><a href={item.href ?? `${sectionBase}#${item.id}`} hreflang={item.hreflang}>{item.label}</a></li>)}
         </ul>
       </nav>
       <div class="footer-col">

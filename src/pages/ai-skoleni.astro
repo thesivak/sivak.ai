@@ -12,6 +12,7 @@ import Reference from "@/components/landing/Reference.astro";
 import Price from "@/components/landing/Price.astro";
 import Faq from "@/components/sections/Faq.astro";
 import EnquiryForm from "@/components/landing/EnquiryForm.astro";
+import LandingSubnav from "@/components/landing/LandingSubnav.astro";
 import { getFaq, getHome, getLanding } from "@/lib/content";
 import { COMPANY, MIREK_LINKEDIN, PEOPLE, SITE_URL } from "@/lib/site";
 
@@ -21,6 +22,8 @@ const home = await getHome("cs");
 const faq = await getFaq("ai-skoleni");
 const url = `${SITE_URL}/ai-skoleni`;
 const formHref = `#${t.form.id}`;
+// The top navbar is the homepage's (same items, CTA and language switch); the page's own sections are in
+// LandingSubnav under it, and in the footer
 const nav = { ...home.nav, items: t.nav.items, cta: t.nav.cta };
 const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
 
@@ -67,7 +70,8 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <a class="skip-link" href="#main">{home.skipLink}</a>
-  <SiteHeader nav={nav} langSwitch={home.langSwitch} homeHref="/" ctaHref={formHref} switchHref="/en?lang=en" switchLang="en" />
+  <SiteHeader nav={home.nav} langSwitch={home.langSwitch} homeHref="/" ctaHref={`/#${home.contact.id}`} switchHref="/en?lang=en" switchLang="en" sectionBase="/" />
+  <LandingSubnav items={t.nav.items} cta={t.nav.cta} ctaHref={formHref} />
   <main id="main">
     <LandingHero t={t} formHref={formHref} programHref={`#${t.program.id}`} />
     <Audience t={t.audience} />
