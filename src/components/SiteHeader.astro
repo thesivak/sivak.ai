@@ -1,0 +1,57 @@
+---
+import BrandLogo from "./BrandLogo.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  nav: { label: string; home: string; items: { id: string; label: string }[]; cta: string; open: string; close: string };
+  langSwitch: { label: string; title: string };
+  homeHref: string;
+  ctaHref: string;
+  switchHref: string;
+  switchLang: string;
+}
+const { nav, langSwitch, homeHref, ctaHref, switchHref, switchLang } = Astro.props;
+---
+<header class="site-header" data-site-header>
+  <div class="container header-inner">
+    <a class="header-logo" href={homeHref} aria-label={nav.home}><BrandLogo /></a>
+    <nav class="header-nav" id="site-nav" aria-label={nav.label}>
+      <ul class="header-links">
+        {nav.items.map((item) => <li><a href={`#${item.id}`} data-close-menu>{item.label}</a></li>)}
+      </ul>
+      <div class="header-actions">
+        <a class="lang-link" href={switchHref} hreflang={switchLang} lang={switchLang} title={langSwitch.title}>{langSwitch.label}</a>
+        <a class="btn btn-light btn-sm" href={ctaHref} data-close-menu>{nav.cta}</a>
+      </div>
+    </nav>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label={nav.open} data-label-open={nav.open} data-label-close={nav.close}>
+      <Icon name="menu" />
+    </button>
+  </div>
+</header>
+
+<script>
+  import { PATHS } from "./icons";
+
+  // The mobile menu closes on Escape, on a link click and when the window grows back to the desktop layout
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
+  const toggle = header?.querySelector<HTMLButtonElement>(".menu-toggle");
+  if (header && toggle) {
+    const desktop = window.matchMedia("(min-width: 1081px)");
+    const setOpen = (open: boolean) => {
+      header.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? "");
+      toggle.querySelector("path")?.setAttribute("d", open ? PATHS.close : PATHS.menu);
+    };
+    const isOpen = () => header.classList.contains("is-open");
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
+    header.querySelectorAll("[data-close-menu]").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isOpen()) setOpen(false);
+    });
+    desktop.addEventListener("change", () => {
+      if (desktop.matches) setOpen(false);
+    });
+  }
+</script>

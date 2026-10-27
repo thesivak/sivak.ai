@@ -1,0 +1,81 @@
+---
+import "@/styles/fonts.css";
+import "@/styles/global.css";
+import type { Locale } from "@/i18n/config";
+import { GA_MEASUREMENT_ID, SITE_URL } from "@/lib/site";
+
+interface Props {
+  lang: Locale;
+  title: string;
+  description: string;
+  /** Absolute canonical URL; also used as og:url */
+  canonical?: string;
+  alternates?: { hreflang: string; href: string }[];
+  ogImage: { path: string; alt: string };
+  ogTitle?: string;
+  ogDescription?: string;
+  /** e.g. "noindex" for pages that should stay out of search */
+  robots?: string;
+  jsonLd?: object[];
+}
+
+const { lang, title, description, canonical, alternates = [], ogImage, robots, jsonLd = [] } = Astro.props;
+const ogTitle = Astro.props.ogTitle ?? title;
+const ogDescription = Astro.props.ogDescription ?? description;
+const image = new URL(ogImage.path, SITE_URL).href;
+
+// Google's snippet; `gtag` stays global so pages can send events (see the /ai-skoleni form)
+const GTAG_SNIPPET = `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${GA_MEASUREMENT_ID}');
+    `;
+
+// The latin and latin-ext files every page needs, preloaded as next/font did
+const PRELOAD_FONTS = [
+  "ibm-plex-mono-400-latin-ext",
+  "ibm-plex-mono-500-latin-ext",
+  "jost-latin",
+  "ibm-plex-mono-400-latin",
+  "jost-latin-ext",
+  "ibm-plex-mono-500-latin",
+];
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    {PRELOAD_FONTS.map((font) => <link rel="preload" href={`/fonts/${font}.woff2`} as="font" crossorigin="" type="font/woff2" />)}
+    <meta name="theme-color" content="#0B1220" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {robots && <meta name="robots" content={robots} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />)}
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:site_name" content="sivak.ai" />
+    <meta property="og:locale" content={lang === "cs" ? "cs_CZ" : "en_US"} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImage.alt} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={image} />
+    <link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml" />
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll("<", "\\u003c")} />)}
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+    <script is:inline set:html={GTAG_SNIPPET} />
+    <slot name="end" />
+  </body>
+</html>

@@ -1,0 +1,8 @@
+---
+// Section label: a numbered index followed by the section name, set in mono.
+interface Props {
+  index: string;
+}
+const { index } = Astro.props;
+---
+<p class="eyebrow"><span class="eyebrow-index">{index}</span><slot /></p>

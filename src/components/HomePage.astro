@@ -1,0 +1,60 @@
+---
+import Base from "@/layouts/Base.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import Hero from "./sections/Hero.astro";
+import Ratio from "./sections/Ratio.astro";
+import Services from "./sections/Services.astro";
+import UseCases from "./sections/UseCases.astro";
+import Process from "./sections/Process.astro";
+import Deployment from "./sections/Deployment.astro";
+import Control from "./sections/Control.astro";
+import CaseStudy from "./sections/CaseStudy.astro";
+import Faq from "./sections/Faq.astro";
+import Contact from "./sections/Contact.astro";
+import { localePath, type Locale } from "@/i18n/config";
+import { getFaq, getHome } from "@/lib/content";
+import { SITE_URL, organizationJsonLd } from "@/lib/site";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = await getHome(lang);
+const faq = await getFaq(lang);
+const other: Locale = lang === "cs" ? "en" : "cs";
+const homeHref = localePath(lang);
+const switchHref = `${localePath(other)}?lang=${other}`;
+const contactHref = `#${t.contact.id}`;
+// The Next.js site wrote the Czech URLs without the trailing slash: https://www.sivak.ai
+const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
+---
+<Base
+  lang={lang}
+  title={t.metadata.title}
+  description={t.metadata.description}
+  canonical={url(lang)}
+  alternates={[
+    { hreflang: "cs", href: url("cs") },
+    { hreflang: "en", href: url("en") },
+    { hreflang: "x-default", href: url("cs") },
+  ]}
+  ogImage={{ path: `/og/${lang}.png`, alt: t.metadata.title }}
+  jsonLd={[organizationJsonLd(lang)]}
+>
+  <a class="skip-link" href="#main">{t.skipLink}</a>
+  <SiteHeader nav={t.nav} langSwitch={t.langSwitch} homeHref={homeHref} ctaHref={contactHref} switchHref={switchHref} switchLang={other} />
+  <main id="main">
+    <Hero t={t} ctaHref={contactHref} processHref={`#${t.process.id}`} />
+    <Ratio t={t.ratio} />
+    <Services t={t.services} />
+    <UseCases t={t.useCases} contactHref={contactHref} />
+    <Process t={t.process} />
+    <Deployment t={t.deployment} />
+    <Control t={t.control} />
+    <CaseStudy t={t.case} />
+    <Faq t={t.faq} items={faq} index="08" />
+    <Contact t={t.contact} />
+  </main>
+  <SiteFooter t={t} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
+</Base>

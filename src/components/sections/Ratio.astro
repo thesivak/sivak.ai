@@ -1,0 +1,35 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home["ratio"];
+}
+const { t } = Astro.props;
+---
+<section class="section light ratio" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container">
+    <div class="ratio-top">
+      {/* the outlined 80 is the routine agents take over, the solid 20 stays with people */}
+      <p class="ratio-figure reveal" aria-hidden="true"><span class="r80">80</span><span class="rc">:</span><span class="r20">20</span></p>
+      <div class="ratio-copy reveal">
+        <Eyebrow index="01">{t.eyebrow}</Eyebrow>
+        <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+        <p class="section-lead">{t.text}</p>
+      </div>
+    </div>
+    <div class="split reveal">
+      <div class="split-bars" aria-hidden="true"><span class="bar-routine">{t.routine.share}</span><span class="bar-people">{t.people.share}</span></div>
+      <div class="split-legend">
+        <div class="legend-routine">
+          <h3 class="legend-label"><b>{t.routine.share}</b>{t.routine.label}</h3>
+          <ul>{t.routine.items.map((item) => <li>{item}</li>)}</ul>
+        </div>
+        <div class="legend-people">
+          <h3 class="legend-label"><b>{t.people.share}</b>{t.people.label}</h3>
+          <ul>{t.people.items.map((item) => <li>{item}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

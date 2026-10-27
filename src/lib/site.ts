@@ -3,6 +3,15 @@ import type { Locale } from "@/i18n/config";
 // Company facts shared by the contact section, the footer and the structured data.
 export const SITE_URL = "https://www.sivak.ai";
 
+// TODO: doplnit LinkedIn URL
+export const MIREK_LINKEDIN_URL = "https://www.linkedin.com/in/TODO";
+
+// TODO: replace the placeholder page with the final privacy policy (or point this at it)
+export const PRIVACY_POLICY_URL = "/ochrana-osobnich-udaju";
+
+// Google Analytics 4, on every page as on the Next.js site
+export const GA_MEASUREMENT_ID = "G-S98V3B32ZL";
+
 export const COMPANY = {
   brand: "sivak.ai",
   legalName: "TheSivak s.r.o.",

@@ -1,0 +1,30 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home["process"];
+}
+const { t } = Astro.props;
+---
+<section class="section light process" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container">
+    <div class="section-head reveal">
+      <Eyebrow index="04">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+    </div>
+    <ol class="p-steps reveal">
+      {
+        t.steps.map((step, i) => (
+          <li class="p-step">
+            <span class="p-node" aria-hidden="true">0{i + 1}</span>
+            <h3>{step.title}</h3>
+            <p>{step.text}</p>
+            <p class="p-output"><span>{t.outputLabel}</span>{step.output}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

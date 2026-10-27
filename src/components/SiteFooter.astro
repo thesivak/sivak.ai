@@ -1,0 +1,45 @@
+---
+import BrandLogo from "./BrandLogo.astro";
+import { COMPANY, PEOPLE } from "@/lib/site";
+
+interface Props {
+  t: {
+    nav: { home: string; items: { id: string; label: string }[] };
+    langSwitch: { label: string };
+    footer: { tagline: string; navLabel: string; contactLabel: string; operatedBy: string; idLabel: string; registry: string };
+  };
+  homeHref: string;
+  switchHref: string;
+  switchLang: string;
+}
+const { t, homeHref, switchHref, switchLang } = Astro.props;
+const f = t.footer;
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="footer-logo" href={homeHref} aria-label={t.nav.home}><BrandLogo /></a>
+        <p>{f.tagline}</p>
+      </div>
+      <nav class="footer-col" aria-label={f.navLabel}>
+        <h2>{f.navLabel}</h2>
+        <ul>
+          {t.nav.items.map((item) => <li><a href={`#${item.id}`}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+      <div class="footer-col">
+        <h2>{f.contactLabel}</h2>
+        <ul>
+          {PEOPLE.map((person) => <li><a href={`mailto:${person.email}`}>{person.email}</a></li>)}
+          <li><a href={switchHref} hreflang={switchLang} lang={switchLang}>{t.langSwitch.label}</a></li>
+        </ul>
+      </div>
+    </div>
+    {/* § 435 of the Czech Civil Code: name, seat, company ID and register entry */}
+    <div class="footer-legal">
+      <p>{f.operatedBy} {COMPANY.legalName}, {COMPANY.city}, {f.idLabel} {COMPANY.ico}. {f.registry}</p>
+      <p>© {new Date().getFullYear()} {COMPANY.legalName}</p>
+    </div>
+  </div>
+</footer>

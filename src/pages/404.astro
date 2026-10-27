@@ -1,0 +1,37 @@
+---
+import Base from "@/layouts/Base.astro";
+import BrandLogo from "@/components/BrandLogo.astro";
+import Icon from "@/components/Icon.astro";
+
+// Served by Cloudflare for every unknown URL (assets.not_found_handling = "404-page"), in both languages
+---
+<Base
+  lang="cs"
+  title="Stránka nenalezena – sivak.ai"
+  description="Tato stránka neexistuje. Pokračujte na úvodní stránku sivak.ai."
+  ogImage={{ path: "/og/cs.png", alt: "sivak.ai" }}
+  robots="noindex"
+>
+  <main id="main" class="hero not-found">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <a class="header-logo" href="/" aria-label="sivak.ai – úvod"><BrandLogo /></a>
+      <p class="hero-eyebrow"><i aria-hidden="true"></i>404</p>
+      <h1 class="hero-title">Tuhle stránku <span class="hero-accent">nemáme</span></h1>
+      <p class="hero-lead">Odkaz je možná starý nebo v něm je překlep.</p>
+      <p class="hero-lead" lang="en">This page doesn't exist.</p>
+      <div class="hero-actions">
+        <a class="btn btn-light" href="/">Na úvodní stránku<Icon name="arrow" /></a>
+        <a class="btn btn-ghost" href="/ai-skoleni">AI školení pro firmy</a>
+        <a class="btn btn-ghost" href="/en?lang=en" hreflang="en" lang="en">English</a>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .not-found { min-height: 100svh; }
+  .not-found .header-logo { margin-bottom: 64px; }
+  .not-found .header-logo :global(svg) { height: 28px; width: auto; }
+  .not-found .hero-lead + .hero-lead { margin-top: 8px; }
+</style>

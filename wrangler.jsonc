@@ -1,0 +1,59 @@
+// Cloudflare Workers with static assets.
+// `astro build` writes the static site to dist/client and the Worker to dist/server, plus a
+// generated dist/server/wrangler.json derived from this file, which `wrangler dev` and
+// `wrangler deploy` pick up automatically.
+// Nothing here has been provisioned yet; see README.md → "Deploy and cutover".
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sivak-ai",
+  // Wraps Astro's handler: the language redirect on "/" runs before the static assets
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "assets": {
+    "binding": "ASSETS",
+    // "/en" serves en.html, "/en/" redirects to "/en" — the same URLs as the Next.js site
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // Static files are served without invoking the Worker, except:
+    //  - where the Worker decides the language: "/" (browser language, cookie), "/en" (?lang= switch),
+    //    "/en/" (308 to "/en" as before) and the old "/cs" URLs;
+    //  - the on-demand routes. Without them here, browser navigations to /admin/… would get the 404 page.
+    "run_worker_first": ["/", "/en", "/en/", "/cs", "/cs/*", "/api/*", "/admin/*"]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sivak-ai",
+      // TODO: replace with the id printed by `wrangler d1 create sivak-ai` (README → Deploy).
+      // Local development (`--local`, `npm run dev`, `npm run preview`) works with this placeholder.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, RESEND_API_KEY, ADMIN_PASSWORD, …) are set
+  // with `wrangler secret put` in production and in .dev.vars locally — see .dev.vars.example.
+  "vars": {
+    // "production" makes the form refuse to skip Turnstile; .dev.vars sets "development"
+    "SITE_ENV": "production",
+    "ENQUIRY_NOTIFY_TO": "mirek@sivak.ai,matous@sivak.ai",
+    // TODO: an address on a domain verified in Resend or Cloudflare Email Service
+    "ENQUIRY_FROM_EMAIL": "",
+    "NOTIFY_DISABLED": "0"
+  },
+
+  // Cloudflare Email Service (send_email binding). Preferred over Resend when bound: the Worker sends
+  // the enquiry notification to verified destination addresses. Requires sivak.ai on Cloudflare DNS
+  // and both addresses verified as Email Routing destinations. Enable after the DNS cutover:
+  // "send_email": [
+  //   {
+  //     "name": "EMAIL",
+  //     "allowed_destination_addresses": ["mirek@sivak.ai", "matous@sivak.ai"]
+  //   }
+  // ],
+
+  "observability": { "enabled": true }
+}
