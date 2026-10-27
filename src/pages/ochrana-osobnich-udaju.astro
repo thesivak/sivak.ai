@@ -1,33 +1,160 @@
 ---
 import Base from "@/layouts/Base.astro";
 import BrandLogo from "@/components/BrandLogo.astro";
-import { COMPANY, PEOPLE } from "@/lib/site";
+import { czechSpacingHtml } from "@/lib/czech";
+import { ENQUIRY_CONTACT_EMAIL, GA_MEASUREMENT_ID } from "@/lib/site";
+import { LIMIT, WINDOW_MS } from "@/lib/server/rate-limit";
+import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 
-// TODO: replace this placeholder with the final privacy policy (zásady zpracování osobních údajů)
-// before the /ai-skoleni campaign goes live. Linked from the consent checkbox via PRIVACY_POLICY_URL.
-// Kept out of search engines until then.
-const contact = PEOPLE[1];
+// DRAFT for Mirek's legal check: not final until every [DOPLNIT: …] is filled in and a lawyer has read it.
+// Kept out of search engines (noindex) until then. Linked from the form via PRIVACY_POLICY_URL.
+// It describes what the code does; change both together:
+//  - fields and columns: src/lib/enquiry/fields.ts, src/lib/server/store.ts, migrations/
+//  - rate limit and retention: src/lib/server/rate-limit.ts, src/lib/server/store.ts (pruneEnquiries),
+//    the hourly cron in src/worker.ts; notification e-mails are deleted by hand (README → Retention)
+//  - Turnstile, notification e-mails: src/lib/server/turnstile.ts, src/lib/server/notify.ts
+//  - Google Analytics on every page (src/layouts/Base.astro); the Google Ads paragraph is shown only
+//    when PUBLIC_GOOGLE_ADS_ID is set at build time, as the Ads tag itself
+//  - the `lang` cookie (src/lib/lang-routing.ts), sessionStorage (src/components/landing/enquiry-form.ts)
+// Open legal points for Mirek: the controller's details (src/lib/site.ts → COMPANY has values to
+// verify), the e-mail provider, and the basis for the Google cookies: the site has no cookie banner,
+// and Czech law (§ 89(3) of Act 127/2005) asks for consent to cookies that aren't strictly necessary.
+// The form's checkbox is an acknowledgement, not consent (CONSENT_VERSION in fields.ts).
+const contact = ENQUIRY_CONTACT_EMAIL;
+const ads = Boolean(import.meta.env.PUBLIC_GOOGLE_ADS_ID);
+const windowMinutes = WINDOW_MS / 60_000;
+const mail = `<a href="mailto:${contact}">${contact}</a>`;
+
+const html = `
+<p>Tyto zásady popisují, jak zpracováváme osobní údaje návštěvníků webu www.sivak.ai, především údaje
+z poptávkového formuláře na stránce <a href="/ai-skoleni">AI školení pro firmy</a>.</p>
+
+<h2>Kdo údaje zpracovává</h2>
+<p>Správcem osobních údajů je [DOPLNIT: název právnické osoby], IČO [DOPLNIT: IČO], se sídlem
+[DOPLNIT: sídlo], který vystupuje pod značkou sivak.ai (dále „my“).</p>
+<p>S dotazy ke zpracování osobních údajů a s uplatněním svých práv se obracejte na e-mail ${mail}.</p>
+
+<h2>Jaké údaje zpracováváme</h2>
+<h3>Údaje z poptávkového formuláře</h3>
+<ul>
+  <li>jméno a příjmení, firma a e-mail (povinné),</li>
+  <li>telefon, počet účastníků a poznámka nebo preferovaný termín (nepovinné),</li>
+  <li>čas odeslání a verze textu u zaškrtávacího pole, které jste potvrdili.</li>
+</ul>
+<h3>Odkud jste na stránku přišli</h3>
+<ul>
+  <li>parametry kampaně z adresy stránky (utm_source, utm_medium, utm_campaign, utm_term, utm_content),</li>
+  <li>identifikátor kliknutí na reklamu Google (gclid), pokud ho adresa obsahuje,</li>
+  <li>adresa stránky, na kterou jste na web přišli (cesta a parametry, bez domény).</li>
+</ul>
+<p>Tyto údaje připojí k poptávce váš prohlížeč, nebo je čteme z adresy předchozí stránky, kterou prohlížeč
+posílá s formulářem.</p>
+<h3>Technické údaje</h3>
+<ul>
+  <li>identifikace prohlížeče (user agent), uložená s poptávkou;</li>
+  <li>otisk IP adresy: IP adresu samotnou neukládáme, jen její otisk vytvořený klíčovanou hašovací funkcí
+    (HMAC-SHA256 s tajným klíčem), ze kterého IP adresu bez klíče zjistit nelze. Ukládáme ho s poptávkou
+    a pro omezení počtu odeslání také s časem každého pokusu o odeslání formuláře;</li>
+  <li>údaje, které zpracovává ochrana formuláře Cloudflare Turnstile: technické údaje o prohlížeči
+    a zařízení a IP adresa, podle kterých služba rozpozná automatizované odesílání. Ověřovací token
+    a IP adresu předáváme Cloudflare k ověření; výsledek si neukládáme.</li>
+</ul>
+<h3>Měření návštěvnosti</h3>
+<p>Na všech stránkách webu používáme Google Analytics 4 (${GA_MEASUREMENT_ID}). Google tak zpracovává údaje
+o návštěvě – například zobrazené stránky, typ zařízení a prohlížeče a přibližnou polohu odvozenou z IP
+adresy – a ukládá do prohlížeče cookies (_ga a _ga_*).</p>
+${
+  ads
+    ? `<p>Na stránce AI školení měříme přes značku Google také konverze z reklam Google Ads: po úspěšném odeslání
+poptávky prohlížeč pošle Google Ads informaci, že konverze proběhla. Obsah formuláře Googlu nepředáváme.
+Značka Google Ads přitom ukládá do prohlížeče vlastní cookies.</p>`
+    : ""
+}
+
+<h2>Proč a na jakém právním základě</h2>
+<ul>
+  <li><strong>Vyřízení poptávky</strong> – ozveme se vám, domluvíme program, termín a nabídku. Právním
+    základem je čl. 6 odst. 1 písm. b) GDPR: provedení opatření přijatých před uzavřením smlouvy na vaši
+    žádost. Údaje poskytujete dobrovolně; bez jména, firmy a e-mailu ale poptávku vyřídit nemůžeme.</li>
+  <li><strong>Vyhodnocení, odkud poptávky přicházejí</strong> (parametry kampaně, gclid, vstupní stránka) –
+    oprávněný zájem na vyhodnocení naší propagace, čl. 6 odst. 1 písm. f) GDPR.</li>
+  <li><strong>Ochrana formuláře před zneužitím a spamem</strong> (Turnstile, omezení počtu odeslání,
+    otisk IP adresy, identifikace prohlížeče) – oprávněný zájem na bezpečném provozu webu, čl. 6 odst. 1
+    písm. f) GDPR.</li>
+  <li><strong>Zapamatování zvoleného jazyka</strong> (cookie lang) – oprávněný zájem na fungování
+    přepínače jazyka, čl. 6 odst. 1 písm. f) GDPR.</li>
+  <li><strong>Měření návštěvnosti${ads ? " a konverzí" : ""}</strong> (Google Analytics${ads ? ", Google Ads" : ""}) –
+    [DOPLNIT: právní základ pro analytické${ads ? " a reklamní" : ""} cookies].</li>
+</ul>
+<p>Zaškrtávací pole ve formuláři potvrzuje, že jste se s těmito zásadami seznámili; nejde o souhlas se
+zpracováním. Proti zpracování na základě oprávněného zájmu můžete vznést námitku (viz Vaše práva).
+Automatizované rozhodování ani profilování neprovádíme.</p>
+
+<h2>Jak dlouho údaje uchováváme</h2>
+<ul>
+  <li><strong>Poptávky</strong> v databázi formuláře uchováváme ${ENQUIRY_RETENTION_MONTHS} měsíců od odeslání,
+    potom je automaticky mažeme. E-mailová oznámení o poptávce mažeme ze schránek ve stejné lhůtě.
+    Pokud z poptávky vznikne smlouva, údaje potřebné k jejímu plnění převezmeme do smluvní dokumentace
+    a uchováváme je po dobu trvání smlouvy a po dobu, kterou nám ukládají právní předpisy (například
+    účetní a daňové).</li>
+  <li><strong>Záznamy pro omezení počtu odeslání</strong> (otisk IP adresy a čas pokusu) mažeme nejpozději
+    po 24 hodinách. Formulář přijme z jedné IP adresy nejvýše ${LIMIT} odeslání za ${windowMinutes} minut.</li>
+  <li><strong>Cookie lang</strong> se ukládá jen tehdy, když jazyk přepnete, a platí 1 rok, pokud ji
+    nesmažete dříve.</li>
+  <li><strong>Parametry kampaně v prohlížeči</strong>: prohlížeč si je během návštěvy pamatuje v úložišti
+    relace (sessionStorage), aby se připojily k poptávce i po přechodu mezi stránkami. Smažou se po odeslání
+    poptávky nebo zavřením okna.</li>
+  <li><strong>Google Analytics${ads ? " a Google Ads" : ""}</strong>: cookies podle nastavení Google, cookie _ga
+    standardně až 2 roky; údaje o návštěvách v Google Analytics [DOPLNIT: doba uchování nastavená ve službě].</li>
+</ul>
+
+<h2>Kdo k údajům má přístup</h2>
+<p>Poptávky vidí jen naši pracovníci, kteří je vyřizují. Údaje neprodáváme a nepředáváme je dalším
+subjektům, kromě těchto zpracovatelů a příjemců:</p>
+<ul>
+  <li><strong>Cloudflare, Inc.</strong> – provoz webu (Cloudflare Workers), databáze poptávek (Cloudflare D1,
+    vytvořená v regionu západní Evropa) a ochrana formuláře (Cloudflare Turnstile);</li>
+  <li><strong>poskytovatel e-mailových služeb</strong> [DOPLNIT: poskytovatel] – doručení a uložení e-mailových
+    oznámení o nové poptávce, která obsahují údaje z formuláře a souhrn parametrů kampaně;</li>
+  <li><strong>Google Ireland Limited a Google LLC</strong> – Google Analytics${ads ? " a Google Ads" : ""}.</li>
+</ul>
+
+<h2>Předávání mimo EU</h2>
+<p>Cloudflare a Google jsou součástí skupin se sídlem v USA, a údaje proto mohou být zpracovány i mimo
+Evropskou unii a Evropský hospodářský prostor. Takové předání se opírá o rozhodnutí Evropské komise
+o odpovídající ochraně údajů pro společnosti zapojené do EU-U.S. Data Privacy Framework, případně o standardní
+smluvní doložky schválené Evropskou komisí. Totéž platí pro poskytovatele e-mailových služeb, pokud údaje
+zpracovává mimo EU.</p>
+
+<h2>Vaše práva</h2>
+<p>Podle GDPR máte právo:</p>
+<ul>
+  <li>na přístup ke svým osobním údajům (čl. 15),</li>
+  <li>na opravu nepřesných údajů (čl. 16),</li>
+  <li>na výmaz (čl. 17),</li>
+  <li>na omezení zpracování (čl. 18),</li>
+  <li>na přenositelnost údajů (čl. 20),</li>
+  <li>vznést námitku proti zpracování na základě oprávněného zájmu (čl. 21),</li>
+  <li>podat stížnost u Úřadu pro ochranu osobních údajů (<a href="https://www.uoou.cz/" rel="noopener">www.uoou.cz</a>).</li>
+</ul>
+<p>Svá práva uplatníte e-mailem na ${mail}. Odpovíme bez zbytečného odkladu, nejpozději do jednoho měsíce.</p>
+
+<h2>Účinnost</h2>
+<p>Tyto zásady jsou účinné od [DOPLNIT: datum účinnosti].</p>
+`;
 ---
 <Base
   lang="cs"
-  title="Zpracování osobních údajů – sivak.ai"
-  description="Jak sivak.ai zpracovává osobní údaje z poptávkového formuláře."
+  title="Zásady zpracování osobních údajů – sivak.ai"
+  description="Jak sivak.ai zpracovává osobní údaje návštěvníků webu a z poptávkového formuláře."
   ogImage={{ path: "/og/cs.png", alt: "sivak.ai" }}
   robots="noindex"
 >
   <main id="main" class="section light privacy">
     <div class="container">
       <a class="privacy-logo" href="/" aria-label="sivak.ai – úvod"><BrandLogo /></a>
-      <h1 class="section-title">Zpracování osobních údajů</h1>
-      <p class="section-lead">Úplné zásady zpracování osobních údajů připravujeme.</p>
-      <p class="section-lead">
-        Údaje z poptávkového formuláře (jméno, firma, e-mail, telefon, počet účastníků a poznámka) zpracovává
-        {COMPANY.legalName}, IČO {COMPANY.ico}, {COMPANY.city}, za účelem vyřízení vaší poptávky.
-      </p>
-      <p class="section-lead">
-        S dotazy k vašim údajům nebo s žádostí o jejich výmaz se obraťte na
-        <a href={`mailto:${contact.email}`}>{contact.email}</a>.
-      </p>
+      <h1 class="section-title">Zásady zpracování osobních údajů</h1>
+      <div class="privacy-body" set:html={czechSpacingHtml(html)} />
     </div>
   </main>
 </Base>
@@ -36,4 +163,12 @@ const contact = PEOPLE[1];
   .privacy { min-height: 100svh; }
   .privacy-logo { display: inline-flex; margin-bottom: 48px; color: var(--ink); }
   .privacy-logo :global(svg) { height: 28px; width: auto; }
+  .privacy-body { max-width: 760px; margin-top: 32px; font-size: 17px; line-height: 1.65; color: var(--ink-2); }
+  .privacy-body :global(h2) { margin: 48px 0 12px; font-size: 24px; font-weight: 500; line-height: 1.25; color: var(--ink); }
+  .privacy-body :global(h3) { margin: 28px 0 8px; font-size: 18px; font-weight: 500; color: var(--ink); }
+  .privacy-body :global(p), .privacy-body :global(ul) { margin: 0 0 14px; }
+  .privacy-body :global(ul) { padding-left: 22px; list-style: disc; }
+  .privacy-body :global(li) { margin: 6px 0; }
+  .privacy-body :global(a) { color: var(--ink); text-underline-offset: 3px; }
+  .privacy-body :global(strong) { font-weight: 500; color: var(--ink); }
 </style>

@@ -114,13 +114,22 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | Honeypot → fake success, nothing stored | curl ✅ |
 | Cross-origin POST → 403 | curl ✅ |
 | 6th submission from one IP within 10 min → 429 | curl ✅ |
+| 10 and 30 parallel submissions from one IP → exactly 5 admitted, the rest 429; attempts older than 23 h pruned | curl + `wrangler d1 execute` ✅ |
+| Body over 32 KiB sent chunked, without `Content-Length` → 413 | curl ✅ |
+| `Cookie: lang=%` (malformed) → no preference: Czech homepage 200, or `/en` by `Accept-Language` | curl ✅ |
+| Hourly cron (`scheduled`): attempts > 23 h and enquiries > 24 months deleted | local explorer `scheduled` endpoint ✅ |
 | Secret set, no token → 400 | curl ✅ |
 | Admin: no credentials → 401 with `WWW-Authenticate`; wrong → 401; right → list; `X-Robots-Tag: noindex`, `no-store` | curl ✅ |
 | CSV: UTF-8 BOM, quoted cells, `=HYPERLINK(…)` and `+…` prefixed with `'`, multi-line note kept | curl ✅ |
-| No D1 binding (dev): form answers success, enquiry in the log, admin "DB není nakonfigurovaná", CSV 503 | separate `wrangler dev` config without D1 ✅ |
-| Production, no Turnstile secret → form 503 + error log; no admin secrets → admin 404 | `SITE_ENV=production` config ✅ |
+| No D1 binding (any mode) → 503 with the contact e-mail and a config-error log, nothing claims success | separate `wrangler dev` config without D1 ✅ |
+| D1 without tables: rate limit fails → 503 in production and preview; development lets it through, then the failed insert → 503 | `wrangler dev` with an empty local D1 ✅ |
+| Production without `IP_HASH_SALT`, without a Turnstile secret, or with the test secret → 503 + config-error log; development without the salt → stored with `ip_hash` NULL, no rate limit | `--var` overrides ✅ |
+| Preview build (`CLOUDFLARE_ENV=preview`, test keys, `IP_HASH_SALT` set) → row in the local `ai-skoleni-nahled` DB with `source = 'ai-skoleni-preview'`, none in `sivak-ai`; noindex header | ✅ |
+| Build without `PUBLIC_TURNSTILE_SITE_KEY` → "Formulář je dočasně nedostupný" + contact e-mail instead of the form, build warning | ✅ |
+| Logs: only id, reason and error class/code, no personal data | `wrangler dev` output reviewed ✅ |
+| Production, no admin secrets → admin 404 | `SITE_ENV=production` config ✅ |
 | Production + `EMAIL` binding (wrangler's local simulation, nothing sent): Email Service preferred over Resend, user input HTML-escaped | ✅ |
-| Production + Resend with an invalid key and `.invalid` recipients: API rejects (401), logged with the full enquiry | ✅ (no e-mail could be delivered) |
+| Production + Resend with an invalid key and `.invalid` recipients: API rejects (401) | ✅ (no e-mail could be delivered); since then the log carries only id, channel and `HTTP_401` (not re-run) |
 | `NOTIFY_DISABLED=1` in production → no send, log only | ✅ |
 | `SITE_ENV=development` → never sends | ✅ |
 | `astro check`, ESLint, `astro build` | 0 errors ✅ |

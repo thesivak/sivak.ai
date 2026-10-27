@@ -17,7 +17,8 @@ Request ─▶ Cloudflare
                                         └─ on-demand routes: POST /api/poptavka, /admin/poptavky(.csv)
                                              ├─ D1 binding DB (enquiries, rate limit)
                                              ├─ Turnstile siteverify
-                                             └─ e-mail: EMAIL send_email binding ▸ Resend ▸ log
+                                             └─ e-mail: EMAIL send_email binding ▸ Resend ▸ none
+           cron "0 * * * *" ─▶ src/worker.ts scheduled(): retention cleanup in D1
 ```
 
 **Why Workers static assets, not Pages:** it is what Cloudflare recommends for new projects and
@@ -51,15 +52,16 @@ page with no English campaign would be untranslated duplicate content to maintai
 | `src/content/faq/{cs,en,ai-skoleni}/*.md` | FAQ entries, one Markdown file per question |
 | `src/content/landing/ai-skoleni.yaml` | Landing page copy |
 | `src/content.config.ts` | Schemas for all of the above (the build fails on missing or misspelt fields) |
-| `src/lib/site.ts` | Company facts, people, `MIREK_LINKEDIN_URL` (TODO), `PRIVACY_POLICY_URL` (TODO), GA ID |
+| `src/lib/site.ts` | Company facts, people, `MIREK_LINKEDIN_URL` (TODO, hidden while a placeholder), `PRIVACY_POLICY_URL`, GA ID |
 | `src/components/`, `src/components/sections/` | Home page components (ported 1:1 from React) |
 | `src/components/landing/` | Landing page sections, the enquiry form and its script |
 | `src/styles/global.css` | The original stylesheet, unchanged; `fonts.css` self-hosts the same font files |
 | `src/styles/landing.css` | Landing page additions, same tokens |
-| `src/lib/enquiry/fields.ts` | Form fields, limits, consent text/version, validation (browser and server) |
+| `src/lib/enquiry/fields.ts` | Form fields, limits, the checkbox text and its version, validation (browser and server) |
+| `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** with `[DOPLNIT: …]` placeholders for the legal check |
 | `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification, admin auth, CSV |
 | `migrations/` | D1 schema (`wrangler d1 migrations apply`) |
-| `wrangler.jsonc` | Worker config: assets, D1 binding (placeholder id), vars, commented-out `send_email` |
+| `wrangler.jsonc` | Worker config: assets, D1 bindings (production `sivak-ai`, preview `ai-skoleni-nahled`), vars, hourly cron, commented-out `send_email` |
 | `docs/` | Migration inventory and parity checklist |
 | `design/` | Brand and OG image sources |
 
@@ -89,11 +91,17 @@ Useful local checks:
 
 ```sh
 curl -I -H 'Accept-Language: en' http://localhost:8787/          # 307 → /en
+curl -I -H 'Cookie: lang=%' http://localhost:8787/               # malformed cookie = no preference: 200 Czech
 npx wrangler d1 execute sivak-ai --local --command "SELECT * FROM enquiries"
 open http://localhost:8787/admin/poptavky                         # credentials from .dev.vars
+# the hourly retention cron, by hand:
+curl -X POST -H 'Content-Type: application/json' -d '{"cron":"0 * * * *"}' \
+  'http://localhost:8787/cdn-cgi/local/explorer/api/local/scheduled?worker=sivak-ai'
 ```
 
-To try Turnstile locally, use Cloudflare's test keys: `PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA`
+A **build** without `PUBLIC_TURNSTILE_SITE_KEY` shows "Formulář je dočasně nedostupný" instead of the
+form (and logs a warning); only `npm run dev` keeps the form without the widget. For `npm run preview`
+and to try Turnstile, use Cloudflare's test keys: `PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA`
 in `.env` and `TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA` in `.dev.vars`.
 
 ## Environment variables and secrets
@@ -103,7 +111,7 @@ in Workers Builds):
 
 | Name | Purpose |
 | --- | --- |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Turnstile widget on the form. Empty = no widget. |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Turnstile widget on the form. Empty in a build = contact notice instead of the form (build warning). |
 | `PUBLIC_GOOGLE_ADS_ID` | Google Ads tag ID, `AW-…`. Empty = no Ads tag and no conversion. |
 | `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Label of the conversion action (`send_to` = `AW-…/label`). |
 
@@ -116,32 +124,49 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 | `ENQUIRY_NOTIFY_TO` | var | Comma-separated recipients, default `mirek@sivak.ai,matous@sivak.ai` |
 | `ENQUIRY_FROM_EMAIL` | var | Sender, on a domain verified for the chosen e-mail channel (TODO) |
 | `NOTIFY_DISABLED` | var | `1` = kill switch: never send, log only |
-| `TURNSTILE_SECRET_KEY` | secret | Turnstile server-side verification |
-| `IP_HASH_SALT` | secret | Salt for the IP hash (rate limit, `ip_hash` column); any long random string |
+| `TURNSTILE_SECRET_KEY` | secret | Turnstile server-side verification; required in production (no test keys). The preview has the public test secret in `env.preview.vars`. |
+| `IP_HASH_SALT` | secret | HMAC-SHA256 key for the IP hash (rate limit, `ip_hash` column), e.g. `openssl rand -hex 32`. Required in production **and preview**; only `development` may run without it (no rate limit, `ip_hash` NULL). |
 | `RESEND_API_KEY` | secret | Resend, if the Cloudflare Email Service binding isn't used |
 | `ADMIN_USER`, `ADMIN_PASSWORD` | secret | HTTP Basic auth for `/admin/*`; without both the admin is a 404 |
-| `DB` | D1 binding | Enquiries and rate limit |
+| `DB` | D1 binding | Enquiries and rate limit; required (without it the form answers 503) |
 | `EMAIL` | send_email binding | Cloudflare Email Service (commented out in wrangler.jsonc) |
 
 ## The enquiry form
 
-`POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order:
+`POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order. The visitor sees "přijali" (200 or
+the 303 to the thank-you page) **only once the row is stored in D1**; every refusal is an error with
+`matous@sivak.ai` as the way out.
 
-1. **Honeypot** (`website` field): filled → answered as success, nothing stored.
-2. **Rate limit**: at most 5 submissions per IP hash in 10 minutes (D1 table `enquiry_attempts`,
-   in-memory without D1). The IP is never stored, only `sha256(IP_HASH_SALT:ip)`.
-3. **Validation** (`src/lib/enquiry/fields.ts`, the same code the browser runs): name, company,
-   e-mail and consent required; phone optional but checked; participants 1–500; length limits.
-4. **Turnstile** siteverify. Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged
-   warning **only outside production** (`SITE_ENV=development` or `preview`); in production the form
-   answers 503 until it is set. Cloudflare's test keys (`1x00000000000000000000AA` /
-   `1x0000000000000000000000000000000AA`) work in development and preview and are refused in
-   production (503 + error log).
-5. **D1** insert with consent time, consent wording version (`CONSENT_VERSION`), `utm_*`, `gclid`,
+1. **Configuration**, before the body is read: no `DB` binding → 503 (every mode). Production and
+   preview also refuse with 503 without `IP_HASH_SALT`; production without `TURNSTILE_SECRET_KEY` or with
+   a Turnstile test secret. Each refusal logs a `config error`.
+2. **Body size**: at most 32 KiB, counted while reading the stream (a missing or false `Content-Length`
+   doesn't help) → 413.
+3. **Rate limit**: at most 5 submissions per IP hash in 10 minutes, in D1 table `enquiry_attempts`. One
+   conditional `INSERT … SELECT … WHERE (SELECT COUNT(*) …) < 5` admits or refuses (`meta.changes`), so
+   parallel requests can't overshoot; the same batch deletes attempts older than 23 hours. If D1 fails
+   here: 503 in production and preview, let through (warning) in development. The IP is never stored,
+   only `HMAC-SHA256(IP_HASH_SALT, ip)`, truncated to 32 hex characters. Without the key (development
+   only) there is no rate limit and `ip_hash` is NULL.
+4. **Parsing**, then the **honeypot** (`website` field): filled → answered as success, nothing stored
+   (the one deliberate exception, for bots).
+5. **Validation** (`src/lib/enquiry/fields.ts`, the same code the browser runs): name, company,
+   e-mail and the checkbox required; phone optional but checked; participants 1–500; length limits.
+6. **Turnstile** siteverify. Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged warning
+   outside production only. Cloudflare's test keys (`1x00000000000000000000AA` /
+   `1x0000000000000000000000000000000AA`) work in development and preview and are refused in production.
+7. **D1** insert with the checkbox time and wording version (`CONSENT_VERSION`), `utm_*`, `gclid`,
    landing URL, user agent and IP hash; `source` is `ai-skoleni`, or `ai-skoleni-preview` /
-   `ai-skoleni-development` outside production. Without the `DB` binding the enquiry is not stored (error
-   log in production) and the e-mail/log is the only copy.
-6. **Notification** (after the response, `waitUntil`): see below.
+   `ai-skoleni-development` outside production. Insert fails → 503 "zkuste to znovu".
+8. **Notification** (after the response, `waitUntil`): see below. Its failure doesn't change the answer:
+   the enquiry is stored and in the admin.
+
+The checkbox ("Beru na vědomí…") acknowledges the privacy policy; it is not a GDPR consent, the legal
+basis is art. 6(1)(b). The column is still called `consent`; `consent_text_version` says which wording
+was shown (`2026-10-27-v2` since the change from "Souhlasím…").
+
+**Logs** carry the enquiry id, a reason and error class/code only: never names, company, e-mail, phone,
+note, IP, user agent, the e-mail subject or body, nor provider response bodies (`src/lib/server/log.ts`).
 
 With JavaScript the form submits with `fetch`, shows errors next to the fields and the result in an
 `aria-live` region, then pushes `ai_skoleni_lead` to `dataLayer` and, if both `PUBLIC_GOOGLE_ADS_*`
@@ -170,9 +195,9 @@ Same-origin is enforced by Astro's `security.checkOrigin` (cross-site form posts
      the two addresses in `allowed_destination_addresses`) and deploy.
 2. **Resend** HTTP API (fallback) — `RESEND_API_KEY`, with `ENQUIRY_FROM_EMAIL` on a domain
    verified in Resend.
-3. **Log only** — the enquiry summary goes to the Worker log (Observability).
+3. **None** — the log gets the enquiry id and the reason; the enquiry itself is in D1 and the admin.
 
-Nothing is sent outside production (`SITE_ENV=development` or `preview` log instead), when `NOTIFY_DISABLED=1`, or
+Nothing is sent outside production (`SITE_ENV=development` or `preview`), when `NOTIFY_DISABLED=1`, or
 while `ENQUIRY_FROM_EMAIL`/`ENQUIRY_NOTIFY_TO` are empty. User input is HTML-escaped in the e-mail;
 Reply-To is the enquirer's address.
 
@@ -183,6 +208,26 @@ Excel, every cell quoted, cells starting with `= + - @` prefixed with `'` agains
 Protected by HTTP Basic auth (`ADMIN_USER`/`ADMIN_PASSWORD`, constant-time comparison); missing
 secrets → 404, never open. Responses carry `noindex`, `no-store`; `/admin/` and `/api/` are
 disallowed in robots.txt and not in the sitemap. Without D1 the page says "DB není nakonfigurovaná".
+
+### Retention and deletion
+
+What `/ochrana-osobnich-udaju` promises, and what does it:
+
+| Data | Kept | How |
+| --- | --- | --- |
+| `enquiry_attempts` (IP hash + time) | ≤ 24 hours | deleted after 23 h on every submission and by the hourly cron |
+| `enquiries` rows | 24 months | the hourly cron deletes rows with `created_at` older than 24 months (`pruneEnquiries`) |
+| Notification e-mails in the mirek@/matous@ mailboxes | 24 months | **by hand**: delete enquiry e-mails older than 24 months (e.g. a monthly mailbox search for "Poptávka AI školení" older than 24 months) |
+| Anything that became a contract | as the contract and the law require | copy what's needed into the contract records before the 24 months run out |
+
+A data subject's request (access or erasure), by e-mail address, on the database in question:
+
+```sh
+npx wrangler d1 execute sivak-ai --remote -c wrangler.jsonc --command "SELECT * FROM enquiries WHERE email = 'jan@example.com'"
+npx wrangler d1 execute sivak-ai --remote -c wrangler.jsonc --command "DELETE FROM enquiries WHERE email = 'jan@example.com'"
+```
+
+and delete the matching notification e-mails from both mailboxes.
 
 **Recommended:** put **Cloudflare Access** in front of `/admin/*` (Zero Trust → Access →
 Applications → self-hosted, domain `www.sivak.ai/admin/*`, policy: e-mails of Mirek and Matouš,
@@ -201,8 +246,8 @@ Commands need a logged-in `wrangler` on the sivak.ai account.
 1. **Turnstile**: dashboard → Turnstile → Add widget for `www.sivak.ai` and `sivak.ai`, mode Managed.
    Site key → `PUBLIC_TURNSTILE_SITE_KEY` (build variable); secret →
    `npx wrangler secret put TURNSTILE_SECRET_KEY`. Production refuses the test keys.
-2. **Secrets**: `npx wrangler secret put` for `ADMIN_USER`, `ADMIN_PASSWORD`, `IP_HASH_SALT`
-   (and `RESEND_API_KEY` only if Resend is used).
+2. **Secrets**: `npx wrangler secret put` for `IP_HASH_SALT` (required: the form refuses enquiries
+   without it), `ADMIN_USER`, `ADMIN_PASSWORD` (and `RESEND_API_KEY` only if Resend is used).
 3. **E-mail** (Cloudflare Email Service, see "E-mail notification"): verify `mirek@sivak.ai` and
    `matous@sivak.ai` as destination addresses (verification only, no routing, no MX change), set
    `ENQUIRY_FROM_EMAIL` (e.g. `web@sivak.ai`) in `wrangler.jsonc`, uncomment `send_email`. Until then
@@ -212,8 +257,10 @@ Commands need a logged-in `wrangler` on the sivak.ai account.
    `PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=YYYYYYYY` as build
    variables. **The customer ID 285-124-8637 shown in the Ads UI is not the tag ID** and does not
    work here. The Ads tag is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) stays on every page.
-5. **Content TODOs** in `src/lib/site.ts`: `MIREK_LINKEDIN_URL`, and the privacy policy behind
-   `PRIVACY_POLICY_URL` (`src/pages/ochrana-osobnich-udaju.astro` is a noindex placeholder).
+5. **Content TODOs**: `MIREK_LINKEDIN_URL` in `src/lib/site.ts` (the LinkedIn button and `sameAs` stay
+   hidden while it is the placeholder), and the privacy policy draft
+   `src/pages/ochrana-osobnich-udaju.astro`: fill in every `[DOPLNIT: …]`, have it checked, decide the
+   basis for the Google cookies (no cookie banner today), then drop its `noindex`.
 6. **Deploy the Worker** `sivak-ai`: `npm run deploy` (build + `wrangler deploy`), or Workers Builds
    (connect the repository; build command `npm run build`, deploy command `npx wrangler deploy`,
    `NODE_VERSION=24` and the `PUBLIC_*` build variables). Check its `*.workers.dev` URL.
@@ -241,17 +288,30 @@ key unless `PUBLIC_TURNSTILE_SITE_KEY` is set) and deploys it. In preview:
   `X-Robots-Tag: noindex, nofollow` to every response, a `<meta name="robots" content="noindex,nofollow">`
   to every page, and serves `robots.txt` as `Disallow: /`;
 - `SITE_ENV=preview`: Turnstile test keys allowed, `NOTIFY_DISABLED=1`, no e-mail;
-- the same D1 database; enquiries are stored with `source = 'ai-skoleni-preview'`
-  (clean up with `DELETE FROM enquiries WHERE source <> 'ai-skoleni'`).
+- **its own D1 database** `ai-skoleni-nahled` (`ea98bf57-da85-4cd6-8a0a-cea4175f9713`, WEUR), so test
+  enquiries never reach production's `sivak-ai`; rows have `source = 'ai-skoleni-preview'`. Apply the
+  migrations once with `npm run db:migrate:preview` before the first deploy;
+- secrets of its own (`npx wrangler secret put NAME --env preview`): `IP_HASH_SALT` (required, use a
+  different value than production), and `ADMIN_USER` / `ADMIN_PASSWORD` for its admin.
 
 The build prints a harmless warning that the prerender worker config has no `preview` environment.
 
 ### Database changes
 
-Never edit an applied migration: schema changes go into a new `migrations/0002_*.sql`, applied with
-`npm run db:migrate:local` and, for production, `npm run db:migrate:remote`.
+Never edit an applied migration: schema changes go into a new `migrations/0002_*.sql`, applied to
+each database:
+
+| Database | Command |
+| --- | --- |
+| local copy (`.wrangler/state`) | `npm run db:migrate:local` |
+| production `sivak-ai` | `npm run db:migrate:remote` (= `wrangler d1 migrations apply sivak-ai --remote -c wrangler.jsonc`) |
+| preview `ai-skoleni-nahled` | `npm run db:migrate:preview` (= `wrangler d1 migrations apply ai-skoleni-nahled --remote -c wrangler.jsonc --env preview`) |
+
+`-c wrangler.jsonc` makes wrangler read the source config rather than the one the last build generated
+(which may be the other environment's).
 
 ## Notes
 
 - `design/og/*.html` are the sources of the share images in `public/og/` (see `design/og/README.md`).
-- The site has no cookie banner; GA4 runs as it did on the Next.js site.
+- The site has no cookie banner; GA4 runs as it did on the Next.js site. The privacy policy draft leaves
+  the legal basis for the Google cookies as `[DOPLNIT]` for Mirek.
