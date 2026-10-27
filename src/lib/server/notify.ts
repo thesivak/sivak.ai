@@ -2,16 +2,18 @@ import type { Enquiry } from "@/lib/enquiry/fields";
 import { flag, isProduction, type ServerEnv } from "./env";
 import { errorCode } from "./log";
 
-// Tells mirek@ and matous@ about a new enquiry. Channels, in order of preference:
-//   1. Cloudflare Email Service — the `EMAIL` send_email binding (commented out in wrangler.jsonc)
-//   2. Resend HTTP API — RESEND_API_KEY
-//   3. None: the enquiry is only in D1 (admin /admin/poptavky)
+// Tells the addresses in ENQUIRY_NOTIFY_TO (mirek@ and matous@) about a new enquiry, through Cloudflare
+// Email Service: the `EMAIL` send_email binding (wrangler.jsonc), sender ENQUIRY_FROM_EMAIL on sivak.ai,
+// which is onboarded for Email Sending. There is no other channel: without the binding nothing is sent
+// and the enquiry is only in D1 (admin /admin/poptavky).
 // Nothing is ever sent outside production (SITE_ENV=development or preview), when NOTIFY_DISABLED=1,
 // or without a sender address (ENQUIRY_FROM_EMAIL) and recipients (ENQUIRY_NOTIFY_TO).
-// It is only called once the enquiry is stored. The log gets the enquiry id and a reason or error code,
-// never the visitor's details or the message.
+// It is only called once the enquiry is stored, and its failures never change the visitor's answer.
+// The log gets the enquiry id and a reason or error code, never the visitor's details or the message.
 
-export type NotifyResult = { channel: "cloudflare" | "resend" | "log"; sent: boolean; reason?: string };
+export type NotifyResult = { sent: boolean; reason?: string; messageId?: string };
+
+const SENDER_NAME = "sivak.ai – poptávky";
 
 const ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 export const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPES[c]);
@@ -32,12 +34,19 @@ function rows(enquiry: Enquiry, id: number): [string, string][] {
   ];
 }
 
-export function buildMessage(enquiry: Enquiry, id: number) {
-  const subject = `Poptávka AI školení: ${enquiry.company} (${enquiry.name})`.replace(/[\r\n]+/g, " ").slice(0, 200);
+// A test submission (name or company starting with "TEST") is marked in the subject
+export const isTestEnquiry = (enquiry: Pick<Enquiry, "name" | "company">) => enquiry.name.startsWith("TEST") || enquiry.company.startsWith("TEST");
+
+/** `origin` is the site the form was sent from (e.g. https://www.sivak.ai), for the admin link. */
+export function buildMessage(enquiry: Enquiry, id: number, origin: string) {
+  const prefix = isTestEnquiry(enquiry) ? "[TEST] " : "";
+  const subject = `${prefix}Poptávka AI školení: ${enquiry.company} (${enquiry.name})`.replace(/[\r\n]+/g, " ").slice(0, 200);
   const list = rows(enquiry, id);
-  const text = `Nová poptávka jednodenního AI školení z www.sivak.ai/ai-skoleni\n\n${list
+  const host = new URL(origin).host;
+  const admin = `${origin}/admin/poptavky`;
+  const text = `Nová poptávka jednodenního AI školení z ${host}/ai-skoleni\n\n${list
     .map(([k, v]) => `${k}: ${v}`)
-    .join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\nVšechny poptávky: https://www.sivak.ai/admin/poptavky\n`;
+    .join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\nVšechny poptávky: ${admin}\n`;
   const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;color:#0B1220">
 <h1 style="font-size:18px">Nová poptávka AI školení</h1>
 <table cellpadding="6" style="border-collapse:collapse;font-size:14px">${list
@@ -46,48 +55,46 @@ export function buildMessage(enquiry: Enquiry, id: number) {
         `<tr><th align="left" valign="top" style="border-bottom:1px solid #ddd">${escapeHtml(k)}</th><td style="border-bottom:1px solid #ddd;white-space:pre-wrap">${escapeHtml(v)}</td></tr>`,
     )
     .join("")}</table>
-<p style="font-size:13px;color:#5B6069">Odpovědí na tento e-mail napíšete přímo poptávajícímu. Všechny poptávky: <a href="https://www.sivak.ai/admin/poptavky">www.sivak.ai/admin/poptavky</a></p>
+<p style="font-size:13px;color:#5B6069">Odpovědí na tento e-mail napíšete přímo poptávajícímu. Všechny poptávky: <a href="${escapeHtml(admin)}">${escapeHtml(`${host}/admin/poptavky`)}</a></p>
 </body></html>`;
   return { subject, text, html };
 }
 
-export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number): Promise<NotifyResult> {
+export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number, origin: string): Promise<NotifyResult> {
   const recipients = (env.ENQUIRY_NOTIFY_TO ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const from = env.ENQUIRY_FROM_EMAIL?.trim();
-  const channel = env.EMAIL ? "cloudflare" : env.RESEND_API_KEY ? "resend" : "log";
 
   const skip = flag(env.NOTIFY_DISABLED)
     ? "NOTIFY_DISABLED is set"
     : !isProduction(env)
       ? "not production (SITE_ENV)"
-      : channel === "log"
-        ? "no e-mail channel configured (EMAIL binding or RESEND_API_KEY)"
+      : !env.EMAIL
+        ? "no EMAIL send_email binding"
         : !from || recipients.length === 0
           ? "ENQUIRY_FROM_EMAIL or ENQUIRY_NOTIFY_TO is empty"
           : null;
 
-  if (skip) {
+  if (skip || !env.EMAIL || !from) {
     console.log("[enquiry] e-mail not sent", { id, reason: skip });
-    return { channel: "log", sent: false, reason: skip };
+    return { sent: false, reason: skip ?? "not configured" };
   }
 
-  const message = buildMessage(enquiry, id);
+  const message = buildMessage(enquiry, id, origin);
   try {
-    if (channel === "cloudflare") {
-      await env.EMAIL!.send({ from: from!, to: recipients, replyTo: enquiry.email, subject: message.subject, text: message.text, html: message.html });
-    } else {
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ from, to: recipients, reply_to: enquiry.email, subject: message.subject, text: message.text, html: message.html }),
-      });
-      // Only the status: the response body may quote the addresses or the subject
-      if (!res.ok) throw new Error(`Resend responded HTTP_${res.status}`);
-    }
-    return { channel, sent: true };
+    const result = await env.EMAIL.send({
+      from: { email: from, name: SENDER_NAME },
+      to: recipients,
+      replyTo: enquiry.email,
+      subject: message.subject,
+      text: message.text,
+      html: message.html,
+    });
+    console.log("[enquiry] e-mail sent", { id });
+    return { sent: true, messageId: result.messageId };
   } catch (error) {
+    // Email Service errors carry a code such as E_RECIPIENT_NOT_ALLOWED; the message may quote addresses
     const code = errorCode(error);
-    console.error("[enquiry] e-mail failed", { id, channel, error: code });
-    return { channel, sent: false, reason: code };
+    console.error("[enquiry] e-mail failed", { id, error: code });
+    return { sent: false, reason: code };
   }
 }

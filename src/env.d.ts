@@ -9,14 +9,13 @@ declare namespace Cloudflare {
   interface Env {
     ASSETS: Fetcher;
     DB?: D1Database;
-    /** Cloudflare Email Service binding, commented out in wrangler.jsonc until the domain is on Cloudflare */
+    /** Cloudflare Email Service send_email binding (production only; the preview has none) */
     EMAIL?: SendEmail;
     /** "production" (wrangler.jsonc), "preview" (env.preview) or "development" (.dev.vars) */
     SITE_ENV?: string;
     ENQUIRY_NOTIFY_TO?: string;
     ENQUIRY_FROM_EMAIL?: string;
     NOTIFY_DISABLED?: string;
-    RESEND_API_KEY?: string;
     TURNSTILE_SECRET_KEY?: string;
     ADMIN_USER?: string;
     ADMIN_PASSWORD?: string;

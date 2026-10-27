@@ -9,21 +9,33 @@ import { pruneEnquiries } from "@/lib/server/store";
 // pages from the asset store and renders the on-demand routes (/api/*, /admin/*).
 // In production other static files never reach this code (assets.run_worker_first in wrangler.jsonc);
 // the preview environment sends everything through here so it can keep search engines out.
+//
+// Search engines are kept out of every *.workers.dev host (production "sivak-ai" before the cutover,
+// and the preview), keyed on the hostname, so sivak.ai / www.sivak.ai are unaffected later:
+//  - responses from this code get X-Robots-Tag (and HTML a robots meta tag), robots.txt is "Disallow: /";
+//  - static files served without the Worker get X-Robots-Tag from public/_headers, whose rule only
+//    matches https://<worker>.<account>.workers.dev/*.
+function isWorkersDev(hostname: string): boolean {
+  return hostname === "workers.dev" || hostname.endsWith(".workers.dev");
+}
+
 export default {
   async fetch(request, env, ctx) {
+    const url = new URL(request.url);
     const preview = (env.SITE_ENV ?? "").trim().toLowerCase() === "preview";
-    const pathname = new URL(request.url).pathname;
-    if (preview && pathname === "/robots.txt") {
+    const hidden = preview || isWorkersDev(url.hostname);
+    const pathname = url.pathname;
+    if (hidden && pathname === "/robots.txt") {
       return new Response("User-Agent: *\nDisallow: /\n", {
         headers: { "Content-Type": "text/plain; charset=utf-8", "X-Robots-Tag": "noindex, nofollow" },
       });
     }
 
     let response = routeLanguage(request) ?? (await handle(request, env, ctx));
-    if (pathname === "/" || preview) response = new Response(response.body, response);
+    if (pathname === "/" || hidden) response = new Response(response.body, response);
     // "/" depends on the browser language and the cookie, so caches must keep the variants apart
     if (pathname === "/") response.headers.append("Vary", "Accept-Language, Cookie");
-    return preview ? noindex(response) : response;
+    return hidden ? noindex(response) : response;
   },
 
   // Hourly cron (wrangler.jsonc → triggers): deletes what the privacy policy says we no longer keep,
@@ -41,7 +53,7 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
-// Preview (ai-skoleni-nahled on workers.dev): never indexed, whatever the page says
+// workers.dev (production before the cutover, and the preview): never indexed, whatever the page says
 function noindex(response: Response): Response {
   response.headers.set("X-Robots-Tag", "noindex, nofollow");
   if (!response.headers.get("content-type")?.includes("text/html")) return response;

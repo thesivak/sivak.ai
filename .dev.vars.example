@@ -25,8 +25,8 @@ IP_HASH_SALT=
 # The D1 binding DB is required in every mode: without it the form answers 503 (never a fake success).
 # Create the local tables with `npm run db:migrate:local`.
 
-# E-mail notification. Never sent while SITE_ENV=development.
-RESEND_API_KEY=
+# E-mail notification via the Cloudflare Email Service binding EMAIL (wrangler.jsonc). Never sent
+# while SITE_ENV=development; `wrangler dev` only simulates the binding anyway.
 ENQUIRY_FROM_EMAIL=
 ENQUIRY_NOTIFY_TO=mirek@sivak.ai,matous@sivak.ai
 # 1 = never send, log only (kill switch)

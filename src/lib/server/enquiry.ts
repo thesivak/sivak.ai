@@ -199,7 +199,7 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
 
   // The row is stored: from here on it's a success, even if the e-mail fails
   waitUntil(
-    notifyEnquiry(env, enquiry, id)
+    notifyEnquiry(env, enquiry, id, new URL(request.url).origin)
       .then(async (sent) => {
         if (sent.sent) await markNotified(db, id, new Date().toISOString());
       })

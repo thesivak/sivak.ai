@@ -2,7 +2,8 @@
 // `astro build` writes the static site to dist/client and the Worker to dist/server, plus a
 // generated dist/server/wrangler.json derived from this file, which `wrangler dev` and
 // `wrangler deploy` pick up automatically.
-// The D1 database exists; the Worker itself is not deployed yet. See README.md → "Deploy and cutover".
+// Production runs as the Worker "sivak-ai" on workers.dev only (no routes, no custom domain yet);
+// there every response is noindex (src/worker.ts, public/_headers). See README.md → "Deploy and cutover".
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "sivak-ai",
@@ -10,6 +11,8 @@
   "main": "./src/worker.ts",
   "compatibility_date": "2026-10-19",
   "compatibility_flags": ["nodejs_compat"],
+  // https://sivak-ai.onfire4yhwh.workers.dev until the cutover; no "routes" on purpose
+  "workers_dev": true,
 
   "assets": {
     "binding": "ASSETS",
@@ -19,8 +22,9 @@
     // Static files are served without invoking the Worker, except:
     //  - where the Worker decides the language: "/" (browser language, cookie), "/en" (?lang= switch),
     //    "/en/" (308 to "/en" as before) and the old "/cs" URLs;
-    //  - the on-demand routes. Without them here, browser navigations to /admin/… would get the 404 page.
-    "run_worker_first": ["/", "/en", "/en/", "/cs", "/cs/*", "/api/*", "/admin/*"]
+    //  - the on-demand routes. Without them here, browser navigations to /admin/… would get the 404 page;
+    //  - /robots.txt, which the Worker answers with "Disallow: /" on *.workers.dev only.
+    "run_worker_first": ["/", "/en", "/en/", "/cs", "/cs/*", "/api/*", "/admin/*", "/robots.txt"]
   },
 
   "d1_databases": [
@@ -34,28 +38,28 @@
     }
   ],
 
-  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, IP_HASH_SALT, ADMIN_USER, ADMIN_PASSWORD,
-  // RESEND_API_KEY) are set with `wrangler secret put` in production and in .dev.vars locally — see
-  // .dev.vars.example. No Turnstile test key belongs here: production refuses them.
+  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, IP_HASH_SALT, ADMIN_USER, ADMIN_PASSWORD) are
+  // set with `wrangler secret put` in production and in .dev.vars locally — see .dev.vars.example.
+  // No Turnstile test key belongs here: production refuses them.
   "vars": {
     // "production" makes the form refuse to skip Turnstile; .dev.vars sets "development"
     "SITE_ENV": "production",
     "ENQUIRY_NOTIFY_TO": "mirek@sivak.ai,matous@sivak.ai",
-    // TODO: sender on sivak.ai (already onboarded for Cloudflare Email Sending), e.g. "web@sivak.ai"
-    "ENQUIRY_FROM_EMAIL": "",
+    // Sender on sivak.ai, which is onboarded for Cloudflare Email Sending (shown as "sivak.ai – poptávky")
+    "ENQUIRY_FROM_EMAIL": "web@sivak.ai",
     "NOTIFY_DISABLED": "0"
   },
 
-  // Cloudflare Email Service (send_email binding), the recommended notifier; preferred over Resend when
-  // bound. sivak.ai is already onboarded for Email Sending. Sending to verified destination addresses is
-  // free: verify mirek@ and matous@ in the dashboard (Email Routing → Destination addresses) WITHOUT
-  // enabling routing or touching MX (mail stays on Google). Then set ENQUIRY_FROM_EMAIL and uncomment:
-  // "send_email": [
-  //   {
-  //     "name": "EMAIL",
-  //     "allowed_destination_addresses": ["mirek@sivak.ai", "matous@sivak.ai"]
-  //   }
-  // ],
+  // Cloudflare Email Service, the only notification channel (src/lib/server/notify.ts). sivak.ai is
+  // onboarded for Email Sending (return path cf-bounce.sivak.ai, DKIM selector cf-bounce); MX stays on
+  // Google. No destination-address verification and no Email Routing are needed. The binding may only
+  // write to these two addresses; the recipients themselves come from ENQUIRY_NOTIFY_TO.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_destination_addresses": ["mirek@sivak.ai", "matous@sivak.ai"]
+    }
+  ],
 
   "observability": { "enabled": true },
 
@@ -66,7 +70,7 @@
   "env": {
     // Noindexed copy for review on workers.dev: `npm run deploy:preview` builds with
     // CLOUDFLARE_ENV=preview and deploys the Worker "ai-skoleni-nahled". Bindings and vars are not
-    // inherited from the top level, so they are repeated here.
+    // inherited from the top level, so they are repeated here; there is deliberately no send_email.
     "preview": {
       "name": "ai-skoleni-nahled",
       "workers_dev": true,

@@ -10,14 +10,14 @@ Built with [Astro](https://astro.build) and deployed to **Cloudflare Workers wit
 ```
 Request ─▶ Cloudflare
            ├─ static asset (HTML, CSS, fonts, images, vCards) ─▶ served directly, no Worker run
-           └─ "/", "/en", "/en/", "/cs*", "/api/*", "/admin/*"   (assets.run_worker_first)
+           └─ "/", "/en", "/en/", "/cs*", "/api/*", "/admin/*", "/robots.txt"   (assets.run_worker_first)
                  ─▶ src/worker.ts
                       ├─ language redirects (src/lib/lang-routing.ts)
                       └─ Astro handler ─▶ prerendered page from the asset store
                                         └─ on-demand routes: POST /api/poptavka, /admin/poptavky(.csv)
                                              ├─ D1 binding DB (enquiries, rate limit)
                                              ├─ Turnstile siteverify
-                                             └─ e-mail: EMAIL send_email binding ▸ Resend ▸ none
+                                             └─ e-mail: EMAIL send_email binding (Cloudflare Email Service)
            cron "0 * * * *" ─▶ src/worker.ts scheduled(): retention cleanup in D1
 ```
 
@@ -122,14 +122,13 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 | --- | --- | --- |
 | `SITE_ENV` | var | `production` (wrangler.jsonc), `preview` (env.preview) or `development` (.dev.vars). Anything else counts as production. |
 | `ENQUIRY_NOTIFY_TO` | var | Comma-separated recipients, default `mirek@sivak.ai,matous@sivak.ai` |
-| `ENQUIRY_FROM_EMAIL` | var | Sender, on a domain verified for the chosen e-mail channel (TODO) |
+| `ENQUIRY_FROM_EMAIL` | var | Sender, `web@sivak.ai` (sivak.ai is onboarded for Email Sending); shown as "sivak.ai – poptávky" |
 | `NOTIFY_DISABLED` | var | `1` = kill switch: never send, log only |
 | `TURNSTILE_SECRET_KEY` | secret | Turnstile server-side verification; required in production (no test keys). The preview has the public test secret in `env.preview.vars`. |
 | `IP_HASH_SALT` | secret | HMAC-SHA256 key for the IP hash (rate limit, `ip_hash` column), e.g. `openssl rand -hex 32`. Required in production **and preview**; only `development` may run without it (no rate limit, `ip_hash` NULL). |
-| `RESEND_API_KEY` | secret | Resend, if the Cloudflare Email Service binding isn't used |
 | `ADMIN_USER`, `ADMIN_PASSWORD` | secret | HTTP Basic auth for `/admin/*`. `ADMIN_PASSWORD` must be at least 24 characters (e.g. `openssl rand -base64 24`); missing or shorter → `/admin/*` answers 503 "Admin not configured." |
 | `DB` | D1 binding | Enquiries and rate limit; required (without it the form answers 503) |
-| `EMAIL` | send_email binding | Cloudflare Email Service (commented out in wrangler.jsonc) |
+| `EMAIL` | send_email binding | Cloudflare Email Service, production only; restricted to `mirek@sivak.ai` and `matous@sivak.ai` |
 
 ## Cookie consent
 
@@ -215,27 +214,23 @@ Same-origin is enforced by Astro's `security.checkOrigin` (cross-site form posts
 
 ### E-mail notification
 
-`src/lib/server/notify.ts` picks the first available channel:
+`src/lib/server/notify.ts` sends through **Cloudflare Email Service**, the only channel: the `EMAIL`
+`send_email` binding, `env.EMAIL.send({ from: { email: "web@sivak.ai", name: "sivak.ai – poptávky" },
+to, replyTo, subject, text, html })` (typed by `SendEmail` in `@cloudflare/workers-types`).
 
-1. **Cloudflare Email Service** (recommended) — the `EMAIL` `send_email` binding
-   (`env.EMAIL.send({ from, to, replyTo, subject, html, text })`). sivak.ai is already onboarded
-   for Cloudflare Email Sending (the `cf-bounce` MX/SPF/DKIM records exist and another Worker in the
-   account already sends this way), so the sender can be e.g. `web@sivak.ai` or `noreply@sivak.ai`.
-   - Sending to **verified destination addresses is free**, also on Workers Free. Verify
-     `mirek@sivak.ai` and `matous@sivak.ai` in the dashboard under Email → Email Routing →
-     Destination addresses (each gets a confirmation e-mail). **Only verify — do not enable Email
-     Routing and do not change MX**: inbound mail for sivak.ai stays on Google Workspace.
-   - Sending to arbitrary recipients would need Workers Paid ($5/month, 3,000 e-mails/month
-     included); this site only ever writes to the two verified addresses.
-   - To switch it on: set `ENQUIRY_FROM_EMAIL`, uncomment `send_email` in `wrangler.jsonc` (it lists
-     the two addresses in `allowed_destination_addresses`) and deploy.
-2. **Resend** HTTP API (fallback) — `RESEND_API_KEY`, with `ENQUIRY_FROM_EMAIL` on a domain
-   verified in Resend.
-3. **None** — the log gets the enquiry id and the reason; the enquiry itself is in D1 and the admin.
-
-Nothing is sent outside production (`SITE_ENV=development` or `preview`), when `NOTIFY_DISABLED=1`, or
-while `ENQUIRY_FROM_EMAIL`/`ENQUIRY_NOTIFY_TO` are empty. User input is HTML-escaped in the e-mail;
-Reply-To is the enquirer's address.
+- sivak.ai is onboarded for Email Sending (return path `cf-bounce.sivak.ai`, DKIM selector `cf-bounce`,
+  quota 200 a day). No destination-address verification and no Email Routing are needed; MX stays on
+  Google Workspace.
+- Recipients come from `ENQUIRY_NOTIFY_TO`; the binding's `allowed_destination_addresses` limits it to
+  `mirek@sivak.ai` and `matous@sivak.ai` anyway. Reply-To is the enquirer's address, so a reply goes
+  straight to them.
+- A name or company starting with `TEST` gets `[TEST] ` in front of the subject. The admin link in the
+  e-mail points to the host the form was sent from (workers.dev before the cutover).
+- User input is HTML-escaped in the HTML part; line breaks are stripped from the subject.
+- Nothing is sent outside production (`SITE_ENV=development` or `preview`; the preview has no binding
+  either), when `NOTIFY_DISABLED=1`, without the binding, or while `ENQUIRY_FROM_EMAIL`/`ENQUIRY_NOTIFY_TO`
+  are empty. A failure is logged with the enquiry id and the Email Service error code
+  (e.g. `E_RATE_LIMIT_EXCEEDED`) and never changes the visitor's answer: the enquiry is already in D1.
 
 ### Admin: `/admin/poptavky`
 
@@ -288,50 +283,79 @@ and delete the matching notification e-mails from both mailboxes.
 
 ## Deploy and cutover from Vercel
 
-State on 27 October 2026: the sivak.ai zone is **already active on Cloudflare DNS** (Free plan). The
-apex `A 76.76.21.21` and `www CNAME cname.vercel-dns.com` (both DNS-only) still point to Vercel; MX is
-Google Workspace; sivak.ai is onboarded for Cloudflare Email Sending; Email Routing (inbound) is off
-and must stay off. The D1 database `sivak-ai` (`73a4d2d1-d42a-4b19-a853-463ee16dc1dd`, WEUR) exists and
-`migrations/0001_enquiries.sql` is applied. The Worker is not deployed yet.
+### Current state (27 October 2026)
 
-Commands need a logged-in `wrangler` on the sivak.ai account.
+- The sivak.ai zone is active on Cloudflare DNS (Free plan). The apex `A 76.76.21.21` and
+  `www CNAME cname.vercel-dns.com` (both DNS-only) **still point to Vercel**, which keeps serving
+  www.sivak.ai. MX is Google Workspace; Email Routing (inbound) is off and stays off.
+- The production Worker **`sivak-ai` runs on workers.dev only**, https://sivak-ai.onfire4yhwh.workers.dev
+  (`workers_dev: true`, no routes, no custom domain). Everything there is **noindex** (see below).
+- D1 `sivak-ai` (`73a4d2d1-d42a-4b19-a853-463ee16dc1dd`, WEUR) has migrations **0001 and 0002** applied.
+- **Email Sending is live**: sivak.ai is onboarded (status ready, return path `cf-bounce.sivak.ai`, DKIM
+  selector `cf-bounce`, 200 e-mails a day). The `EMAIL` binding sends from `web@sivak.ai` to
+  `mirek@sivak.ai` and `matous@sivak.ai` (`allowed_destination_addresses`); no destination verification
+  or Email Routing is involved.
+- **Turnstile**: one widget for `sivak.ai`, `www.sivak.ai` and `sivak-ai.onfire4yhwh.workers.dev`; its site
+  key is the build variable `PUBLIC_TURNSTILE_SITE_KEY`, its secret the Worker secret
+  `TURNSTILE_SECRET_KEY`. The code has no hostname check of its own: the widget's hostname list decides
+  where it works.
+- Secrets on `sivak-ai`: `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`, `ADMIN_USER`, `ADMIN_PASSWORD` (≥ 24 characters).
+- Google Ads: not configured (`PUBLIC_GOOGLE_ADS_*` unset), so no Ads tag and no conversion.
 
-1. **Turnstile**: dashboard → Turnstile → Add widget for `www.sivak.ai` and `sivak.ai`, mode Managed.
-   Site key → `PUBLIC_TURNSTILE_SITE_KEY` (build variable); secret →
-   `npx wrangler secret put TURNSTILE_SECRET_KEY`. Production refuses the test keys.
-2. **Secrets**: `npx wrangler secret put` for `IP_HASH_SALT` (required: the form refuses enquiries
-   without it), `ADMIN_USER`, `ADMIN_PASSWORD` (and `RESEND_API_KEY` only if Resend is used).
-3. **E-mail** (Cloudflare Email Service, see "E-mail notification"): verify `mirek@sivak.ai` and
-   `matous@sivak.ai` as destination addresses (verification only, no routing, no MX change), set
-   `ENQUIRY_FROM_EMAIL` (e.g. `web@sivak.ai`) in `wrangler.jsonc`, uncomment `send_email`. Until then
-   enquiries are stored in D1 and visible in the admin, and notifications only go to the log.
-4. **Google Ads**: Google Ads → Goals → Conversions → create a "Submit lead form" action (website,
-   manual tag) → Tag setup → "Use Google tag" shows `send_to: 'AW-XXXXXXXXX/YYYYYYYY'`. Set
-   `PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=YYYYYYYY` as build
-   variables. **The customer ID 285-124-8637 shown in the Ads UI is not the tag ID** and does not
-   work here. The Ads tag is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) stays on every page.
-5. **Content TODOs**: `MIREK_LINKEDIN_URL` in `src/lib/site.ts` (the LinkedIn button and `sameAs` stay
-   hidden while it is the placeholder), and the privacy policy draft
-   `src/pages/ochrana-osobnich-udaju.astro`: fill in every `[DOPLNIT: …]` (controller, e-mail provider,
-   Google Analytics retention setting, effective date), have it checked, then drop its `noindex`.
-   The basis for the Google cookies is decided: consent, via the cookie banner (see "Cookie consent").
-6. **Deploy the Worker** `sivak-ai`: `npm run deploy` (build + `wrangler deploy`), or Workers Builds
-   (connect the repository; build command `npm run build`, deploy command `npx wrangler deploy`,
-   `NODE_VERSION=24` and the `PUBLIC_*` build variables). Check its `*.workers.dev` URL.
-7. **Cutover** — no DNS move is needed. Worker → Settings → Domains & Routes → add the **Custom
-   Domains** `sivak.ai` and `www.sivak.ai`. Cloudflare replaces the Vercel `A`/`CNAME` records with
-   the Worker and issues certificates; MX and the e-mail records are untouched. Then make the apex
-   redirect to `www` to match the canonical URLs (Rules → Redirect Rules → custom filter
-   `http.host eq "sivak.ai"`, dynamic target `concat("https://www.sivak.ai", http.request.uri.path)`,
-   301, preserve query string). Check `/`, `/en`, `/ai-skoleni`, a test enquiry
-   and the admin on the real domain.
-8. **Access** and/or a **WAF rate-limiting rule** for `/admin/*` (see "Admin"). Before the first
-   deploy apply migration 0002 (`npm run db:migrate:remote`); the admin needs table `admin_auth_failures`.
-9. **Vercel**: remove `sivak.ai` and `www.sivak.ai` from the Vercel project's domains, then, once
-   all is well, delete the project.
+Deploying is `npm run deploy` (build + `wrangler deploy`) with `PUBLIC_TURNSTILE_SITE_KEY` set in the
+environment of the build, or Workers Builds (build command `npm run build`, deploy command
+`npx wrangler deploy`, `NODE_VERSION=24`, the `PUBLIC_*` build variables).
 
-Rollback before step 9: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
+### noindex on workers.dev, keyed on the hostname
+
+Before the cutover nothing on `*.workers.dev` may be indexed, and after it sivak.ai must be indexed
+normally, without a config change. Two parts, both matching only `*.workers.dev`:
+
+- **Static files** (served without the Worker): `public/_headers` has the absolute-URL rule
+  `https://:worker.:account.workers.dev/*` → `X-Robots-Tag: noindex, nofollow`. Workers static assets
+  support absolute URLs with host placeholders in `_headers`
+  ([docs](https://developers.cloudflare.com/workers/static-assets/headers/)); the rule cannot match
+  sivak.ai or www.sivak.ai, so no extra request goes through the Worker.
+- **Worker responses** (`_headers` doesn't apply to them): `src/worker.ts` adds the same header when
+  the hostname ends in `.workers.dev`, puts a robots meta tag into HTML, and answers `/robots.txt`
+  (now in `run_worker_first`) with `Disallow: /`. On any other host robots.txt is the normal one.
+
+Verify:
+
+```sh
+curl -sI https://sivak-ai.onfire4yhwh.workers.dev/ai-skoleni | grep -i x-robots-tag   # noindex, nofollow
+curl -sI https://sivak-ai.onfire4yhwh.workers.dev/og/cs.png | grep -i x-robots-tag    # noindex, nofollow
+curl -s  https://sivak-ai.onfire4yhwh.workers.dev/robots.txt                          # Disallow: /
+# locally, after `npm run preview`: the same with -H 'Host: sivak-ai.onfire4yhwh.workers.dev' on
+# http://localhost:8787, and no X-Robots-Tag with -H 'Host: www.sivak.ai'
+```
+
+### Remaining cutover steps (not done; each needs Mirek's OK)
+
+1. **Custom domains**: Worker `sivak-ai` → Settings → Domains & Routes → add the Custom Domains
+   `sivak.ai` and `www.sivak.ai`. Cloudflare replaces the Vercel `A`/`CNAME` records with the Worker and
+   issues certificates; MX and the e-mail records are untouched. Then redirect the apex to `www` to match
+   the canonical URLs (Rules → Redirect Rules → filter `http.host eq "sivak.ai"`, dynamic target
+   `concat("https://www.sivak.ai", http.request.uri.path)`, 301, preserve query string). Check `/`, `/en`,
+   `/ai-skoleni`, a test enquiry (name starting with `TEST`, the e-mail subject gets `[TEST] `), the
+   admin, and that robots.txt and the pages carry **no** noindex on www.sivak.ai.
+2. **Admin protection**: Cloudflare Access and/or a WAF rate-limiting rule for `/admin/*` (see "Admin").
+3. **Vercel**: remove `sivak.ai` and `www.sivak.ai` from the Vercel project's domains and disconnect its
+   Git integration; delete the project once all is well.
+4. **Merge**: squash-merge PR #1 (`astro-cloudflare` → `main`) so `main` gets one commit for the
+   migration rather than the branch's working history.
+
+Rollback before step 3: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
 `CNAME www cname.vercel-dns.com` (DNS-only).
+
+Google Ads, when wanted: Google Ads → Goals → Conversions → create a "Submit lead form" action
+(website, manual tag) → Tag setup → "Use Google tag" shows `send_to: 'AW-XXXXXXXXX/YYYYYYYY'`. Set
+`PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=YYYYYYYY` as build variables.
+**The customer ID 285-124-8637 shown in the Ads UI is not the tag ID** and does not work here. The Ads tag
+is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) is on every page, both only after consent.
+
+The privacy policy (`src/pages/ochrana-osobnich-udaju.astro`) has one `[DOPLNIT]` left, the Google
+Analytics retention setting; once it is filled in and checked, drop the page's `noindex`.
 
 ### Preview deployment (`ai-skoleni-nahled`)
 

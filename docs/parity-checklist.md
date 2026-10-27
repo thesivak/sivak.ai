@@ -65,14 +65,14 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image` | identical ✅ |
 | icon | `<link rel="icon" href="/icon.svg" sizes="any" type="image/svg+xml">` (was `/icon.svg?icon.c607bc5c.svg`; the query was Next's cache buster) |
 | font preloads | the same 6 latin / latin-ext woff2 files, now under `/fonts/` |
-| JSON-LD `Organization` | identical string ✅ |
+| JSON-LD `Organization` | identical string at migration time ✅; since then `founder.sameAs` = Mirek's LinkedIn profile (deliberate) |
 | `<meta name="next-size-adjust">`, Next's hidden `<div>` and RSC payload scripts | gone (Next internals) |
 
 ## Content, layout and assets
 
 | Item | Result |
 | --- | --- |
-| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical at the time of the migration ✅. **One deliberate change since then** (commit 4a03e5b, Mirek's decision): process step 3 (`#postup` / `#process`) retitled to "První agent" / "First agent"; the step text is unchanged. **Second deliberate change** (Mirek's decision, cookie consent): every page now starts `<head>` with the Google Consent Mode v2 defaults, has the (hidden until needed) cookie banner as the first element of `<body>`, a "Nastavení cookies" / "Cookie settings" button in the footer's legal line, and the end-of-body GA snippet only calls `gtag('js')` and `gtag('config')` (the `gtag` definition moved to `<head>`). Apart from these, `/` and `/en` are unchanged. |
+| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical at the time of the migration ✅. **One deliberate change since then** (commit 4a03e5b, Mirek's decision): process step 3 (`#postup` / `#process`) retitled to "První agent" / "First agent"; the step text is unchanged. **Second deliberate change** (Mirek's decision, cookie consent): every page now starts `<head>` with the Google Consent Mode v2 defaults, has the (hidden until needed) cookie banner as the first element of `<body>`, a "Nastavení cookies" / "Cookie settings" button in the footer's legal line, and the end-of-body GA snippet only calls `gtag('js')` and `gtag('config')` (the `gtag` definition moved to `<head>`). **Third deliberate change** (Mirek's decision, 27 October 2026): the Czech nav (header, mobile menu and footer) has a last item "AI školení" → `/ai-skoleni`; the Czech "Co děláme" section (`#sluzby`) ends with a teaser card for the training ("Více o školení" → `/ai-skoleni`); on both `/` and `/en` the contact card of Mirek Sivák links his LinkedIn profile and the Organization JSON-LD carries it as `founder.sameAs`. `/en` has no link to the Czech-only training page. Apart from these, `/` and `/en` are unchanged. |
 | Czech no-break spaces (one-letter words, dashes) | kept (`src/lib/czech.ts`), visible in identical `innerText` ✅; one nbsp that lived in the JSX (`IČO 23010282`) was found by the text comparison and restored |
 | Section order, anchors (`#sluzby`, `#postup`, … / `#services`, …), skip link | identical HTML ✅ |
 | Stylesheet | `src/app/globals.css` → `src/styles/global.css`, unchanged (git rename, 100 %) ✅ |
@@ -135,8 +135,8 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | Admin secrets missing, `ADMIN_PASSWORD` under 24 characters, or no D1 → `/admin/*` 503 "Admin not configured." (was 404 before the login limit) | `--var` overrides ✅ |
 | Admin login limit: 12 wrong logins in a row → 10 × 401, then 429 (`Retry-After: 900`), correct password also 429 while blocked; 25 wrong in parallel → 10 × 401 + 15 × 429; a correct login leaves no row; requests without credentials aren't counted; cron prunes old rows | curl + `wrangler d1 execute` ✅ |
 | Form fields: border #7A7E86 (4.07:1 on the white field, 3.58:1 on the ivory card), 2px solid focus outline #4F7DFF (3.68:1 / 3.23:1) | computed (WCAG relative luminance) ✅ |
-| Production + `EMAIL` binding (wrangler's local simulation, nothing sent): Email Service preferred over Resend, user input HTML-escaped | ✅ |
-| Production + Resend with an invalid key and `.invalid` recipients: API rejects (401) | ✅ (no e-mail could be delivered); since then the log carries only id, channel and `HTTP_401` (not re-run) |
+| Production + `EMAIL` binding (wrangler's local simulation, nothing sent): `from` web@sivak.ai with the name "sivak.ai – poptávky", Reply-To the enquirer, `[TEST] ` subject prefix for TEST names/companies, user input HTML-escaped, admin link on the sending host; a throwing binding is logged as id + error code and doesn't affect the stored enquiry | ✅ |
+| noindex keyed on the hostname: with `Host: sivak-ai.onfire4yhwh.workers.dev` every path (static HTML, images, sitemap, 404, Worker routes) has `X-Robots-Tag: noindex, nofollow` and robots.txt is `Disallow: /`; with `Host: www.sivak.ai` none of it, robots.txt normal | `wrangler dev` + curl ✅ |
 | `NOTIFY_DISABLED=1` in production → no send, log only | ✅ |
 | `SITE_ENV=development` → never sends | ✅ |
 | `astro check`, ESLint, `astro build` | 0 errors ✅ |
