@@ -2,7 +2,9 @@
 # Copy to .dev.vars (gitignored) and fill in what you need. Everything is optional locally.
 # In production, set the secrets with `wrangler secret put NAME`; the non-secret values live in wrangler.jsonc → vars.
 
-# "development" skips Turnstile when its secret is missing and never sends e-mail (it logs instead).
+# "development" (local) or "preview" (the noindexed workers.dev copy, see wrangler.jsonc env.preview):
+# Turnstile may be skipped when its secret is missing or use the test keys, and e-mail is never sent (logged instead).
+# "production" (the default in wrangler.jsonc) requires real Turnstile keys.
 SITE_ENV=development
 
 # Admin at /admin/poptavky (HTTP Basic auth). Without both, the admin returns 404.

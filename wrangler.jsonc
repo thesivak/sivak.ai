@@ -55,5 +55,41 @@
   //   }
   // ],
 
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+
+  "env": {
+    // Noindexed copy for review on workers.dev: `npm run deploy:preview` builds with
+    // CLOUDFLARE_ENV=preview and deploys the Worker "sivak-ai-preview". Bindings and vars are not
+    // inherited from the top level, so they are repeated here.
+    "preview": {
+      "name": "sivak-ai-preview",
+      "workers_dev": true,
+      "routes": [],
+      "assets": {
+        "binding": "ASSETS",
+        "html_handling": "auto-trailing-slash",
+        "not_found_handling": "404-page",
+        // Every request goes through the Worker, which adds X-Robots-Tag and the robots meta tag
+        // and answers robots.txt with "Disallow: /". Fine for a preview, too slow for production.
+        "run_worker_first": true
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "sivak-ai",
+          "database_id": "73a4d2d1-d42a-4b19-a853-463ee16dc1dd",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "vars": {
+        // Turnstile test keys allowed, no e-mail, enquiries stored with source "ai-skoleni-preview"
+        "SITE_ENV": "preview",
+        "ENQUIRY_NOTIFY_TO": "mirek@sivak.ai,matous@sivak.ai",
+        "ENQUIRY_FROM_EMAIL": "",
+        "NOTIFY_DISABLED": "1",
+        // Cloudflare's public always-pass test secret (not a secret); production refuses it
+        "TURNSTILE_SECRET_KEY": "1x0000000000000000000000000000000AA"
+      }
+    }
+  }
 }
