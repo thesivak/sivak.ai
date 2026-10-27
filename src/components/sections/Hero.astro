@@ -1,0 +1,37 @@
+---
+import AgentConsole from "../AgentConsole.astro";
+import Icon from "../Icon.astro";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home;
+  ctaHref: string;
+  processHref: string;
+}
+const { t, ctaHref, processHref } = Astro.props;
+const h = t.hero;
+---
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="hero-eyebrow"><i aria-hidden="true"></i>{h.eyebrow}</p>
+      <h1 class="hero-title" id="hero-title">{h.title} <span class="hero-accent">{h.titleAccent}</span></h1>
+      <p class="hero-lead">{h.lead}</p>
+      {/* 80:20 — the routine agents take over becomes time for what matters */}
+      <div class="hero-gain">
+        <strong class="gain-figure">{h.gain.figure}</strong>
+        <p class="gain-title">{h.gain.title}</p>
+        <p class="gain-text">{h.gain.text}</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-light" href={ctaHref}>{h.primary}<Icon name="arrow" /></a>
+        <a class="btn btn-ghost" href={processHref}>{h.secondary}</a>
+      </div>
+      <ul class="hero-notes">{h.notes.map((note) => <li><Icon name="check" />{note}</li>)}</ul>
+    </div>
+    <div class="hero-visual">
+      <AgentConsole t={t.console} />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,69 @@
+---
+import Icon from "./Icon.astro";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home["console"];
+}
+// An illustrative dashboard: agents work through their steps one after another,
+// then hand the result to a person or report it as done.
+// The HTML is the first agent at its first step; the script below runs the animation.
+const { t } = Astro.props;
+const agent = t.agents[0];
+---
+<figure class="console-wrap" data-agent-console>
+  <div class="console" role="group" aria-label={t.label}>
+    <div class="console-bar">
+      <span class="console-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="console-app">{t.app}</span>
+      <span class="console-live"><i aria-hidden="true"></i>{t.live}</span>
+    </div>
+    <div class="console-tabs" role="group" aria-label={t.agentsLabel}>
+      {
+        t.agents.map((a, i) => (
+          <button type="button" class="console-tab" aria-pressed={i === 0 ? "true" : "false"}><i aria-hidden="true"></i>{a.short}</button>
+        ))
+      }
+    </div>
+    <div class="console-main">
+      <div class="task-head">
+        <div class="task-title">
+          <p class="task-name">{agent.name}</p>
+          <p class="task-sub">{agent.task}</p>
+        </div>
+        <span class="state-chip is-running">{t.states.running}</span>
+      </div>
+      <div class="task-progress" aria-hidden="true"><i style="transform:scaleX(0)"></i></div>
+      <ol class="task-steps">
+        {
+          agent.steps.map((step, i) => (
+            <li class={`task-step is-${i === 0 ? "running" : "pending"}`}>
+              <span class="step-icon" aria-hidden="true"></span>
+              <span class="step-text">{step.text}</span>
+              <span class="step-result">{i === 0 ? "…" : ""}</span>
+              <span class="step-time"></span>
+            </li>
+          ))
+        }
+      </ol>
+      {/* Both layers share one cell, so the console keeps its height when the result appears */}
+      <div class={`task-outcome is-${agent.state}`}>
+        <p class="outcome-pending" aria-hidden="false">{t.preparing}</p>
+        <div class="outcome-result" aria-hidden="true">
+          <p>{agent.outcome}</p>
+          <span class="outcome-action">{agent.action}</span>
+        </div>
+      </div>
+    </div>
+    <div class="console-foot" aria-hidden="true">{t.footer.map((item) => <span>{item}</span>)}</div>
+  </div>
+  <figcaption class="console-caption">{t.caption}</figcaption>
+  <script type="application/json" set:html={JSON.stringify({ states: t.states, agents: t.agents }).replaceAll("<", "\\u003c")} />
+  <span hidden data-check-icon><Icon name="check" /></span>
+</figure>
+
+<script>
+  import { runAgentConsole } from "./agent-console";
+
+  document.querySelectorAll<HTMLElement>("[data-agent-console]").forEach(runAgentConsole);
+</script>

@@ -1,0 +1,69 @@
+// Cloudflare Workers with static assets.
+// `astro build` writes the static site to dist/client and the Worker to dist/server, plus a
+// generated dist/server/wrangler.json derived from this file, which `wrangler dev` and
+// `wrangler deploy` pick up automatically.
+// Production runs as the Worker "sivak-ai" on workers.dev only (no routes, no custom domain yet);
+// there every response is noindex (src/worker.ts, public/_headers). See README.md → "Deploy and cutover".
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sivak-ai",
+  // Wraps Astro's handler: the language redirect on "/" runs before the static assets
+  "main": "./src/worker.ts",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat"],
+  // https://sivak-ai.onfire4yhwh.workers.dev until the cutover; no "routes" on purpose
+  "workers_dev": true,
+
+  "assets": {
+    "binding": "ASSETS",
+    // "/en" serves en.html, "/en/" redirects to "/en" — the same URLs as the Next.js site
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    // Static files are served without invoking the Worker, except:
+    //  - where the Worker decides the language: "/" (browser language, cookie), "/en" (?lang= switch),
+    //    "/en/" (308 to "/en" as before) and the old "/cs" URLs;
+    //  - the enquiry API /api/poptavka (on-demand);
+    //  - /robots.txt, which the Worker answers with "Disallow: /" on *.workers.dev only.
+    "run_worker_first": ["/", "/en", "/en/", "/cs", "/cs/*", "/api/*", "/robots.txt"]
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sivak-ai",
+      // Created in WEUR; migrations/0001 is applied remotely. Local development (`--local`,
+      // `npm run dev`, `npm run preview`) uses a local copy in .wrangler/state, never this database.
+      "database_id": "73a4d2d1-d42a-4b19-a853-463ee16dc1dd",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, IP_HASH_SALT) are set with
+  // `wrangler secret put` in production and in .dev.vars locally — see .dev.vars.example.
+  // No Turnstile test key belongs here: production refuses them.
+  "vars": {
+    // "production" makes the form refuse to skip Turnstile; .dev.vars sets "development"
+    "SITE_ENV": "production",
+    "ENQUIRY_NOTIFY_TO": "mirek@sivak.ai,matous@sivak.ai",
+    // Sender on sivak.ai, which is onboarded for Cloudflare Email Sending (shown as "sivak.ai – poptávky")
+    "ENQUIRY_FROM_EMAIL": "web@sivak.ai",
+    "NOTIFY_DISABLED": "0"
+  },
+
+  // Cloudflare Email Service, the only notification channel (src/lib/server/notify.ts). sivak.ai is
+  // onboarded for Email Sending (return path cf-bounce.sivak.ai, DKIM selector cf-bounce); MX stays on
+  // Google. No destination-address verification and no Email Routing are needed. The binding may only
+  // write to these two addresses; the recipients themselves come from ENQUIRY_NOTIFY_TO.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_destination_addresses": ["mirek@sivak.ai", "matous@sivak.ai"]
+    }
+  ],
+
+  "observability": { "enabled": true },
+
+  // Hourly retention cleanup (src/worker.ts → scheduled): rate-limit attempts after a day,
+  // enquiries after 24 months, as the privacy policy says
+  "triggers": { "crons": ["0 * * * *"] }
+}

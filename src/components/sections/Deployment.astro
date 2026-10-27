@@ -1,0 +1,39 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { IconName } from "../icons";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home["deployment"];
+}
+const { t } = Astro.props;
+const ICONS: IconName[] = ["cloud", "server"];
+// Where agents run: cloud models, or local models on the client's own hardware that work offline
+---
+<section class="section dark deployment" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="container">
+    <div class="section-head reveal">
+      <Eyebrow index="05">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+    </div>
+    <ul class="deploy-grid reveal">
+      {
+        t.options.map((option, i) => (
+          <li class={`deploy-card${option.highlight ? " is-highlight" : ""}`}>
+            <div class="deploy-top">
+              <span class="deploy-icon"><Icon name={ICONS[i] ?? "server"} /></span>
+              {option.badge && <span class="deploy-badge"><Icon name="offline" />{option.badge}</span>}
+            </div>
+            <h3>{option.title}</h3>
+            <p class="deploy-text">{option.text}</p>
+            <dl class="deploy-specs">{option.specs.map(([key, value]) => <div><dt>{key}</dt><dd>{value}</dd></div>)}</dl>
+            <p class="deploy-fit">{option.fit}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

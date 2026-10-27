@@ -1,0 +1,88 @@
+---
+import Base from "@/layouts/Base.astro";
+// after Base, so its rules come after global.css and can refine it
+import "@/styles/landing.css";
+import SiteHeader from "@/components/SiteHeader.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
+import LandingHero from "@/components/landing/LandingHero.astro";
+import Audience from "@/components/landing/Audience.astro";
+import Program from "@/components/landing/Program.astro";
+import Trainer from "@/components/landing/Trainer.astro";
+import Reference from "@/components/landing/Reference.astro";
+import Price from "@/components/landing/Price.astro";
+import Faq from "@/components/sections/Faq.astro";
+import EnquiryForm from "@/components/landing/EnquiryForm.astro";
+import LandingSubnav from "@/components/landing/LandingSubnav.astro";
+import { getFaq, getHome, getLanding } from "@/lib/content";
+import { COMPANY, MIREK_LINKEDIN, PEOPLE, SITE_URL } from "@/lib/site";
+
+// The Google Ads landing page for "AI školení". Czech only: there is no /en/ai-skoleni (see README).
+const t = await getLanding("ai-skoleni");
+const home = await getHome("cs");
+const faq = await getFaq("ai-skoleni");
+const url = `${SITE_URL}/ai-skoleni`;
+const formHref = `#${t.form.id}`;
+// The top navbar is the homepage's (same items, CTA and language switch); the page's own sections are in
+// LandingSubnav under it, and in the footer
+const nav = { ...home.nav, items: t.nav.items, cta: t.nav.cta };
+const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
+
+const plain = (html: string) => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+const founder = PEOPLE[0];
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: "Jednodenní AI školení pro firmy",
+    description: plain(t.metadata.description),
+    url,
+    inLanguage: "cs",
+    provider: { "@type": "Organization", name: COMPANY.brand, legalName: COMPANY.legalName, url: `${SITE_URL}/` },
+    instructor: {
+      "@type": "Person",
+      name: t.trainer.name,
+      jobTitle: founder.role,
+      worksFor: { "@type": "Organization", name: COMPANY.brand },
+      ...(MIREK_LINKEDIN ? { sameAs: [MIREK_LINKEDIN] } : {}),
+    },
+    offers: { "@type": "Offer", price: "35000", priceCurrency: "CZK", category: "Paid", url: `${url}#${t.price.id}` },
+    hasCourseInstance: { "@type": "CourseInstance", courseWorkload: "P1D" },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: plain(item.question),
+      acceptedAnswer: { "@type": "Answer", text: plain(item.answerHtml) },
+    })),
+  },
+];
+---
+<Base
+  lang="cs"
+  title={t.metadata.title}
+  description={t.metadata.description}
+  canonical={url}
+  ogTitle={t.metadata.ogTitle}
+  ogDescription={t.metadata.ogDescription}
+  ogImage={{ path: "/og/ai-skoleni.png", alt: t.metadata.ogTitle }}
+  jsonLd={jsonLd}
+>
+  <a class="skip-link" href="#main">{home.skipLink}</a>
+  <SiteHeader nav={home.nav} langSwitch={home.langSwitch} homeHref="/" ctaHref={`/#${home.contact.id}`} switchHref="/en?lang=en" switchLang="en" sectionBase="/" />
+  <LandingSubnav items={t.nav.items} cta={t.nav.cta} ctaHref={formHref} />
+  <main id="main">
+    <LandingHero t={t} formHref={formHref} programHref={`#${t.program.id}`} />
+    <Audience t={t.audience} />
+    <Program t={t.program} />
+    <Trainer t={t.trainer} />
+    <Reference t={t.reference} />
+    <Price t={t.price} formHref={formHref} />
+    <Faq t={t.faq} items={faq} index="06" />
+    <EnquiryForm t={t.form} />
+  </main>
+  {/* No e-mail addresses on the landing page: the form is the only way to get in touch */}
+  <SiteFooter lang="cs" t={{ ...home, nav }} homeHref="/" switchHref="/en?lang=en" switchLang="en" contact={{ href: formHref, label: t.nav.cta }} />
+  {adsId && <script is:inline slot="end" set:html={`gtag('config', ${JSON.stringify(adsId)});`} />}
+</Base>

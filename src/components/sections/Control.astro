@@ -1,0 +1,64 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { IconName } from "../icons";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home["control"];
+}
+const { t } = Astro.props;
+const m = t.manifest;
+const ICONS: IconName[] = ["approve", "shield", "lock", "layers", "eye", "chart"];
+
+// The agent's permissions written out like its configuration file
+type Line = { key?: string; value?: string; level?: string; indent?: boolean };
+const lines: Line[] = [
+  { key: m.agent[0], value: m.agent[1] },
+  { key: m.accessKey },
+  ...m.access.map(([name, level]) => ({ value: name, level, indent: true })),
+  ...m.rest.map(([key, value]) => ({ key, value })),
+];
+---
+<section class="section dark control" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="control-glow" aria-hidden="true"></div>
+  <div class="container">
+    <div class="section-head reveal">
+      <Eyebrow index="06">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+    </div>
+    <div class="control-grid">
+      <figure class="manifest reveal" aria-label={m.label}>
+        <figcaption class="manifest-bar"><Icon name="shield" />{m.file}</figcaption>
+        <div class="manifest-body">
+          {
+            lines.map((line, i) => (
+              <div class="m-line">
+                <span class="m-ln" aria-hidden="true">{i + 1}</span>
+                <code>{line.indent ? (
+                  <span class="m-indent"><span class="m-val">{line.value}:</span> <span class="m-level">{line.level}</span></span>
+                ) : line.value === undefined ? (
+                  <span class="m-key">{line.key}:</span>
+                ) : (
+                  <Fragment><span class="m-key">{line.key}:</span> <span class="m-val">{line.value}</span></Fragment>
+                )}</code>
+              </div>
+            ))
+          }
+        </div>
+      </figure>
+      <ul class="control-items reveal">
+        {
+          t.items.map((item, i) => (
+            <li class="c-item">
+              <Icon name={ICONS[i] ?? "shield"} />
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>

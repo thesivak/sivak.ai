@@ -1,26 +1,43 @@
 {
   "name": "sivak-ai",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "description": "sivak.ai company website: Astro on Cloudflare Workers",
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "lint": "eslint .",
+    "preview": "astro build && wrangler dev --local --port 8787",
+    "db:migrate:local": "astro build && wrangler d1 migrations apply sivak-ai --local",
+    "db:migrate:remote": "wrangler d1 migrations apply sivak-ai --remote -c wrangler.jsonc",
+    "deploy": "astro build && wrangler deploy"
   },
   "dependencies": {
-    "next": "16.1.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "@astrojs/cloudflare": "^14.4.2",
+    "@astrojs/markdown-satteri": "^0.4.5",
+    "astro": "^7.4.2"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@astrojs/check": "^0.9.12",
+    "@cloudflare/workers-types": "^5.20261027.1",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.13.0",
+    "eslint-plugin-astro": "^3.2.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "wrangler": "^4.153.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "esbuild@0.27.3": true,
+    "workerd@1.20261019.1": true,
+    "sharp@0.35.5": true,
+    "sharp@0.34.5": true,
+    "workerd@1.20261023.1": true
   }
 }

@@ -3,6 +3,17 @@ import type { Locale } from "@/i18n/config";
 // Company facts shared by the contact section, the footer and the structured data.
 export const SITE_URL = "https://www.sivak.ai";
 
+// Mirek's LinkedIn profile: the /ai-skoleni trainer section, the homepage contact card and JSON-LD sameAs.
+// Set it back to a "/in/TODO" placeholder and every LinkedIn link disappears.
+export const MIREK_LINKEDIN_URL = "https://www.linkedin.com/in/mireksivak/";
+export const MIREK_LINKEDIN: string | null = MIREK_LINKEDIN_URL.includes("/in/TODO") ? null : MIREK_LINKEDIN_URL;
+
+// Draft privacy policy, waiting for the legal check (see the comment in the page)
+export const PRIVACY_POLICY_URL = "/ochrana-osobnich-udaju";
+
+// Google Analytics 4, on every page as on the Next.js site
+export const GA_MEASUREMENT_ID = "G-S98V3B32ZL";
+
 export const COMPANY = {
   brand: "sivak.ai",
   legalName: "TheSivak s.r.o.",
@@ -15,12 +26,13 @@ export type Person = {
   role: string;
   email: string;
   phone?: string;
+  linkedin?: string;
   vcard: string;
 };
 
 // Mirek is listed with email only; the phone number belongs to the key account manager.
 export const PEOPLE: Person[] = [
-  { name: "Mirek Sivák", role: "Founder & CEO", email: "mirek@sivak.ai", vcard: "/mirek-sivak.vcf" },
+  { name: "Mirek Sivák", role: "Founder & CEO", email: "mirek@sivak.ai", linkedin: MIREK_LINKEDIN ?? undefined, vcard: "/mirek-sivak.vcf" },
   {
     name: "Matouš Čep",
     role: "Key account manager",
@@ -31,6 +43,9 @@ export const PEOPLE: Person[] = [
 ];
 
 const [FOUNDER, ACCOUNT_MANAGER] = PEOPLE;
+
+// The controller contact in the privacy policy. Not shown on /ai-skoleni, where the form is the only contact.
+export const PRIVACY_CONTACT_EMAIL = ACCOUNT_MANAGER.email;
 
 // Meeting requests go to the key account manager, with the founder in copy.
 export function meetingHref(subject: string): string {
@@ -58,7 +73,13 @@ export function organizationJsonLd(lang: Locale) {
     logo: `${SITE_URL}/brand/logo.svg`,
     identifier: { "@type": "PropertyValue", propertyID: "IČO", value: COMPANY.ico },
     address: { "@type": "PostalAddress", addressLocality: COMPANY.city, addressCountry: "CZ" },
-    founder: { "@type": "Person", name: FOUNDER.name, jobTitle: FOUNDER.role, email: FOUNDER.email },
+    founder: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      jobTitle: FOUNDER.role,
+      email: FOUNDER.email,
+      ...(FOUNDER.linkedin ? { sameAs: [FOUNDER.linkedin] } : {}),
+    },
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "sales",

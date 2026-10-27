@@ -1,0 +1,48 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { IconName } from "../icons";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home["services"];
+}
+const { t } = Astro.props;
+const ICONS: IconName[] = ["agent", "data", "flow", "terminal"];
+---
+<section class="section light services" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container">
+    <div class="section-head reveal">
+      <Eyebrow index="02">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+    </div>
+    <ul class="service-grid reveal">
+      {
+        t.items.map((item, i) => (
+          <li class="service-card">
+            <div class="service-top">
+              <span class="service-icon"><Icon name={ICONS[i] ?? "agent"} /></span>
+              <span class="service-num">0{i + 1}</span>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+            <ul class="tags">{item.tags.map((tag) => <li>{tag}</li>)}</ul>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      t.training && (
+        <div class="service-training reveal">
+          <div class="service-training-copy">
+            <p class="service-training-label">{t.training.label}</p>
+            <h3>{t.training.title}</h3>
+            <p>{t.training.text}</p>
+          </div>
+          <a class="btn btn-light" href={t.training.href} hreflang={t.training.hreflang}>{t.training.cta}<Icon name="arrow" /></a>
+        </div>
+      )
+    }
+  </div>
+</section>

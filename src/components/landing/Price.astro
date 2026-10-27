@@ -1,0 +1,26 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { Landing } from "@/lib/content";
+
+interface Props {
+  t: Landing["price"];
+  formHref: string;
+}
+const { t, formHref } = Astro.props;
+---
+<section class="section light lp-price" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container lp-price-grid">
+    <div class="section-head reveal">
+      <Eyebrow index="05">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+    </div>
+    <div class="lp-price-card reveal">
+      <p class="lp-price-figure">{t.figure}</p>
+      <p class="lp-price-unit">{t.unit}</p>
+      <h3 class="lp-price-label">{t.includedLabel}</h3>
+      <ul class="lp-included">{t.included.map((item) => <li><Icon name="check" />{item}</li>)}</ul>
+      <a class="btn btn-dark" href={formHref}>{t.cta}<Icon name="arrow" /></a>
+    </div>
+  </div>
+</section>

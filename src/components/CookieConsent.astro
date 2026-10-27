@@ -1,0 +1,101 @@
+---
+import type { Locale } from "@/i18n/config";
+import { CONSENT_TEXT } from "@/lib/consent";
+import { czechSpacing } from "@/lib/czech";
+import { PRIVACY_POLICY_URL } from "@/lib/site";
+
+// Cookie banner, on every page that uses Base. Rendered hidden; cookie-consent.ts shows it when there is
+// no current choice or when the footer link "Nastavení cookies" asks for it. Fixed to the bottom of the
+// viewport, so showing it moves nothing on the page.
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = lang === "cs" ? czechSpacing(CONSENT_TEXT.cs) : CONSENT_TEXT[lang];
+---
+<div class="cc" role="dialog" aria-modal="false" aria-labelledby="cc-title" aria-describedby="cc-text" tabindex="-1" hidden data-cookie-consent>
+  <h2 class="cc-title" id="cc-title">{t.title}</h2>
+  <p class="cc-text" id="cc-text">{t.text} <a href={PRIVACY_POLICY_URL}>{t.policy}</a></p>
+  <fieldset class="cc-settings" id="cc-settings" hidden data-cc-settings>
+    <legend class="sr-only">{t.categories}</legend>
+    <div class="cc-option">
+      <input type="checkbox" id="cc-necessary" checked disabled />
+      <label for="cc-necessary"><strong>{t.necessary}</strong> {t.necessaryText}</label>
+    </div>
+    <div class="cc-option">
+      <input type="checkbox" id="cc-analytics" data-cc-toggle="analytics" />
+      <label for="cc-analytics"><strong>{t.analytics}</strong> {t.analyticsText}</label>
+    </div>
+    <div class="cc-option">
+      <input type="checkbox" id="cc-marketing" data-cc-toggle="marketing" />
+      <label for="cc-marketing"><strong>{t.marketing}</strong> {t.marketingText}</label>
+    </div>
+  </fieldset>
+  <div class="cc-actions">
+    {/* Accept and reject look the same: neither is the "default" */}
+    <button type="button" class="cc-btn cc-btn-main" data-cc="accept">{t.accept}</button>
+    <button type="button" class="cc-btn cc-btn-main" data-cc="reject">{t.reject}</button>
+    <button type="button" class="cc-btn cc-btn-quiet" data-cc="settings" aria-expanded="false" aria-controls="cc-settings">{t.settings}</button>
+    <button type="button" class="cc-btn cc-btn-quiet" data-cc="save" hidden>{t.save}</button>
+  </div>
+</div>
+
+<script>
+  import { setupCookieConsent } from "./cookie-consent";
+
+  const banner = document.querySelector<HTMLElement>("[data-cookie-consent]");
+  if (banner) setupCookieConsent(banner);
+</script>
+
+<style>
+  .cc {
+    position: fixed;
+    z-index: 100;
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    display: grid;
+    gap: 14px;
+    max-width: 560px;
+    max-height: calc(100svh - 32px);
+    overflow-y: auto;
+    padding: 22px 24px;
+    border: 1px solid var(--line-dark-strong);
+    border-radius: 18px;
+    background: var(--navy-900);
+    box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .6);
+    color: var(--on-dark);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .cc[hidden], .cc-settings[hidden], .cc-btn[hidden] { display: none; }
+  .cc:focus { outline: none; }
+  .cc :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .cc-title { font-size: 18px; font-weight: 500; line-height: 1.3; }
+  .cc-text { color: var(--on-dark-2); }
+  .cc-text a { color: var(--on-dark); text-underline-offset: 3px; }
+  .cc-settings { display: grid; gap: 12px; margin: 0; padding: 14px 0 2px; border: 0; border-top: 1px solid var(--line-dark-strong); }
+  .cc-option { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; align-items: start; }
+  .cc-option input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--signal); }
+  .cc-option input:disabled { opacity: .7; }
+  .cc-option label { color: var(--on-dark-2); }
+  .cc-option strong { font-weight: 500; color: var(--on-dark); }
+  .cc-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .cc-btn {
+    min-height: 44px;
+    padding: 0 20px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color .2s, border-color .2s;
+  }
+  .cc-btn-main { flex: 1 1 140px; background: var(--ivory); color: var(--navy-900); }
+  .cc-btn-main:hover { background: #fff; }
+  .cc-btn-quiet { background: transparent; border-color: var(--line-dark-strong); color: var(--on-dark); }
+  .cc-btn-quiet:hover { border-color: rgba(242, 240, 235, .36); }
+  @media (min-width: 640px) {
+    .cc { right: auto; left: 24px; bottom: 24px; }
+  }
+</style>

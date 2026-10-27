@@ -1,0 +1,58 @@
+---
+import BrandLogo from "./BrandLogo.astro";
+import type { Locale } from "@/i18n/config";
+import { CONSENT_TEXT } from "@/lib/consent";
+import { COMPANY, PEOPLE } from "@/lib/site";
+
+interface Props {
+  lang: Locale;
+  t: {
+    nav: { home: string; items: { id: string; label: string; href?: string; hreflang?: string }[] };
+    langSwitch: { label: string };
+    footer: { tagline: string; navLabel: string; contactLabel: string; operatedBy: string; idLabel: string; registry: string };
+  };
+  homeHref: string;
+  switchHref: string;
+  switchLang: string;
+  /** Prefix of the section links (see SiteHeader); empty = links to sections of this page */
+  sectionBase?: string;
+  /** Replaces the e-mail addresses in the contact column (the landing page, where the form is the only contact) */
+  contact?: { href: string; label: string };
+}
+const { lang, t, homeHref, switchHref, switchLang, contact, sectionBase = "" } = Astro.props;
+const f = t.footer;
+---
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="footer-logo" href={homeHref} aria-label={t.nav.home}><BrandLogo /></a>
+        <p>{f.tagline}</p>
+      </div>
+      <nav class="footer-col" aria-label={f.navLabel}>
+        <h2>{f.navLabel}</h2>
+        <ul>
+          {t.nav.items.map((item) => <li><a href={item.href ?? `${sectionBase}#${item.id}`} hreflang={item.hreflang}>{item.label}</a></li>)}
+        </ul>
+      </nav>
+      <div class="footer-col">
+        <h2>{f.contactLabel}</h2>
+        <ul>
+          {contact
+            ? <li><a href={contact.href}>{contact.label}</a></li>
+            : PEOPLE.map((person) => <li><a href={`mailto:${person.email}`}>{person.email}</a></li>)}
+          <li><a href={switchHref} hreflang={switchLang} lang={switchLang}>{t.langSwitch.label}</a></li>
+        </ul>
+      </div>
+    </div>
+    {/* § 435 of the Czech Civil Code: name, seat, company ID and register entry */}
+    <div class="footer-legal">
+      <p>{f.operatedBy} {COMPANY.legalName}, {COMPANY.city}, {f.idLabel}{"\u00a0"}{COMPANY.ico}. {f.registry}</p>
+      <p>
+        © {new Date().getFullYear()} {COMPANY.legalName}
+        {/* Reopens the cookie banner to change or withdraw consent; cookie-consent.ts unhides it (no JS, no Google tags) */}
+        <button type="button" class="footer-cookies" data-cookie-settings hidden>{CONSENT_TEXT[lang].footerLink}</button>
+      </p>
+    </div>
+  </div>
+</footer>

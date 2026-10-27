@@ -1,0 +1,29 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { Landing } from "@/lib/content";
+
+interface Props {
+  t: Landing["reference"];
+}
+const { t } = Astro.props;
+---
+<section class="section dark lp-reference" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="control-glow" aria-hidden="true"></div>
+  <div class="container lp-reference-grid">
+    <div class="section-head reveal">
+      <Eyebrow index="04">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+    </div>
+    <article class="lp-case reveal" aria-labelledby={`${t.id}-name`}>
+      <div class="lp-case-top">
+        <span class="deploy-icon"><Icon name="agent" /></span>
+        <span class="lp-case-client">{t.client}</span>
+      </div>
+      <h3 id={`${t.id}-name`}>{t.name}</h3>
+      {t.text.map((paragraph) => <p>{paragraph}</p>)}
+      <ul class="tags lp-case-tags">{t.facts.map((fact) => <li>{fact}</li>)}</ul>
+      <a class="lp-case-link" href="/#sluzby">{t.link}<Icon name="arrow" /></a>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,33 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { FaqItem } from "@/lib/content";
+
+interface Props {
+  t: { id: string; eyebrow: string; title: string };
+  items: FaqItem[];
+  index: string;
+}
+const { t, items, index } = Astro.props;
+---
+<section class="section light faq" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container faq-grid">
+    <div class="section-head reveal">
+      <Eyebrow index={index}>{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+    </div>
+    <div class="faq-list reveal">
+      {
+        items.map((item) => (
+          <details class="faq-item">
+            <summary>
+              <span>{item.question}</span>
+              <span class="faq-icon" aria-hidden="true"><Icon name="plus" /></span>
+            </summary>
+            <Fragment set:html={item.answerHtml} />
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

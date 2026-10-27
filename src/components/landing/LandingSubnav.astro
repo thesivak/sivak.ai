@@ -1,0 +1,18 @@
+---
+// The page's own sections and the enquiry button, in a bar that sticks under the shared site header.
+// On phones the links scroll sideways; the button stays put.
+interface Props {
+  items: { id: string; label: string }[];
+  cta: string;
+  ctaHref: string;
+}
+const { items, cta, ctaHref } = Astro.props;
+---
+<nav class="lp-subnav" aria-label="Na této stránce">
+  <div class="container lp-subnav-inner">
+    <ul class="lp-subnav-links">
+      {items.map((item) => <li><a href={`#${item.id}`}>{item.label}</a></li>)}
+    </ul>
+    <a class="btn btn-light btn-sm lp-subnav-cta" href={ctaHref}>{cta}</a>
+  </div>
+</nav>

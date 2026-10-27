@@ -1,0 +1,43 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import { MARK, MARK_VIEWBOX } from "../logo";
+import type { Home } from "@/lib/content";
+import { PEOPLE, initials, meetingHref, telHref } from "@/lib/site";
+
+interface Props {
+  t: Home["contact"];
+}
+const { t } = Astro.props;
+---
+<section class="section dark contact" id={t.id} aria-labelledby={`${t.id}-title`}>
+  {/* the doorway from the logo, as an open door into the conversation */}
+  <svg class="contact-mark" viewBox={MARK_VIEWBOX} aria-hidden="true" focusable="false"><path d={MARK}></path></svg>
+  <div class="container contact-grid">
+    <div class="contact-copy reveal">
+      <Eyebrow index="09">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title contact-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+      <a class="btn btn-light contact-cta" href={meetingHref(t.mailSubject)}>{t.cta}<Icon name="arrow" /></a>
+    </div>
+    <ul class="people reveal">
+      {
+        PEOPLE.map((person) => (
+          <li class="person">
+            <span class="avatar" aria-hidden="true">{initials(person.name)}</span>
+            <div class="person-body">
+              <h3>{person.name}</h3>
+              <p class="person-role">{person.role}</p>
+              <ul class="person-links">
+                <li><a href={`mailto:${person.email}`}><Icon name="mail" /><span class="sr-only">{t.emailLabel}: </span>{person.email}</a></li>
+                {person.phone && <li><a href={telHref(person.phone)}><Icon name="phone" /><span class="sr-only">{t.phoneLabel}: </span>{person.phone}</a></li>}
+                {person.linkedin && <li><a href={person.linkedin} rel="noopener" target="_blank"><Icon name="arrow" />LinkedIn</a></li>}
+              </ul>
+              <a class="vcard-link" href={person.vcard} download><Icon name="download" />{t.saveContact}</a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

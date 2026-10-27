@@ -7,9 +7,11 @@ The doorway symbol was reconstructed with straight segments and rounded outer
 corners. The lettering, including the circular dots, was converted to vector
 outlines from the approved image. The SVGs contain no embedded bitmap or fonts.
 
-The shared inline geometry lives in `src/components/Logo.tsx`. The site header
+The shared inline geometry lives in `src/components/logo.ts`. The site header
 and footer use the full logo, and the contact section draws the doorway symbol as
-a hairline outline. `src/app/icon.svg` uses the same doorway symbol.
+a hairline outline. The website icons (`public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`,
+`icon-192.png`, `icon-512.png`, ivory mark on navy) use the same doorway symbol; they are linked from
+`src/layouts/Base.astro` with `?v=2` and listed in `public/site.webmanifest`.
 
 Standalone exports have transparent backgrounds:
 

@@ -1,0 +1,37 @@
+---
+import Icon from "../Icon.astro";
+import type { Landing } from "@/lib/content";
+import { initials } from "@/lib/site";
+
+interface Props {
+  t: Landing;
+  formHref: string;
+  programHref: string;
+}
+const { t, formHref, programHref } = Astro.props;
+const h = t.hero;
+const trainer = t.trainer;
+---
+{/* What it is, who leads it and how to ask: one column on phones, the trainer card on the right from tablet up */}
+<section class="hero lp-hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container lp-hero-grid">
+    <p class="lp-hero-eyebrow">{h.eyebrow}</p>
+    <h1 class="lp-hero-title" id="hero-title">{h.title} <span class="hero-accent">{h.titleAccent}</span></h1>
+    <div class="lp-hero-trainer">
+      <span class="avatar" aria-hidden="true">{initials(trainer.name)}</span>
+      <p class="lp-hero-trainer-who">
+        <span class="lp-hero-trainer-label">{h.trainerLabel}</span>
+        <span class="lp-hero-trainer-name">{trainer.name}</span>
+        <span class="lp-hero-trainer-role">{trainer.role}</span>
+      </p>
+      <p class="lp-hero-trainer-note">{h.trainerNote}</p>
+    </div>
+    <p class="lp-hero-lead">{h.lead}</p>
+    <p class="lp-hero-price"><strong>{h.price.figure}</strong> <span>{h.price.unit}</span></p>
+    <div class="lp-hero-actions">
+      <a class="btn btn-light" href={formHref}>{h.primary}<Icon name="arrow" /></a>
+      <a class="lp-hero-link" href={programHref}>{h.secondary}</a>
+    </div>
+  </div>
+</section>

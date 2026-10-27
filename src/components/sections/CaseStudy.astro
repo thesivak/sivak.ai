@@ -1,0 +1,39 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { IconName } from "../icons";
+import type { Home } from "@/lib/content";
+
+interface Props {
+  t: Home["case"];
+}
+const { t } = Astro.props;
+const ICONS: IconName[] = ["chat", "browser", "code", "pen"];
+---
+<section class="section light case" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container">
+    <div class="case-head reveal">
+      <div class="section-head">
+        <Eyebrow index="07">{t.eyebrow}</Eyebrow>
+        <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+        <p class="section-lead">{t.lead}</p>
+      </div>
+      <ul class="case-facts">{t.facts.map((fact) => <li><Icon name="check" />{fact}</li>)}</ul>
+    </div>
+    <ul class="case-grid reveal">
+      {
+        t.agents.map((agent, i) => (
+          <li class="case-card">
+            <div class="case-card-top">
+              <span class="case-icon"><Icon name={ICONS[i] ?? "agent"} /></span>
+              <span class="case-status"><i aria-hidden="true"></i>{t.status}</span>
+            </div>
+            <h3>{agent.name}</h3>
+            <p>{agent.text}</p>
+            <p class="case-meta">{agent.meta}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
