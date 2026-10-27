@@ -1,0 +1,183 @@
+# Texty landing page /ai-skoleni (jen česky). Otázky a odpovědi jsou v src/content/faq/ai-skoleni/*.md.
+# Schéma: src/content.config.ts. Pevné mezery za jednopísmennými předložkami doplní web sám.
+# Pravidla obsahu: žádná vymyšlená čísla, reference ani citace klientů. Fakta o Mirkovi a sivak.ai
+# jen ta, která stojí i na hlavní stránce (src/content/home/cs.yaml).
+# "35 000 Kč" je zapsané s pevnými mezerami, aby se částka nezalomila.
+
+metadata:
+  title: AI školení pro firmy – jednodenní praktický workshop | sivak.ai
+  description: Jednodenní AI školení pro zaměstnance, management i CEO. ChatGPT a další nástroje, prompty, bezpečná práce s daty a úvod do AI agentů. 35 000 Kč, konečná cena.
+  ogTitle: Jednodenní AI školení pro firmy
+  ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po bezpečnou práci s daty a AI agenty. Školí Miroslav Sivák. 35 000 Kč, konečná cena.
+
+nav:
+  items:
+    - id: pro-koho
+      label: Pro koho
+    - id: program
+      label: Program
+    - id: lektor
+      label: Lektor
+    - id: cena
+      label: Cena
+    - id: otazky
+      label: Otázky
+  cta: Poptat školení
+
+hero:
+  eyebrow: AI školení pro firmy
+  # Tři řádky: "pro váš tým" drží pohromadě pevné mezery
+  title: |-
+    Jednodenní
+    AI školení
+  titleAccent: pro váš tým
+  lead: Praktický den s umělou inteligencí pro zaměstnance, management i vedení firmy. Ukážeme ChatGPT a další nástroje na práci, kterou ve vaší firmě opravdu děláte, a domluvíme pravidla, aby s AI pracovali bezpečně.
+  price:
+    figure: 35 000 Kč
+    title: za celý den školení pro vaši firmu
+    text: Konečná cena – nejsme plátci DPH. Program připravíme na míru vašemu týmu.
+  primary: Nezávazně poptat
+  secondary: Program dne
+  notes:
+    - Jeden den, celý tým
+    - Program na míru vaší firmě
+    - Školí praktik, který AI agenty staví
+    - Konečná cena bez DPH navíc
+
+# Karta v hero: shrnutí, které jde rovnou přeposlat nadřízenému
+summary:
+  label: Shrnutí nabídky
+  file: ai-skoleni.txt
+  rows:
+    - [co, jednodenní AI školení]
+    - [pro koho, "zaměstnanci, management, CEO"]
+    - [rozsah, 1 den]
+    - [program, na míru vaší firmě]
+    - [lektor, "Miroslav Sivák, sivak.ai"]
+    - [cena, "35 000 Kč, konečná"]
+    - [DPH, nejsme plátci]
+    - [další krok, poptávkový formulář]
+  forward: Přeposlat shrnutí e-mailem
+  forwardSubject: "Návrh: jednodenní AI školení pro naši firmu"
+  forwardIntro: "Dobrý den, posílám nabídku jednodenního AI školení pro naši firmu:"
+
+audience:
+  id: pro-koho
+  eyebrow: Pro koho
+  title: Pro každého, kdo pracuje u počítače
+  lead: Školení vedeme pro jednu skupinu i pro celou firmu. Příklady a cvičení vybíráme podle toho, kdo bude v místnosti.
+  items:
+    - title: Zaměstnanci
+      text: Asistentky, HR, obchod, účetnictví, marketing. Naučí se používat AI na každodenní práci – e-maily, dokumenty, tabulky, shrnutí a rešerše – a poznat, kdy výsledku nevěřit.
+    - title: Management
+      text: Vedoucí týmů a oddělení. Kde AI týmu ušetří čas, jak nastavit pravidla jejího používání a jak kontrolovat, co AI připraví.
+    - title: CEO a vedení firmy
+      text: Majitelé a ředitelé. Co AI dnes opravdu zvládne, kde se ve firmě vyplatí nejdřív a co znamenají AI agenti pro chod firmy.
+  note: Smíšená skupina je v pořádku – program sestavíme tak, aby si odnesl každý.
+
+program:
+  id: program
+  eyebrow: Program dne
+  title: Co se váš tým za jeden den naučí
+  lead: Málo teorie, hodně práce na příkladech z vaší firmy. Každý si nástroje vyzkouší sám.
+  parts:
+    - label: Dopoledne
+      blocks:
+        - title: Jak AI funguje a co od ní čekat
+          text: Přehled nástrojů a jejich rozdílů, bez technického žargonu.
+          points:
+            - ChatGPT, Claude, Gemini a Microsoft Copilot
+            - co AI umí dobře a kde chybuje
+            - proč si AI někdy vymýšlí a jak to poznat
+        - title: Prompting v praxi
+          text: Jak zadávat úkoly, aby výsledek seděl napoprvé.
+          points:
+            - kontext, role, příklady a formát výstupu
+            - práce s dokumenty, tabulkami a delšími texty
+            - vlastní knihovna osvědčených zadání
+        - title: AI na vaší každodenní práci
+          text: Ukázky a cvičení na úlohách, které účastníci řeší každý den.
+          points:
+            - e-maily, zápisy z porad, shrnutí a překlady
+            - podklady, přehledy a rešerše pro vedení
+            - inzeráty, interní komunikace a dokumenty pro HR
+    - label: Odpoledne
+      blocks:
+        - title: Bezpečnost a firemní pravidla
+          text: Jak s AI pracovat, aby firemní a osobní data zůstala v bezpečí.
+          points:
+            - jaká data do AI nepatří
+            - osobní údaje, GDPR a firemní účty
+            - návrh jednoduchých pravidel používání AI ve firmě
+        - title: Úvod do AI agentů a automatizace
+          text: Co přijde po chatu – agenti, kteří převezmou rutinní práci u počítače.
+          points:
+            - rozdíl mezi chatem a AI agentem
+            - ukázky agentů z naší praxe
+            - agent připraví, člověk rozhodne
+        - title: Workshop na vašich úlohách a otázky
+          text: Účastníci si AI vyzkouší na vlastní práci a ptají se na cokoli.
+          points:
+            - řešení konkrétních úloh účastníků
+            - otázky a odpovědi
+            - doporučení, kde ve firmě začít
+  note: Orientační program. Před školením ho upravíme podle vaší firmy, složení skupiny a nástrojů, které používáte.
+
+trainer:
+  id: lektor
+  eyebrow: Kdo školí
+  title: Školí někdo, kdo AI agenty sám staví
+  name: Miroslav Sivák
+  role: Founder & CEO, sivak.ai
+  bio:
+    - Mirek vede sivak.ai – firmu, která pro české firmy staví AI agenty na práci u počítače, nasazuje je a provozuje. Pro softwarovou firmu například provozuje agenty, kteří připravují odpovědi zákaznické podpory a testují nové verze aplikace.
+    - Na školení proto neukazuje teorii z prezentací, ale postupy, které se osvědčily v provozu. A stejně otevřeně mluví o tom, kde má AI své limity a kde musí rozhodnout člověk.
+  facts:
+    - Founder & CEO sivak.ai
+    - Staví a provozuje AI agenty pro firmy
+    - Agenti v cloudu i na vlastním serveru firmy
+    - "Zásada: agent připraví, člověk rozhodne"
+  linkedinLabel: Profil na LinkedInu
+
+reference:
+  id: reference
+  eyebrow: Reference
+  title: Z naší praxe
+  name: Factory
+  client: Technologický startup v Belgii
+  text:
+    - Pro technologický startup v Belgii jsme postavili Factory – tým AI agentů na míru jeho práci. Název klienta neuvádíme.
+    - Zkušenosti z tohoto projektu přinášíme na školení – jak agentům zadávat práci, jak jejich výstupy kontrolovat a kde musí rozhodnout člověk.
+  facts:
+    - Tým AI agentů
+    - Technologický startup
+    - Belgie
+  link: Jak stavíme AI agenty
+
+price:
+  id: cena
+  eyebrow: Cena
+  title: Jedna cena za celý den
+  figure: 35 000 Kč
+  unit: za jednodenní školení pro vaši firmu
+  vat: Konečná cena. Nejsme plátci DPH, takže k ceně nic nepřipočítáváme.
+  includedLabel: V ceně
+  included:
+    - celodenní praktické školení
+    - úvodní rozhovor a program na míru vaší firmě
+    - cvičení na úlohách z vaší praxe
+    - prostor pro otázky po celý den
+  cta: Poptat školení
+
+faq:
+  id: otazky
+  eyebrow: Otázky
+  title: Co se nás ptají firmy
+
+form:
+  id: poptavka
+  eyebrow: Poptávka
+  title: Nezávazně poptejte školení
+  lead: Vyplňte pár údajů. Ozveme se vám, probereme program i termín a pošleme potvrzení. Poptávka vás k ničemu nezavazuje.
+  phoneLabel: Raději telefonicky?
+  phoneHint: Matouš Čep, key account manager

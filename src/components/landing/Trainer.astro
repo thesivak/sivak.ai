@@ -1,0 +1,29 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { Landing } from "@/lib/content";
+import { MIREK_LINKEDIN_URL, initials } from "@/lib/site";
+
+interface Props {
+  t: Landing["trainer"];
+}
+const { t } = Astro.props;
+---
+<section class="section light lp-trainer" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container lp-trainer-grid">
+    <div class="reveal">
+      <Eyebrow index="03">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+      {t.bio.map((paragraph) => <p class="section-lead">{paragraph}</p>)}
+      <ul class="case-facts lp-facts">{t.facts.map((fact) => <li><Icon name="check" />{fact}</li>)}</ul>
+    </div>
+    <div class="lp-person reveal">
+      <span class="avatar" aria-hidden="true">{initials(t.name)}</span>
+      <div>
+        <p class="lp-person-name">{t.name}</p>
+        <p class="person-role">{t.role}</p>
+        <a class="btn btn-dark btn-sm lp-linkedin" href={MIREK_LINKEDIN_URL} rel="noopener" target="_blank">{t.linkedinLabel}<Icon name="arrow" /></a>
+      </div>
+    </div>
+  </div>
+</section>

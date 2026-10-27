@@ -1,0 +1,53 @@
+---
+import Icon from "../Icon.astro";
+import type { Landing } from "@/lib/content";
+import { SITE_URL } from "@/lib/site";
+
+interface Props {
+  t: Landing;
+  formHref: string;
+  programHref: string;
+}
+const { t, formHref, programHref } = Astro.props;
+const h = t.hero;
+const s = t.summary;
+
+// "Forward to your boss": the same summary as plain text in an e-mail draft
+const pageUrl = `${SITE_URL}/ai-skoleni`;
+const body = [s.forwardIntro, "", ...s.rows.map(([key, value]) => `${key}: ${value}`), "", pageUrl].join("\n");
+const forwardHref = `mailto:?subject=${encodeURIComponent(s.forwardSubject)}&body=${encodeURIComponent(body.replaceAll(" ", " "))}`;
+---
+<section class="hero lp-hero" aria-labelledby="hero-title">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="hero-eyebrow"><i aria-hidden="true"></i>{h.eyebrow}</p>
+      <h1 class="hero-title" id="hero-title">{h.title} <span class="hero-accent">{h.titleAccent}</span></h1>
+      <p class="hero-lead">{h.lead}</p>
+      <div class="hero-gain lp-price-box">
+        <strong class="gain-figure">{h.price.figure}</strong>
+        <p class="gain-title">{h.price.title}</p>
+        <p class="gain-text">{h.price.text}</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-light" href={formHref}>{h.primary}<Icon name="arrow" /></a>
+        <a class="btn btn-ghost" href={programHref}>{h.secondary}</a>
+      </div>
+      <ul class="hero-notes">{h.notes.map((note) => <li><Icon name="check" />{note}</li>)}</ul>
+    </div>
+    <div class="hero-visual">
+      {/* the offer at a glance, written like the agent manifest on the home page */}
+      <figure class="manifest lp-summary" aria-labelledby="summary-title">
+        <figcaption class="manifest-bar"><Icon name="layers" /><span id="summary-title">{s.label}</span><span class="lp-summary-file" aria-hidden="true">{s.file}</span></figcaption>
+        <dl class="manifest-body">
+          {
+            s.rows.map(([key, value]) => (
+              <div class="m-line"><dt class="m-key">{key}:</dt><dd class="m-val">{value}</dd></div>
+            ))
+          }
+        </dl>
+        <a class="lp-forward" href={forwardHref}><Icon name="mail" />{s.forward}</a>
+      </figure>
+    </div>
+  </div>
+</section>

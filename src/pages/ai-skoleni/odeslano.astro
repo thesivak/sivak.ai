@@ -1,0 +1,39 @@
+---
+import Base from "@/layouts/Base.astro";
+import BrandLogo from "@/components/BrandLogo.astro";
+import Icon from "@/components/Icon.astro";
+import { PEOPLE, telHref } from "@/lib/site";
+
+// Where the enquiry form lands without JavaScript (303 from /api/poptavka). Not for search engines.
+const contact = PEOPLE.find((person) => person.phone)!;
+---
+<Base
+  lang="cs"
+  title="Děkujeme za poptávku – sivak.ai"
+  description="Poptávku AI školení jsme přijali. Ozveme se vám co nejdříve."
+  ogImage={{ path: "/og/ai-skoleni.png", alt: "Jednodenní AI školení pro firmy" }}
+  robots="noindex"
+>
+  <main id="main" class="hero not-found">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <a class="header-logo" href="/" aria-label="sivak.ai – úvod"><BrandLogo /></a>
+      <p class="hero-eyebrow"><i aria-hidden="true"></i>Poptávka odeslána</p>
+      <h1 class="hero-title">Děkujeme, <span class="hero-accent">ozveme se vám</span></h1>
+      <p class="hero-lead">Poptávku jednodenního AI školení jsme přijali. Brzy se vám ozveme, probereme program i termín a pošleme potvrzení.</p>
+      <p class="hero-lead">Spěcháte? Zavolejte na <a href={telHref(contact.phone!)}>{contact.phone}</a> nebo napište na <a href={`mailto:${contact.email}`}>{contact.email}</a>.</p>
+      <div class="hero-actions">
+        <a class="btn btn-light" href="/ai-skoleni">Zpět na stránku školení<Icon name="arrow" /></a>
+        <a class="btn btn-ghost" href="/">Co dalšího děláme</a>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .not-found { min-height: 100svh; }
+  .not-found .header-logo { margin-bottom: 64px; }
+  .not-found .header-logo :global(svg) { height: 28px; width: auto; }
+  .not-found .hero-lead + .hero-lead { margin-top: 12px; }
+  .not-found .hero-lead a { color: var(--on-dark); }
+</style>

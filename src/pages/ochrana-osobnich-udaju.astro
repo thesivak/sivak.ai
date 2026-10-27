@@ -1,0 +1,39 @@
+---
+import Base from "@/layouts/Base.astro";
+import BrandLogo from "@/components/BrandLogo.astro";
+import { COMPANY, PEOPLE } from "@/lib/site";
+
+// TODO: replace this placeholder with the final privacy policy (zásady zpracování osobních údajů)
+// before the /ai-skoleni campaign goes live. Linked from the consent checkbox via PRIVACY_POLICY_URL.
+// Kept out of search engines until then.
+const contact = PEOPLE[1];
+---
+<Base
+  lang="cs"
+  title="Zpracování osobních údajů – sivak.ai"
+  description="Jak sivak.ai zpracovává osobní údaje z poptávkového formuláře."
+  ogImage={{ path: "/og/cs.png", alt: "sivak.ai" }}
+  robots="noindex"
+>
+  <main id="main" class="section light privacy">
+    <div class="container">
+      <a class="privacy-logo" href="/" aria-label="sivak.ai – úvod"><BrandLogo /></a>
+      <h1 class="section-title">Zpracování osobních údajů</h1>
+      <p class="section-lead">Úplné zásady zpracování osobních údajů připravujeme.</p>
+      <p class="section-lead">
+        Údaje z poptávkového formuláře (jméno, firma, e-mail, telefon, počet účastníků a poznámka) zpracovává
+        {COMPANY.legalName}, IČO {COMPANY.ico}, {COMPANY.city}, za účelem vyřízení vaší poptávky.
+      </p>
+      <p class="section-lead">
+        S dotazy k vašim údajům nebo s žádostí o jejich výmaz se obraťte na
+        <a href={`mailto:${contact.email}`}>{contact.email}</a>.
+      </p>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .privacy { min-height: 100svh; }
+  .privacy-logo { display: inline-flex; margin-bottom: 48px; color: var(--ink); }
+  .privacy-logo :global(svg) { height: 28px; width: auto; }
+</style>

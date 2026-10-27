@@ -1,0 +1,36 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { IconName } from "../icons";
+import type { Landing } from "@/lib/content";
+
+interface Props {
+  t: Landing["audience"];
+}
+const { t } = Astro.props;
+const ICONS: IconName[] = ["browser", "chart", "approve"];
+---
+<section class="section light" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container">
+    <div class="section-head reveal">
+      <Eyebrow index="01">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+    </div>
+    <ul class="lp-audience reveal">
+      {
+        t.items.map((item, i) => (
+          <li class="service-card">
+            <div class="service-top">
+              <span class="service-icon"><Icon name={ICONS[i] ?? "agent"} /></span>
+              <span class="service-num">0{i + 1}</span>
+            </div>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="lp-note reveal"><Icon name="check" />{t.note}</p>
+  </div>
+</section>

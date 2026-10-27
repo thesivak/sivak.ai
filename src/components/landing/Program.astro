@@ -1,0 +1,42 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { Landing } from "@/lib/content";
+
+interface Props {
+  t: Landing["program"];
+}
+const { t } = Astro.props;
+let n = 0;
+const parts = t.parts.map((part) => ({ ...part, blocks: part.blocks.map((block) => ({ ...block, n: ++n })) }));
+---
+<section class="section dark lp-program" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="container">
+    <div class="section-head reveal">
+      <Eyebrow index="02">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+    </div>
+    {
+      parts.map((part) => (
+        <div class="lp-part reveal">
+          <h3 class="lp-part-label">{part.label}</h3>
+          <ol class="lp-blocks">
+            {part.blocks.map((block) => (
+              <li class="lp-block">
+                <span class="lp-num" aria-hidden="true">0{block.n}</span>
+                <div>
+                  <h4>{block.title}</h4>
+                  <p>{block.text}</p>
+                </div>
+                <ul class="lp-points">{block.points.map((point) => <li><Icon name="check" />{point}</li>)}</ul>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))
+    }
+    <p class="lp-program-note reveal">{t.note}</p>
+  </div>
+</section>

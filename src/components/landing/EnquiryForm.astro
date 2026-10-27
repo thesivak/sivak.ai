@@ -1,0 +1,121 @@
+---
+import Eyebrow from "../Eyebrow.astro";
+import Icon from "../Icon.astro";
+import type { Landing } from "@/lib/content";
+import { CONSENT_TEXT, FIELD, LIMITS, TRACKING_KEYS } from "@/lib/enquiry/fields";
+import { PEOPLE, PRIVACY_POLICY_URL, initials, telHref } from "@/lib/site";
+
+interface Props {
+  t: Landing["form"];
+}
+const { t } = Astro.props;
+const contact = PEOPLE.find((person) => person.phone)!;
+
+// Public keys are read at build time; without them the widget / conversion simply isn't there
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
+const adsLabel = import.meta.env.PUBLIC_GOOGLE_ADS_CONVERSION_LABEL;
+const conversion = adsId && adsLabel ? `${adsId}/${adsLabel}` : "";
+
+const fields = [
+  { name: FIELD.name, label: "Jméno a příjmení", type: "text", autocomplete: "name", required: true, maxlength: LIMITS.name.max, minlength: LIMITS.name.min },
+  { name: FIELD.company, label: "Firma", type: "text", autocomplete: "organization", required: true, maxlength: LIMITS.company.max, minlength: LIMITS.company.min },
+  { name: FIELD.email, label: "E-mail", type: "email", autocomplete: "email", required: true, maxlength: LIMITS.email.max },
+  { name: FIELD.phone, label: "Telefon", type: "tel", autocomplete: "tel", required: false, maxlength: LIMITS.phone.max, hint: "Nepovinné. Zavoláme, jen pokud si to přejete." },
+  { name: FIELD.participants, label: "Počet účastníků", type: "number", required: false, min: LIMITS.participants.min, max: LIMITS.participants.max, inputmode: "numeric", hint: "Stačí odhad." },
+] as const;
+---
+<section class="section dark contact lp-form-section" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="container lp-form-grid">
+    <div class="contact-copy reveal">
+      <Eyebrow index="07">{t.eyebrow}</Eyebrow>
+      <h2 class="section-title contact-title" id={`${t.id}-title`}>{t.title}</h2>
+      <p class="section-lead">{t.lead}</p>
+      <div class="person lp-phone">
+        <span class="avatar" aria-hidden="true">{initials(contact.name)}</span>
+        <div class="person-body">
+          <h3>{t.phoneLabel}</h3>
+          <p class="person-role">{t.phoneHint}</p>
+          <ul class="person-links">
+            <li><a href={telHref(contact.phone!)}><Icon name="phone" /><span class="sr-only">Telefon: </span>{contact.phone}</a></li>
+            <li><a href={`mailto:${contact.email}`}><Icon name="mail" /><span class="sr-only">E-mail: </span>{contact.email}</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="lp-form-card">
+      <form class="lp-form" method="post" action="/api/poptavka" data-enquiry-form data-conversion={conversion || undefined} aria-describedby="form-required">
+        <p class="lp-form-required" id="form-required">Pole označená * jsou povinná.</p>
+        <div class="lp-fields">
+          {
+            fields.map((field) => {
+              const describedBy = [("hint" in field && field.hint) ? `${field.name}-hint` : "", `${field.name}-error`].filter(Boolean).join(" ");
+              return (
+                <div class={`lp-field lp-field-${field.name}`}>
+                  <label for={`f-${field.name}`}>{field.label}{field.required && <span aria-hidden="true"> *</span>}</label>
+                  <input
+                    id={`f-${field.name}`}
+                    name={field.name}
+                    type={field.type}
+                    autocomplete={"autocomplete" in field ? field.autocomplete : undefined}
+                    required={field.required}
+                    maxlength={"maxlength" in field ? field.maxlength : undefined}
+                    minlength={"minlength" in field ? field.minlength : undefined}
+                    min={"min" in field ? field.min : undefined}
+                    max={"max" in field ? field.max : undefined}
+                    step={field.type === "number" ? 1 : undefined}
+                    inputmode={"inputmode" in field ? field.inputmode : undefined}
+                    aria-describedby={describedBy}
+                  />
+                  {"hint" in field && field.hint && <p class="lp-hint" id={`${field.name}-hint`}>{field.hint}</p>}
+                  <p class="lp-error" id={`${field.name}-error`}></p>
+                </div>
+              );
+            })
+          }
+          <div class="lp-field lp-field-note">
+            <label for="f-note">Poznámka nebo preferovaný termín</label>
+            <textarea id="f-note" name={FIELD.note} rows="4" maxlength={LIMITS.note.max} aria-describedby="note-hint note-error"></textarea>
+            <p class="lp-hint" id="note-hint">Např. kdo se zúčastní, co vás nejvíc zajímá, kdy by se vám školení hodilo.</p>
+            <p class="lp-error" id="note-error"></p>
+          </div>
+        </div>
+
+        {/* Honeypot: invisible to people and screen readers; bots that fill it are dropped */}
+        <div class="lp-trap" aria-hidden="true">
+          <label for="f-website">Web</label>
+          <input id="f-website" name={FIELD.website} type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        {TRACKING_KEYS.map((key) => <input type="hidden" name={key} />)}
+        <input type="hidden" name="landing_url" />
+
+        <div class="lp-consent">
+          <input id="f-consent" name={FIELD.consent} type="checkbox" value="on" required aria-describedby="consent-error" />
+          <label for="f-consent">{CONSENT_TEXT} <a href={PRIVACY_POLICY_URL} target="_blank">Zásady zpracování osobních údajů</a><span aria-hidden="true"> *</span></label>
+          <p class="lp-error" id="consent-error"></p>
+        </div>
+
+        {turnstileSiteKey && <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-language="cs" data-theme="light" data-size="flexible"></div>}
+
+        <div class="lp-submit">
+          <button class="btn btn-light" type="submit">Odeslat poptávku<Icon name="arrow" /></button>
+          <p class="lp-status" role="status" aria-live="polite" data-status></p>
+        </div>
+      </form>
+      <div class="lp-success" data-success hidden tabindex="-1">
+        <span class="lp-success-icon"><Icon name="check" /></span>
+        <h3>Děkujeme, poptávku jsme přijali</h3>
+        <p>Ozveme se vám co nejdříve a probereme program i termín. Pokud spěcháte, zavolejte na <a href={telHref(contact.phone!)}>{contact.phone}</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{turnstileSiteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+
+<script>
+  import { enhanceEnquiryForm } from "./enquiry-form";
+
+  document.querySelectorAll<HTMLFormElement>("[data-enquiry-form]").forEach(enhanceEnquiryForm);
+</script>
