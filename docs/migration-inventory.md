@@ -107,7 +107,7 @@ Scroll reveal (`.reveal`) and the hero entrance are pure CSS
 | `<meta charset>` | `utf-8` | same |
 | viewport | `width=device-width, initial-scale=1, viewport-fit=cover` | same |
 | `theme-color` | `#0B1220` | same |
-| `<title>` | `sivak.ai – AI agenti pro práci u počítače` | `sivak.ai — AI agents for computer work` |
+| `<title>` | Next.js (history): `sivak.ai – AI agenti pro práci u počítače`; new site since 27 October 2026: `sivak.ai – AI agenti a automatizace` | Next.js (history): `sivak.ai — AI agents for computer work`; new site: `sivak.ai — AI agents and automation` |
 | description | `metadata.description` (cs) | (en) |
 | canonical | `https://www.sivak.ai` | `https://www.sivak.ai/en` |
 | hreflang alternates | `cs → https://www.sivak.ai`, `en → https://www.sivak.ai/en`, `x-default → https://www.sivak.ai` | same |

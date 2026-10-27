@@ -39,7 +39,8 @@ const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
     { hreflang: "en", href: url("en") },
     { hreflang: "x-default", href: url("cs") },
   ]}
-  ogImage={{ path: `/og/${lang}.png`, alt: t.metadata.title }}
+  // ?v=2: the share image changed with the slogan; LinkedIn and Slack cache by URL
+  ogImage={{ path: `/og/${lang}.png?v=2`, alt: t.metadata.title }}
   jsonLd={[organizationJsonLd(lang)]}
 >
   <a class="skip-link" href="#main">{t.skipLink}</a>

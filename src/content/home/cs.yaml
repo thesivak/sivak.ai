@@ -1,7 +1,7 @@
 # Texty české domovské stránky (/). Otázky a odpovědi sekce FAQ jsou v src/content/faq/cs/*.md.
 # Schéma: src/content.config.ts. Pevné mezery za jednopísmennými předložkami doplní web sám.
 metadata:
-  title: sivak.ai – AI agenti pro práci u počítače
+  title: sivak.ai – AI agenti a automatizace
   description: Stavíme AI agenty, kteří zvládnou práci, jakou lidé dělají u počítače. Převezmou 80 % rutiny a vašemu týmu zůstane 20 % práce, která přináší výsledky.
 skipLink: Přeskočit na obsah
 langSwitch:
@@ -28,11 +28,11 @@ nav:
   open: Otevřít menu
   close: Zavřít menu
 hero:
-  eyebrow: AI agenti pro české firmy
-  title: |-
-    Práci u počítače
-    svěřte
-  titleAccent: AI agentům
+  eyebrow: Pro české firmy
+  # The line break after the title is kept (white-space: pre-line): the accent starts a new line
+  title: |
+    AI agenti
+  titleAccent: a automatizace
   lead: Stavíme agenty na míru vašim procesům. Zvládnou práci, kterou dnes lidé dělají u počítače – od faktur přes zákaznickou podporu po testování softwaru.
   gain:
     figure: 80 %

@@ -1,7 +1,7 @@
 # Copy of the English home page (/en). The FAQ questions and answers live in src/content/faq/en/*.md.
 # Schema: src/content.config.ts.
 metadata:
-  title: sivak.ai — AI agents for computer work
+  title: sivak.ai — AI agents and automation
   description: We build AI agents that handle the work people do at a computer. They take over 80% of the routine, so your team can focus on the 20% that drives results.
 skipLink: Skip to content
 langSwitch:
@@ -30,10 +30,11 @@ nav:
   open: Open menu
   close: Close menu
 hero:
-  eyebrow: AI agents and automation
+  eyebrow: For Czech businesses
+  # The line break after the title is kept (white-space: pre-line): the accent starts a new line
   title: |
-    Let AI agents do
-  titleAccent: the computer work
+    AI agents
+  titleAccent: and automation
   lead: We build agents around your processes. They handle the work people do at a computer today — from invoices and customer support to software testing.
   gain:
     figure: 80%
