@@ -10,18 +10,18 @@ export const prerender = false;
 const env = serverEnv();
 const access = await checkAdmin(Astro.request, env);
 if (!access.ok) return access.response;
+// checkAdmin only lets through with a D1 binding
+const db = access.db;
 for (const [key, value] of Object.entries(ADMIN_HEADERS)) Astro.response.headers.set(key, value);
 
 const SHOWN = 500;
 let enquiries: StoredEnquiry[] = [];
 let total = 0;
 let dbError: string | null = null;
-if (env.DB) {
-  try {
-    [enquiries, total] = await Promise.all([listEnquiries(env.DB, SHOWN), countEnquiries(env.DB)]);
-  } catch (error) {
-    dbError = String(error);
-  }
+try {
+  [enquiries, total] = await Promise.all([listEnquiries(db, SHOWN), countEnquiries(db)]);
+} catch (error) {
+  dbError = String(error);
 }
 
 const dateFormat = new Intl.DateTimeFormat("cs-CZ", { dateStyle: "short", timeStyle: "short", timeZone: "Europe/Prague" });
@@ -41,7 +41,7 @@ const campaign = (e: StoredEnquiry) => [e.utm_source, e.utm_medium, e.utm_campai
     <main>
       <header>
         <h1>Poptávky AI školení</h1>
-        {env.DB && !dbError && (
+        {!dbError && (
           <p>
             {total === 0 ? "Zatím žádné poptávky." : `Celkem ${total}${total > SHOWN ? `, zobrazeno nejnovějších ${SHOWN}` : ""}.`}
             {total > 0 && <a class="button" href="/admin/poptavky.csv" download>Stáhnout CSV</a>}
@@ -49,12 +49,6 @@ const campaign = (e: StoredEnquiry) => [e.utm_source, e.utm_medium, e.utm_campai
         )}
       </header>
 
-      {!env.DB && (
-        <p class="notice" role="status">
-          DB není nakonfigurovaná. Worker nemá binding <code>DB</code> (Cloudflare D1), formulář proto poptávky
-          nepřijímá: návštěvníkům odpovídá 503 „zkuste to znovu později“, dokud binding nenastavíte. Postup je v README.
-        </p>
-      )}
       {dbError && (
         <p class="notice" role="alert">
           Databázi se nepodařilo přečíst. Je aplikovaná migrace <code>migrations/0001_enquiries.sql</code>?<br />

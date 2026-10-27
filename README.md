@@ -127,7 +127,7 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 | `TURNSTILE_SECRET_KEY` | secret | Turnstile server-side verification; required in production (no test keys). The preview has the public test secret in `env.preview.vars`. |
 | `IP_HASH_SALT` | secret | HMAC-SHA256 key for the IP hash (rate limit, `ip_hash` column), e.g. `openssl rand -hex 32`. Required in production **and preview**; only `development` may run without it (no rate limit, `ip_hash` NULL). |
 | `RESEND_API_KEY` | secret | Resend, if the Cloudflare Email Service binding isn't used |
-| `ADMIN_USER`, `ADMIN_PASSWORD` | secret | HTTP Basic auth for `/admin/*`; without both the admin is a 404 |
+| `ADMIN_USER`, `ADMIN_PASSWORD` | secret | HTTP Basic auth for `/admin/*`. `ADMIN_PASSWORD` must be at least 24 characters (e.g. `openssl rand -base64 24`); missing or shorter → `/admin/*` answers 503 "Admin not configured." |
 | `DB` | D1 binding | Enquiries and rate limit; required (without it the form answers 503) |
 | `EMAIL` | send_email binding | Cloudflare Email Service (commented out in wrangler.jsonc) |
 
@@ -212,9 +212,20 @@ Reply-To is the enquirer's address.
 
 Enquiries newest first (500 shown) and `/admin/poptavky.csv` with all of them (UTF-8 with BOM for
 Excel, every cell quoted, cells starting with `= + - @` prefixed with `'` against CSV injection).
-Protected by HTTP Basic auth (`ADMIN_USER`/`ADMIN_PASSWORD`, constant-time comparison); missing
-secrets → 404, never open. Responses carry `noindex`, `no-store`; `/admin/` and `/api/` are
-disallowed in robots.txt and not in the sitemap. Without D1 the page says "DB není nakonfigurovaná".
+Protected by HTTP Basic auth (`ADMIN_USER`/`ADMIN_PASSWORD`, constant-time comparison,
+`src/lib/server/admin.ts`). It never falls open:
+
+- `ADMIN_USER` missing, or `ADMIN_PASSWORD` missing or shorter than 24 characters → **503** "Admin not
+  configured." (the same answer without the `DB` binding, or without `IP_HASH_SALT` outside development);
+- **failed-login limit**: at most 10 wrong logins per IP hash (`HMAC-SHA256(IP_HASH_SALT, "admin:" + ip)`)
+  in 15 minutes, then **429** with `Retry-After`. Table `admin_auth_failures` (**migration 0002**): every
+  request with credentials is recorded by one conditional `INSERT … SELECT … WHERE count < 10`, so
+  parallel guesses can't overshoot, and a correct login deletes its own row. Rows older than a day go on
+  every attempt and with the hourly cron. If D1 fails here the admin answers 503. Requests without
+  credentials (the browser's first one) only get the 401 login prompt and are not counted.
+
+Responses carry `noindex`, `no-store`; `/admin/` and `/api/` are disallowed in robots.txt and not in
+the sitemap.
 
 ### Retention and deletion
 
@@ -223,6 +234,7 @@ What `/ochrana-osobnich-udaju` promises, and what does it:
 | Data | Kept | How |
 | --- | --- | --- |
 | `enquiry_attempts` (IP hash + time) | ≤ 24 hours | deleted after 23 h on every submission and by the hourly cron |
+| `admin_auth_failures` (IP hash + time of failed admin logins) | ≤ 24 hours | deleted after 23 h on every login attempt and by the hourly cron |
 | `enquiries` rows | 24 months | the hourly cron deletes rows with `created_at` older than 24 months (`pruneEnquiries`) |
 | Notification e-mails in the mirek@/matous@ mailboxes | 24 months | **by hand**: delete enquiry e-mails older than 24 months (e.g. a monthly mailbox search for "Poptávka AI školení" older than 24 months) |
 | Anything that became a contract | as the contract and the law require | copy what's needed into the contract records before the 24 months run out |
@@ -236,9 +248,14 @@ npx wrangler d1 execute sivak-ai --remote -c wrangler.jsonc --command "DELETE FR
 
 and delete the matching notification e-mails from both mailboxes.
 
-**Recommended:** put **Cloudflare Access** in front of `/admin/*` (Zero Trust → Access →
-Applications → self-hosted, domain `www.sivak.ai/admin/*`, policy: e-mails of Mirek and Matouš,
-one-time PIN or Google login). Keep Basic auth as the second layer.
+**Recommended at cutover** (nothing of this is configured yet):
+
+- **Cloudflare Access** in front of `/admin/*` (Zero Trust → Access → Applications → self-hosted,
+  domain `www.sivak.ai/admin/*`, policy: e-mails of Mirek and Matouš, one-time PIN or Google login).
+  Requests then reach the Worker only after Access has let them through. Keep Basic auth as the second layer.
+- and/or a **WAF rate-limiting rule** (Security → WAF → Rate limiting rules): e.g. requests whose URI path
+  starts with `/admin/`, counted per IP, a few dozen per minute → block for 10 minutes. It stops floods
+  at the edge before they cost Worker requests or D1 writes; the Worker's own limit stays underneath.
 
 ## Deploy and cutover from Vercel
 
@@ -278,7 +295,8 @@ Commands need a logged-in `wrangler` on the sivak.ai account.
    `http.host eq "sivak.ai"`, dynamic target `concat("https://www.sivak.ai", http.request.uri.path)`,
    301, preserve query string). Check `/`, `/en`, `/ai-skoleni`, a test enquiry
    and the admin on the real domain.
-8. **Access** for `/admin/*` (see "Admin").
+8. **Access** and/or a **WAF rate-limiting rule** for `/admin/*` (see "Admin"). Before the first
+   deploy apply migration 0002 (`npm run db:migrate:remote`); the admin needs table `admin_auth_failures`.
 9. **Vercel**: remove `sivak.ai` and `www.sivak.ai` from the Vercel project's domains, then, once
    all is well, delete the project.
 
@@ -305,8 +323,8 @@ The build prints a harmless warning that the prerender worker config has no `pre
 
 ### Database changes
 
-Never edit an applied migration: schema changes go into a new `migrations/0002_*.sql`, applied to
-each database:
+Never edit an applied migration: schema changes go into a new `migrations/000N_*.sql`, applied to
+each database. Current: `0001_enquiries.sql`, `0002_admin_auth_failures.sql` (the admin login limit).
 
 | Database | Command |
 | --- | --- |

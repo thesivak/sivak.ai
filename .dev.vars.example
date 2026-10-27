@@ -8,7 +8,8 @@
 # Outside development a failing rate limit refuses the submission (503); development lets it through.
 SITE_ENV=development
 
-# Admin at /admin/poptavky (HTTP Basic auth). Without both, the admin returns 404.
+# Admin at /admin/poptavky (HTTP Basic auth). ADMIN_PASSWORD needs at least 24 characters
+# (e.g. `openssl rand -base64 24`); missing or shorter, the admin answers 503 "Admin not configured."
 ADMIN_USER=
 ADMIN_PASSWORD=
 

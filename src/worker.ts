@@ -1,5 +1,6 @@
 import { handle } from "@astrojs/cloudflare/handler";
 import { routeLanguage } from "@/lib/lang-routing";
+import { pruneAdminFailures } from "@/lib/server/admin";
 import { errorCode } from "@/lib/server/log";
 import { pruneAttempts } from "@/lib/server/rate-limit";
 import { pruneEnquiries } from "@/lib/server/store";
@@ -26,13 +27,14 @@ export default {
   },
 
   // Hourly cron (wrangler.jsonc → triggers): deletes what the privacy policy says we no longer keep,
-  // rate-limit attempts older than a day and enquiries older than 24 months
+  // rate-limit attempts and failed admin logins older than a day, and enquiries older than 24 months
   async scheduled(_controller, env) {
     if (!env.DB) return;
     try {
       const attempts = await pruneAttempts(env.DB);
       const enquiries = await pruneEnquiries(env.DB);
-      console.log("[retention] pruned", { attempts, enquiries });
+      const adminFailures = await pruneAdminFailures(env.DB);
+      console.log("[retention] pruned", { attempts, enquiries, adminFailures });
     } catch (error) {
       console.error("[retention] pruning failed", { error: errorCode(error) });
     }

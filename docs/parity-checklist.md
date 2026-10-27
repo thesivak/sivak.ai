@@ -71,7 +71,7 @@ All compared in the normalized HTML diff: no differences apart from the items no
 
 | Item | Result |
 | --- | --- |
-| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical at the time of the migration ✅. **One deliberate change since then** (commit 4a03e5b, Mirek's decision): the title of process step 3 (`#postup` / `#process`), CZ "Pilotní agent" → "První agent", EN "Pilot agent" → "First agent"; the step text is unchanged. The built `/` and `/en` differ from the migrated version only in that `<h3>`. |
+| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical at the time of the migration ✅. **One deliberate change since then** (commit 4a03e5b, Mirek's decision): process step 3 (`#postup` / `#process`) retitled to "První agent" / "First agent"; the step text is unchanged. The built `/` and `/en` differ from the migrated version only in that `<h3>`. |
 | Czech no-break spaces (one-letter words, dashes) | kept (`src/lib/czech.ts`), visible in identical `innerText` ✅; one nbsp that lived in the JSX (`IČO 23010282`) was found by the text comparison and restored |
 | Section order, anchors (`#sluzby`, `#postup`, … / `#services`, …), skip link | identical HTML ✅ |
 | Stylesheet | `src/app/globals.css` → `src/styles/global.css`, unchanged (git rename, 100 %) ✅ |
@@ -130,7 +130,9 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | Build without `PUBLIC_TURNSTILE_SITE_KEY` → "Formulář je dočasně nedostupný" notice instead of the form, build warning | ✅ |
 | Logs: only id, reason and error class/code, no personal data | `wrangler dev` output reviewed ✅ |
 | No `@sivak.ai` / `mailto:` in `/ai-skoleni`, `/ai-skoleni/odeslano` or the form's server messages; homepage footer keeps the addresses | grep of `dist/` ✅ |
-| Production, no admin secrets → admin 404 | `SITE_ENV=production` config ✅ |
+| Admin secrets missing, `ADMIN_PASSWORD` under 24 characters, or no D1 → `/admin/*` 503 "Admin not configured." (was 404 before the login limit) | `--var` overrides ✅ |
+| Admin login limit: 12 wrong logins in a row → 10 × 401, then 429 (`Retry-After: 900`), correct password also 429 while blocked; 25 wrong in parallel → 10 × 401 + 15 × 429; a correct login leaves no row; requests without credentials aren't counted; cron prunes old rows | curl + `wrangler d1 execute` ✅ |
+| Form fields: border #7A7E86 (4.07:1 on the white field, 3.58:1 on the ivory card), 2px solid focus outline #4F7DFF (3.68:1 / 3.23:1) | computed (WCAG relative luminance) ✅ |
 | Production + `EMAIL` binding (wrangler's local simulation, nothing sent): Email Service preferred over Resend, user input HTML-escaped | ✅ |
 | Production + Resend with an invalid key and `.invalid` recipients: API rejects (401) | ✅ (no e-mail could be delivered); since then the log carries only id, channel and `HTTP_401` (not re-run) |
 | `NOTIFY_DISABLED=1` in production → no send, log only | ✅ |

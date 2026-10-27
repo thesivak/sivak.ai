@@ -303,12 +303,17 @@
 .lp-field { display: grid; gap: 6px; align-content: start; }
 .lp-field-email, .lp-field-note { grid-column: 1 / -1; }
 .lp-field label, .lp-consent label { font-size: 15px; font-weight: 500; }
+/* Field borders and focus ring (WCAG 1.4.11, ≥ 3:1): --lp-field-border #7A7E86 is 4.07:1 against the white
+   field and 3.58:1 against the ivory card (#F2F0EB); hover #5B6069 is 6.32:1 / 5.55:1; the 2px solid focus
+   ring #4F7DFF (--signal-deep) is 3.68:1 / 3.23:1, the error colour #B42318 6.57:1 / 5.77:1.
+   Landing only: the homepage keeps --line-strong. */
+.lp-form-card { --lp-field-border: #7A7E86; --lp-field-border-hover: #5B6069; }
 .lp-field input,
 .lp-field textarea {
   width: 100%;
   min-height: 48px;
   padding: 11px 14px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid var(--lp-field-border);
   border-radius: 12px;
   background: #fff;
   font: inherit;
@@ -317,10 +322,10 @@
   transition: border-color .2s, box-shadow .2s;
 }
 .lp-field textarea { min-height: 112px; resize: vertical; }
-.lp-field input:hover, .lp-field textarea:hover { border-color: rgba(11, 18, 32, .35); }
-.lp-field input:focus, .lp-field textarea:focus { outline: none; border-color: var(--signal-deep); box-shadow: 0 0 0 3px rgba(79, 125, 255, .2); }
+.lp-field input:hover, .lp-field textarea:hover { border-color: var(--lp-field-border-hover); }
+.lp-field input:focus, .lp-field textarea:focus { outline: 2px solid var(--signal-deep); outline-offset: 2px; border-color: var(--signal-deep); }
 .lp-field [aria-invalid="true"] { border-color: #B42318; }
-.lp-field [aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgba(180, 35, 24, .18); }
+.lp-field [aria-invalid="true"]:focus { outline-color: #B42318; }
 .lp-hint { font-size: 13.5px; line-height: 1.45; color: var(--ink-3); }
 .lp-error { font-size: 14px; line-height: 1.45; color: #B42318; }
 .lp-error:empty { display: none; }

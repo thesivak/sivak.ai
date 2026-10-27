@@ -10,9 +10,8 @@ export const GET: APIRoute = async ({ request }) => {
   const env = serverEnv();
   const access = await checkAdmin(request, env);
   if (!access.ok) return access.response;
-  if (!env.DB) return new Response("DB není nakonfigurovaná.", { status: 503, headers: { ...ADMIN_HEADERS, "Content-Type": "text/plain; charset=utf-8" } });
 
-  const rows = await listEnquiries(env.DB);
+  const rows = await listEnquiries(access.db);
   const date = new Date().toISOString().slice(0, 10);
   return new Response(toCsv(COLUMNS, rows.map((row) => COLUMNS.map((column) => row[column]))), {
     headers: {

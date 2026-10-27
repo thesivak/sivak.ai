@@ -93,7 +93,7 @@ export function validateEnquiry(raw: Record<string, unknown>): Validation {
   errors.company = lengthError(company, "název firmy", LIMITS.company.min, LIMITS.company.max);
 
   if (!email) errors.email = "Vyplňte e-mail.";
-  else if (email.length > LIMITS.email.max || !EMAIL.test(email)) errors.email = "Zadejte e-mail ve tvaru jmeno@firma.cz.";
+  else if (email.length > LIMITS.email.max || !EMAIL.test(email)) errors.email = "Zadejte platnou e-mailovou adresu.";
 
   if (phone) {
     const digits = phone.replace(/\D/g, "").length;
