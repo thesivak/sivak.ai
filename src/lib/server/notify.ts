@@ -5,7 +5,7 @@ import { errorCode } from "./log";
 // Tells the addresses in ENQUIRY_NOTIFY_TO (mirek@ and matous@) about a new enquiry, through Cloudflare
 // Email Service: the `EMAIL` send_email binding (wrangler.jsonc), sender ENQUIRY_FROM_EMAIL on sivak.ai,
 // which is onboarded for Email Sending. There is no other channel: without the binding nothing is sent
-// and the enquiry is only in D1 (admin /admin/poptavky).
+// and the enquiry is only in D1.
 // Nothing is ever sent outside production (SITE_ENV=development or preview), when NOTIFY_DISABLED=1,
 // or without a sender address (ENQUIRY_FROM_EMAIL) and recipients (ENQUIRY_NOTIFY_TO).
 // It is only called once the enquiry is stored, and its failures never change the visitor's answer.
@@ -37,16 +37,15 @@ function rows(enquiry: Enquiry, id: number): [string, string][] {
 // A test submission (name or company starting with "TEST") is marked in the subject
 export const isTestEnquiry = (enquiry: Pick<Enquiry, "name" | "company">) => enquiry.name.startsWith("TEST") || enquiry.company.startsWith("TEST");
 
-/** `origin` is the site the form was sent from (e.g. https://www.sivak.ai), for the admin link. */
+/** `origin` is the site the form was sent from (e.g. https://www.sivak.ai), named in the first line. */
 export function buildMessage(enquiry: Enquiry, id: number, origin: string) {
   const prefix = isTestEnquiry(enquiry) ? "[TEST] " : "";
   const subject = `${prefix}Poptávka AI školení: ${enquiry.company} (${enquiry.name})`.replace(/[\r\n]+/g, " ").slice(0, 200);
   const list = rows(enquiry, id);
   const host = new URL(origin).host;
-  const admin = `${origin}/admin/poptavky`;
   const text = `Nová poptávka jednodenního AI školení z ${host}/ai-skoleni\n\n${list
     .map(([k, v]) => `${k}: ${v}`)
-    .join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\nVšechny poptávky: ${admin}\n`;
+    .join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\n`;
   const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;color:#0B1220">
 <h1 style="font-size:18px">Nová poptávka AI školení</h1>
 <table cellpadding="6" style="border-collapse:collapse;font-size:14px">${list
@@ -55,7 +54,7 @@ export function buildMessage(enquiry: Enquiry, id: number, origin: string) {
         `<tr><th align="left" valign="top" style="border-bottom:1px solid #ddd">${escapeHtml(k)}</th><td style="border-bottom:1px solid #ddd;white-space:pre-wrap">${escapeHtml(v)}</td></tr>`,
     )
     .join("")}</table>
-<p style="font-size:13px;color:#5B6069">Odpovědí na tento e-mail napíšete přímo poptávajícímu. Všechny poptávky: <a href="${escapeHtml(admin)}">${escapeHtml(`${host}/admin/poptavky`)}</a></p>
+<p style="font-size:13px;color:#5B6069">Odpovědí na tento e-mail napíšete přímo poptávajícímu.</p>
 </body></html>`;
   return { subject, text, html };
 }

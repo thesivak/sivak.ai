@@ -22,9 +22,9 @@
     // Static files are served without invoking the Worker, except:
     //  - where the Worker decides the language: "/" (browser language, cookie), "/en" (?lang= switch),
     //    "/en/" (308 to "/en" as before) and the old "/cs" URLs;
-    //  - the on-demand routes. Without them here, browser navigations to /admin/… would get the 404 page;
+    //  - the enquiry API /api/poptavka (on-demand);
     //  - /robots.txt, which the Worker answers with "Disallow: /" on *.workers.dev only.
-    "run_worker_first": ["/", "/en", "/en/", "/cs", "/cs/*", "/api/*", "/admin/*", "/robots.txt"]
+    "run_worker_first": ["/", "/en", "/en/", "/cs", "/cs/*", "/api/*", "/robots.txt"]
   },
 
   "d1_databases": [
@@ -38,8 +38,8 @@
     }
   ],
 
-  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, IP_HASH_SALT, ADMIN_USER, ADMIN_PASSWORD) are
-  // set with `wrangler secret put` in production and in .dev.vars locally — see .dev.vars.example.
+  // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, IP_HASH_SALT) are set with
+  // `wrangler secret put` in production and in .dev.vars locally — see .dev.vars.example.
   // No Turnstile test key belongs here: production refuses them.
   "vars": {
     // "production" makes the form refuse to skip Turnstile; .dev.vars sets "development"

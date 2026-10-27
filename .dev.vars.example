@@ -8,11 +8,6 @@
 # Outside development a failing rate limit refuses the submission (503); development lets it through.
 SITE_ENV=development
 
-# Admin at /admin/poptavky (HTTP Basic auth). ADMIN_PASSWORD needs at least 24 characters
-# (e.g. `openssl rand -base64 24`); missing or shorter, the admin answers 503 "Admin not configured."
-ADMIN_USER=
-ADMIN_PASSWORD=
-
 # Cloudflare Turnstile secret key (the site key is PUBLIC_TURNSTILE_SITE_KEY in .env).
 # Cloudflare's test secret that always passes: 1x0000000000000000000000000000000AA
 TURNSTILE_SECRET_KEY=

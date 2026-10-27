@@ -39,7 +39,7 @@ Every item from `docs/migration-inventory.md`, old behaviour vs new, and how it 
 | unknown path, Czech browser | 404 (Next default page) | 404 (styled bilingual page, noindex) | curl ✅ — improvement |
 | unknown path, English browser | 307 → `/en/<path>` → 404 | 404 directly | curl — intentional: the language redirect now applies to `/` only, so Czech-only pages such as `/ai-skoleni` are never sent to a non-existent English URL |
 | `/sitemap.xml` | 2 URLs | same 2 URLs, byte-identical, plus `https://www.sivak.ai/ai-skoleni` (priority 0.9) | diff ✅ |
-| `/robots.txt` | `Allow: /` + sitemap | same plus `Disallow: /api/` and `Disallow: /admin/` | diff ✅ |
+| `/robots.txt` | `Allow: /` + sitemap | same plus `Disallow: /api/` (and `Disallow: /admin/` until the admin was removed on 27 October 2026) | diff ✅ |
 | `/icon.svg` | 200 `image/svg+xml` | 200, byte-identical | cmp ✅ |
 | `/favicon.ico` | 404 | 404 | curl ✅ |
 | `/og/cs.png`, `/og/en.png` | 200 | 200, byte-identical | cmp ✅ |
@@ -48,7 +48,7 @@ Every item from `docs/migration-inventory.md`, old behaviour vs new, and how it 
 | `/ai-skoleni` | 404 | 200 new landing page | new |
 | `/ai-skoleni/odeslano`, `/ochrana-osobnich-udaju` | 404 | 200, noindex | new |
 | `/en/ai-skoleni` | 404 | 404 (no English version, see README) | curl ✅ |
-| `POST /api/poptavka`, `/admin/poptavky(.csv)` | — | new on-demand routes | see below |
+| `POST /api/poptavka` | — | new on-demand route (`/admin/poptavky(.csv)` existed too until the admin was removed on 27 October 2026) | see below |
 
 ## `<head>` and structured data (`/` and `/en`)
 
@@ -122,8 +122,8 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | `Cookie: lang=%` (malformed) → no preference: Czech homepage 200, or `/en` by `Accept-Language` | curl ✅ |
 | Hourly cron (`scheduled`): attempts > 23 h and enquiries > 24 months deleted | local explorer `scheduled` endpoint ✅ |
 | Secret set, no token → 400 | curl ✅ |
-| Admin: no credentials → 401 with `WWW-Authenticate`; wrong → 401; right → list; `X-Robots-Tag: noindex`, `no-store` | curl ✅ |
-| CSV: UTF-8 BOM, quoted cells, `=HYPERLINK(…)` and `+…` prefixed with `'`, multi-line note kept | curl ✅ |
+| Admin: no credentials → 401 with `WWW-Authenticate`; wrong → 401; right → list; `X-Robots-Tag: noindex`, `no-store` *(The admin was removed on 27 October 2026; kept as a record.)* | curl ✅ |
+| CSV: UTF-8 BOM, quoted cells, `=HYPERLINK(…)` and `+…` prefixed with `'`, multi-line note kept *(The admin was removed on 27 October 2026; kept as a record.)* | curl ✅ |
 | No D1 binding (any mode) → 503 "zkuste to prosím znovu později" and a config-error log, nothing claims success | separate `wrangler dev` config without D1 ✅ |
 | D1 without tables: rate limit fails → 503 in production and preview; development lets it through, then the failed insert → 503 | `wrangler dev` with an empty local D1 ✅ |
 | Production without `IP_HASH_SALT`, without a Turnstile secret, or with the test secret → 503 + config-error log; development without the salt → stored with `ip_hash` NULL, no rate limit | `--var` overrides ✅ |
@@ -133,10 +133,10 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | Shared header on `/ai-skoleni` (identical markup to `/` apart from `aria-current="page"` on "AI školení"), section bar under it; from `/ai-skoleni` "Jak to probíhá" opens `/#postup`; on `/` the links stay in the same document and close the mobile menu; `/en#process` and `/ai-skoleni#cena` on load, bar links and the bar CTA: the section starts exactly at the bottom of the sticky header (68 px, 64 px on phones) or of header + bar (+52 px), at 1280 and 390 px; the mobile menu covers the bar | Chromium via DevTools Protocol ✅ |
 | Cookie consent (empty profile, real gtag.js): first load → no `_ga*`, consent `default` denied, banner shown, focus not taken, CLS 0; Accept all → `_ga` + `_ga_S98V3B32ZL`; reload → `default` then `update` granted before config, banner hidden; footer link → focus into banner, toggles show the choice, withdraw → `_ga*` deleted at once and still absent 5 s later, consent `update` denied, focus back on the link; Reject all → no `_ga*`; expired (200 days) or old version → asked again, stray `_ga` deleted; Escape in settings → settings closed, banner stays, nothing stored; Accept/Reject same class and size; first Tab lands in the banner, focus ring 2px solid; `/en` English; JS off → no banner, no link, no cookies | Chromium 139 via DevTools Protocol against `wrangler dev` ✅ |
 | No `@sivak.ai` / `mailto:` in `/ai-skoleni`, `/ai-skoleni/odeslano` or the form's server messages; homepage footer keeps the addresses | grep of `dist/` ✅ |
-| Admin secrets missing, `ADMIN_PASSWORD` under 24 characters, or no D1 → `/admin/*` 503 "Admin not configured." (was 404 before the login limit) | `--var` overrides ✅ |
-| Admin login limit: 12 wrong logins in a row → 10 × 401, then 429 (`Retry-After: 900`), correct password also 429 while blocked; 25 wrong in parallel → 10 × 401 + 15 × 429; a correct login leaves no row; requests without credentials aren't counted; cron prunes old rows | curl + `wrangler d1 execute` ✅ |
+| Admin secrets missing, `ADMIN_PASSWORD` under 24 characters, or no D1 → `/admin/*` 503 "Admin not configured." (was 404 before the login limit) *(The admin was removed on 27 October 2026; kept as a record.)* | `--var` overrides ✅ |
+| Admin login limit: 12 wrong logins in a row → 10 × 401, then 429 (`Retry-After: 900`), correct password also 429 while blocked; 25 wrong in parallel → 10 × 401 + 15 × 429; a correct login leaves no row; requests without credentials aren't counted; cron prunes old rows *(The admin was removed on 27 October 2026; kept as a record.)* | curl + `wrangler d1 execute` ✅ |
 | Form fields: border #7A7E86 (4.07:1 on the white field, 3.58:1 on the ivory card), 2px solid focus outline #4F7DFF (3.68:1 / 3.23:1) | computed (WCAG relative luminance) ✅ |
-| Production + `EMAIL` binding (wrangler's local simulation, nothing sent): `from` web@sivak.ai with the name "sivak.ai – poptávky", Reply-To the enquirer, `[TEST] ` subject prefix for TEST names/companies, user input HTML-escaped, admin link on the sending host; a throwing binding is logged as id + error code and doesn't affect the stored enquiry | ✅ |
+| Production + `EMAIL` binding (wrangler's local simulation, nothing sent): `from` web@sivak.ai with the name "sivak.ai – poptávky", Reply-To the enquirer, `[TEST] ` subject prefix for TEST names/companies, user input HTML-escaped, admin link on the sending host (dropped with the admin on 27 October 2026); a throwing binding is logged as id + error code and doesn't affect the stored enquiry | ✅ |
 | noindex keyed on the hostname: with `Host: sivak-ai.onfire4yhwh.workers.dev` every path (static HTML, images, sitemap, 404, Worker routes) has `X-Robots-Tag: noindex, nofollow` and robots.txt is `Disallow: /`; with `Host: www.sivak.ai` none of it, robots.txt normal | `wrangler dev` + curl ✅ |
 | `NOTIFY_DISABLED=1` in production → no send, log only | ✅ |
 | `SITE_ENV=development` → never sends | ✅ |
@@ -147,6 +147,6 @@ All compared in the normalized HTML diff: no differences apart from the items no
 - The language redirect runs on `/` only (was: every path). Unknown paths 404 directly; Czech-only
   pages are never redirected to English.
 - `/cs/` redirects to `/` in one hop instead of two.
-- robots.txt disallows `/api/` and `/admin/`; the sitemap lists `/ai-skoleni`.
+- robots.txt disallows `/api/` (and `/admin/` until the admin was removed on 27 October 2026); the sitemap lists `/ai-skoleni`.
 - 404 page is a styled bilingual page instead of Next's default.
 - `Set-Cookie` for the language has `Max-Age` without the equivalent `Expires`.

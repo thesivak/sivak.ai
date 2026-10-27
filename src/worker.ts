@@ -1,12 +1,11 @@
 import { handle } from "@astrojs/cloudflare/handler";
 import { routeLanguage } from "@/lib/lang-routing";
-import { pruneAdminFailures } from "@/lib/server/admin";
 import { errorCode } from "@/lib/server/log";
 import { pruneAttempts } from "@/lib/server/rate-limit";
 import { pruneEnquiries } from "@/lib/server/store";
 
 // The Worker entry: the language redirects first, then Astro, which serves the prerendered
-// pages from the asset store and renders the on-demand routes (/api/*, /admin/*).
+// pages from the asset store and renders the on-demand route (/api/poptavka).
 // In production other static files never reach this code (assets.run_worker_first in wrangler.jsonc);
 // the preview environment sends everything through here so it can keep search engines out.
 //
@@ -39,14 +38,13 @@ export default {
   },
 
   // Hourly cron (wrangler.jsonc → triggers): deletes what the privacy policy says we no longer keep,
-  // rate-limit attempts and failed admin logins older than a day, and enquiries older than 24 months
+  // rate-limit attempts older than a day and enquiries older than 24 months
   async scheduled(_controller, env) {
     if (!env.DB) return;
     try {
       const attempts = await pruneAttempts(env.DB);
       const enquiries = await pruneEnquiries(env.DB);
-      const adminFailures = await pruneAdminFailures(env.DB);
-      console.log("[retention] pruned", { attempts, enquiries, adminFailures });
+      console.log("[retention] pruned", { attempts, enquiries });
     } catch (error) {
       console.error("[retention] pruning failed", { error: errorCode(error) });
     }

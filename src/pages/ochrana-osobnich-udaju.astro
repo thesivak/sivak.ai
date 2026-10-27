@@ -13,7 +13,6 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 // It describes what the code does; change both together:
 //  - fields and columns: src/lib/enquiry/fields.ts, src/lib/server/store.ts, migrations/
 //  - rate limit and retention: src/lib/server/rate-limit.ts, src/lib/server/store.ts (pruneEnquiries),
-//    src/lib/server/admin.ts (failed admin logins, admin_auth_failures),
 //    the hourly cron in src/worker.ts; notification e-mails are deleted by hand (README → Retention)
 //  - Turnstile, notification e-mails: src/lib/server/turnstile.ts, src/lib/server/notify.ts
 //  - Google Analytics on every page (src/layouts/Base.astro) under Google Consent Mode v2, with the cookie
@@ -63,9 +62,7 @@ posílá s formulářem.</p>
     a pro omezení počtu odeslání také s časem každého pokusu o odeslání formuláře;</li>
   <li>údaje, které zpracovává ochrana formuláře Cloudflare Turnstile: technické údaje o prohlížeči
     a zařízení a IP adresa, podle kterých služba rozpozná automatizované odesílání. Ověřovací token
-    a IP adresu předáváme Cloudflare k ověření; výsledek si neukládáme;</li>
-  <li>při neúspěšném pokusu o přihlášení do neveřejné administrace webu otisk IP adresy (vytvořený stejně)
-    a čas pokusu.</li>
+    a IP adresu předáváme Cloudflare k ověření; výsledek si neukládáme.</li>
 </ul>
 <h3>Měření návštěvnosti${ads ? " a reklam" : ""} – jen s vaším souhlasem</h3>
 <p>Na stránkách webu je značka Google Analytics 4 (${GA_MEASUREMENT_ID}). Cookies ukládá a návštěvu měří jen
@@ -88,9 +85,9 @@ se konverze neodesílá. Obsah formuláře Googlu nepředáváme.</p>`
     žádost. Údaje poskytujete dobrovolně; bez jména, firmy a e-mailu ale poptávku vyřídit nemůžeme.</li>
   <li><strong>Vyhodnocení, odkud poptávky přicházejí</strong> (parametry kampaně, gclid, vstupní stránka) –
     oprávněný zájem na vyhodnocení naší propagace, čl. 6 odst. 1 písm. f) GDPR.</li>
-  <li><strong>Ochrana formuláře a administrace před zneužitím a spamem</strong> (Turnstile, omezení počtu
-    odeslání a pokusů o přihlášení, otisk IP adresy, identifikace prohlížeče) – oprávněný zájem na
-    bezpečném provozu webu, čl. 6 odst. 1 písm. f) GDPR.</li>
+  <li><strong>Ochrana formuláře před zneužitím a spamem</strong> (Turnstile, omezení počtu odeslání,
+    otisk IP adresy, identifikace prohlížeče) – oprávněný zájem na bezpečném provozu webu, čl. 6 odst. 1
+    písm. f) GDPR.</li>
   <li><strong>Zapamatování zvoleného jazyka</strong> (cookie lang) – oprávněný zájem na fungování
     přepínače jazyka, čl. 6 odst. 1 písm. f) GDPR.</li>
   <li><strong>Měření návštěvnosti${ads ? " a konverzí z reklam" : ""}</strong> (analytické${ads ? " a marketingové" : ""} cookies,
@@ -113,8 +110,7 @@ Automatizované rozhodování ani profilování neprovádíme.</p>
     a uchováváme je po dobu trvání smlouvy a po dobu, kterou nám ukládají právní předpisy (například
     účetní a daňové).</li>
   <li><strong>Záznamy pro omezení počtu odeslání</strong> (otisk IP adresy a čas pokusu) mažeme nejpozději
-    po 24 hodinách. Formulář přijme z jedné IP adresy nejvýše ${LIMIT} odeslání za ${windowMinutes} minut.
-    Stejně dlouho, nejvýše 24 hodin, uchováváme záznamy o neúspěšných pokusech o přihlášení do administrace.</li>
+    po 24 hodinách. Formulář přijme z jedné IP adresy nejvýše ${LIMIT} odeslání za ${windowMinutes} minut.</li>
   <li><strong>Cookies a úložiště v prohlížeči</strong>: podle tabulky níže.</li>
   <li><strong>Údaje o návštěvách v Google Analytics</strong>: [DOPLNIT: doba uchování nastavená ve službě].</li>
 </ul>

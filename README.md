@@ -10,11 +10,11 @@ Built with [Astro](https://astro.build) and deployed to **Cloudflare Workers wit
 ```
 Request ─▶ Cloudflare
            ├─ static asset (HTML, CSS, fonts, images, vCards) ─▶ served directly, no Worker run
-           └─ "/", "/en", "/en/", "/cs*", "/api/*", "/admin/*", "/robots.txt"   (assets.run_worker_first)
+           └─ "/", "/en", "/en/", "/cs*", "/api/*", "/robots.txt"   (assets.run_worker_first)
                  ─▶ src/worker.ts
                       ├─ language redirects (src/lib/lang-routing.ts)
                       └─ Astro handler ─▶ prerendered page from the asset store
-                                        └─ on-demand routes: POST /api/poptavka, /admin/poptavky(.csv)
+                                        └─ on-demand route: POST /api/poptavka
                                              ├─ D1 binding DB (enquiries, rate limit)
                                              ├─ Turnstile siteverify
                                              └─ e-mail: EMAIL send_email binding (Cloudflare Email Service)
@@ -27,8 +27,8 @@ pages and the few dynamic routes, the language redirect runs in front of the sta
 would need Functions plus `_routes.json` for the same), and D1, Email Service, Observability and
 Workers Builds all attach to the same Worker.
 
-Content pages are prerendered at build time (`output: "static"`); only `src/pages/api/*` and
-`src/pages/admin/*` set `prerender = false` and run on the Worker.
+Content pages are prerendered at build time (`output: "static"`); only `src/pages/api/*` sets
+`prerender = false` and runs on the Worker.
 
 ### Language behaviour (same as the Next.js site)
 
@@ -59,7 +59,7 @@ page with no English campaign would be untranslated duplicate content to maintai
 | `src/styles/landing.css` | Landing page additions, same tokens |
 | `src/lib/enquiry/fields.ts` | Form fields, limits, the checkbox text and its version, validation (browser and server) |
 | `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** with `[DOPLNIT: …]` placeholders for the legal check |
-| `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification, admin auth, CSV |
+| `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification |
 | `migrations/` | D1 schema (`wrangler d1 migrations apply`) |
 | `wrangler.jsonc` | Worker config: assets, D1 binding (`sivak-ai`), vars, hourly cron, commented-out `send_email` |
 | `docs/` | Migration inventory and parity checklist |
@@ -73,7 +73,7 @@ Requires **Node.js ≥ 22.23.4** (Astro 7; `.nvmrc` says 24).
 
 ```sh
 npm install
-cp .dev.vars.example .dev.vars        # Worker variables and secrets; set ADMIN_USER/ADMIN_PASSWORD to try the admin
+cp .dev.vars.example .dev.vars        # Worker variables and secrets
 cp .env.example .env                  # optional: PUBLIC_* build-time keys
 npm run db:migrate:local              # builds once, then creates the tables in the local D1 (.wrangler/state)
 
@@ -93,7 +93,6 @@ Useful local checks:
 curl -I -H 'Accept-Language: en' http://localhost:8787/          # 307 → /en
 curl -I -H 'Cookie: lang=%' http://localhost:8787/               # malformed cookie = no preference: 200 Czech
 npx wrangler d1 execute sivak-ai --local --command "SELECT * FROM enquiries"
-open http://localhost:8787/admin/poptavky                         # credentials from .dev.vars
 # the hourly retention cron, by hand:
 curl -X POST -H 'Content-Type: application/json' -d '{"cron":"0 * * * *"}' \
   'http://localhost:8787/cdn-cgi/local/explorer/api/local/scheduled?worker=sivak-ai'
@@ -126,7 +125,6 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 | `NOTIFY_DISABLED` | var | `1` = kill switch: never send, log only |
 | `TURNSTILE_SECRET_KEY` | secret | Turnstile server-side verification; required in production (no test keys). The preview has the public test secret in `env.preview.vars`. |
 | `IP_HASH_SALT` | secret | HMAC-SHA256 key for the IP hash (rate limit, `ip_hash` column), e.g. `openssl rand -hex 32`. Required in production **and preview**; only `development` may run without it (no rate limit, `ip_hash` NULL). |
-| `ADMIN_USER`, `ADMIN_PASSWORD` | secret | HTTP Basic auth for `/admin/*`. `ADMIN_PASSWORD` must be at least 24 characters (e.g. `openssl rand -base64 24`); missing or shorter → `/admin/*` answers 503 "Admin not configured." |
 | `DB` | D1 binding | Enquiries and rate limit; required (without it the form answers 503) |
 | `EMAIL` | send_email binding | Cloudflare Email Service, production only; restricted to `mirek@sivak.ai` and `matous@sivak.ai` |
 
@@ -189,7 +187,7 @@ footer is unchanged). The form is the only contact path; only the privacy policy
    landing URL, user agent and IP hash; `source` is `ai-skoleni`, or `ai-skoleni-preview` /
    `ai-skoleni-development` outside production. Insert fails → 503 "zkuste to znovu".
 8. **Notification** (after the response, `waitUntil`): see below. Its failure doesn't change the answer:
-   the enquiry is stored and in the admin.
+   the enquiry is stored in D1.
 
 The checkbox ("Beru na vědomí…") acknowledges the privacy policy; it is not a GDPR consent, the legal
 basis is art. 6(1)(b). The column is still called `consent`; `consent_text_version` stores the wording
@@ -224,32 +222,13 @@ to, replyTo, subject, text, html })` (typed by `SendEmail` in `@cloudflare/worke
 - Recipients come from `ENQUIRY_NOTIFY_TO`; the binding's `allowed_destination_addresses` limits it to
   `mirek@sivak.ai` and `matous@sivak.ai` anyway. Reply-To is the enquirer's address, so a reply goes
   straight to them.
-- A name or company starting with `TEST` gets `[TEST] ` in front of the subject. The admin link in the
-  e-mail points to the host the form was sent from (workers.dev before the cutover).
+- A name or company starting with `TEST` gets `[TEST] ` in front of the subject. The first line of the
+  e-mail names the host the form was sent from (workers.dev before the cutover).
 - User input is HTML-escaped in the HTML part; line breaks are stripped from the subject.
 - Nothing is sent outside production (`SITE_ENV=development` or `preview`; the preview has no binding
   either), when `NOTIFY_DISABLED=1`, without the binding, or while `ENQUIRY_FROM_EMAIL`/`ENQUIRY_NOTIFY_TO`
   are empty. A failure is logged with the enquiry id and the Email Service error code
   (e.g. `E_RATE_LIMIT_EXCEEDED`) and never changes the visitor's answer: the enquiry is already in D1.
-
-### Admin: `/admin/poptavky`
-
-Enquiries newest first (500 shown) and `/admin/poptavky.csv` with all of them (UTF-8 with BOM for
-Excel, every cell quoted, cells starting with `= + - @` prefixed with `'` against CSV injection).
-Protected by HTTP Basic auth (`ADMIN_USER`/`ADMIN_PASSWORD`, constant-time comparison,
-`src/lib/server/admin.ts`). It never falls open:
-
-- `ADMIN_USER` missing, or `ADMIN_PASSWORD` missing or shorter than 24 characters → **503** "Admin not
-  configured." (the same answer without the `DB` binding, or without `IP_HASH_SALT` outside development);
-- **failed-login limit**: at most 10 wrong logins per IP hash (`HMAC-SHA256(IP_HASH_SALT, "admin:" + ip)`)
-  in 15 minutes, then **429** with `Retry-After`. Table `admin_auth_failures` (**migration 0002**): every
-  request with credentials is recorded by one conditional `INSERT … SELECT … WHERE count < 10`, so
-  parallel guesses can't overshoot, and a correct login deletes its own row. Rows older than a day go on
-  every attempt and with the hourly cron. If D1 fails here the admin answers 503. Requests without
-  credentials (the browser's first one) only get the 401 login prompt and are not counted.
-
-Responses carry `noindex`, `no-store`; `/admin/` and `/api/` are disallowed in robots.txt and not in
-the sitemap.
 
 ### Retention and deletion
 
@@ -258,7 +237,6 @@ What `/ochrana-osobnich-udaju` promises, and what does it:
 | Data | Kept | How |
 | --- | --- | --- |
 | `enquiry_attempts` (IP hash + time) | ≤ 24 hours | deleted after 23 h on every submission and by the hourly cron |
-| `admin_auth_failures` (IP hash + time of failed admin logins) | ≤ 24 hours | deleted after 23 h on every login attempt and by the hourly cron |
 | `enquiries` rows | 24 months | the hourly cron deletes rows with `created_at` older than 24 months (`pruneEnquiries`) |
 | Notification e-mails in the mirek@/matous@ mailboxes | 24 months | **by hand**: delete enquiry e-mails older than 24 months (e.g. a monthly mailbox search for "Poptávka AI školení" older than 24 months) |
 | Anything that became a contract | as the contract and the law require | copy what's needed into the contract records before the 24 months run out |
@@ -271,15 +249,6 @@ npx wrangler d1 execute sivak-ai --remote -c wrangler.jsonc --command "DELETE FR
 ```
 
 and delete the matching notification e-mails from both mailboxes.
-
-**Recommended at cutover** (nothing of this is configured yet):
-
-- **Cloudflare Access** in front of `/admin/*` (Zero Trust → Access → Applications → self-hosted,
-  domain `www.sivak.ai/admin/*`, policy: e-mails of Mirek and Matouš, one-time PIN or Google login).
-  Requests then reach the Worker only after Access has let them through. Keep Basic auth as the second layer.
-- and/or a **WAF rate-limiting rule** (Security → WAF → Rate limiting rules): e.g. requests whose URI path
-  starts with `/admin/`, counted per IP, a few dozen per minute → block for 10 minutes. It stops floods
-  at the edge before they cost Worker requests or D1 writes; the Worker's own limit stays underneath.
 
 ## Deploy and cutover from Vercel
 
@@ -299,7 +268,8 @@ and delete the matching notification e-mails from both mailboxes.
   key is the build variable `PUBLIC_TURNSTILE_SITE_KEY`, its secret the Worker secret
   `TURNSTILE_SECRET_KEY`. The code has no hostname check of its own: the widget's hostname list decides
   where it works.
-- Secrets on `sivak-ai`: `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`, `ADMIN_USER`, `ADMIN_PASSWORD` (≥ 24 characters).
+- Secrets on `sivak-ai`: `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`. (`ADMIN_USER` / `ADMIN_PASSWORD`, if still set
+  from the removed admin, are unused and can be deleted.)
 - Google Ads: not configured (`PUBLIC_GOOGLE_ADS_*` unset), so no Ads tag and no conversion.
 
 Deploying is `npm run deploy` (build + `wrangler deploy`) with `PUBLIC_TURNSTILE_SITE_KEY` set in the
@@ -337,15 +307,14 @@ curl -s  https://sivak-ai.onfire4yhwh.workers.dev/robots.txt                    
    issues certificates; MX and the e-mail records are untouched. Then redirect the apex to `www` to match
    the canonical URLs (Rules → Redirect Rules → filter `http.host eq "sivak.ai"`, dynamic target
    `concat("https://www.sivak.ai", http.request.uri.path)`, 301, preserve query string). Check `/`, `/en`,
-   `/ai-skoleni`, a test enquiry (name starting with `TEST`, the e-mail subject gets `[TEST] `), the
-   admin, and that robots.txt and the pages carry **no** noindex on www.sivak.ai.
-2. **Admin protection**: Cloudflare Access and/or a WAF rate-limiting rule for `/admin/*` (see "Admin").
-3. **Vercel**: remove `sivak.ai` and `www.sivak.ai` from the Vercel project's domains and disconnect its
+   `/ai-skoleni`, a test enquiry (name starting with `TEST`, the e-mail subject gets `[TEST] `), and that
+   robots.txt and the pages carry **no** noindex on www.sivak.ai.
+2. **Vercel**: remove `sivak.ai` and `www.sivak.ai` from the Vercel project's domains and disconnect its
    Git integration; delete the project once all is well.
-4. **Merge**: squash-merge PR #1 (`astro-cloudflare` → `main`) so `main` gets one commit for the
+3. **Merge**: squash-merge PR #1 (`astro-cloudflare` → `main`) so `main` gets one commit for the
    migration rather than the branch's working history.
 
-Rollback before step 3: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
+Rollback before step 2: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
 `CNAME www cname.vercel-dns.com` (DNS-only).
 
 Google Ads, when wanted: Google Ads → Goals → Conversions → create a "Submit lead form" action
@@ -360,7 +329,15 @@ Analytics retention setting; once it is filled in and checked, drop the page's `
 ### Database changes
 
 Never edit an applied migration: schema changes go into a new `migrations/000N_*.sql`, applied to
-each database. Current: `0001_enquiries.sql`, `0002_admin_auth_failures.sql` (the admin login limit).
+each database. Current: `0001_enquiries.sql`, `0002_admin_auth_failures.sql`. 0002 is a leftover of the
+admin (`/admin/poptavky`), which was removed on 27 October 2026: it is applied and stays, the table
+`admin_auth_failures` is no longer used by anything.
+
+Enquiries are read in D1 (and arrive by e-mail); there is no admin page:
+
+```sh
+npx wrangler d1 execute sivak-ai --remote -c wrangler.jsonc --command "SELECT * FROM enquiries ORDER BY id DESC LIMIT 20"
+```
 
 | Database | Command |
 | --- | --- |

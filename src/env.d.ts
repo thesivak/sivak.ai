@@ -17,8 +17,6 @@ declare namespace Cloudflare {
     ENQUIRY_FROM_EMAIL?: string;
     NOTIFY_DISABLED?: string;
     TURNSTILE_SECRET_KEY?: string;
-    ADMIN_USER?: string;
-    ADMIN_PASSWORD?: string;
     /** HMAC key for the IP hash; required in production and preview */
     IP_HASH_SALT?: string;
   }

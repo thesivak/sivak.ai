@@ -4,7 +4,7 @@ import cloudflare from "@astrojs/cloudflare";
 import { satteri } from "@astrojs/markdown-satteri";
 
 // Content pages are prerendered to static HTML and served from Cloudflare's asset store.
-// Only the enquiry API and the admin pages run on the Worker (`export const prerender = false`).
+// Only the enquiry API (POST /api/poptavka) runs on the Worker (`export const prerender = false`).
 // The language redirect on "/" lives in src/worker.ts, in front of the static assets.
 export default defineConfig({
   site: "https://www.sivak.ai",
