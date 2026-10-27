@@ -1,3 +1,4 @@
+import { safePath } from "@/lib/safe-path";
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 
 // Czech lives at "/", English at "/en".
@@ -29,8 +30,8 @@ function readCookie(header: string | null, name: string): string | undefined {
 }
 
 function redirect(url: URL, status: 307 | 308, headers: HeadersInit = {}): Response {
-  // A relative Location, as the Next.js site sent
-  return new Response(null, { status, headers: { Location: url.pathname + url.search + url.hash, ...headers } });
+  // A relative Location, as the Next.js site sent; never "//host" or "/\host" (open redirect)
+  return new Response(null, { status, headers: { Location: safePath(url.pathname) + url.search + url.hash, ...headers } });
 }
 
 /** Returns the redirect for this request, or null when the page should be served as is. */
