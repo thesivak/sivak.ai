@@ -3,7 +3,7 @@ import BrandLogo from "./BrandLogo.astro";
 import Icon from "./Icon.astro";
 
 interface Props {
-  nav: { label: string; home: string; items: { id: string; label: string }[]; cta: string; open: string; close: string };
+  nav: { label: string; home: string; items: { id: string; label: string; href?: string }[]; cta: string; open: string; close: string };
   langSwitch: { label: string; title: string };
   homeHref: string;
   ctaHref: string;
@@ -17,7 +17,7 @@ const { nav, langSwitch, homeHref, ctaHref, switchHref, switchLang } = Astro.pro
     <a class="header-logo" href={homeHref} aria-label={nav.home}><BrandLogo /></a>
     <nav class="header-nav" id="site-nav" aria-label={nav.label}>
       <ul class="header-links">
-        {nav.items.map((item) => <li><a href={`#${item.id}`} data-close-menu>{item.label}</a></li>)}
+        {nav.items.map((item) => <li><a href={item.href ?? `#${item.id}`} data-close-menu>{item.label}</a></li>)}
       </ul>
       <div class="header-actions">
         <a class="lang-link" href={switchHref} hreflang={switchLang} lang={switchLang} title={langSwitch.title}>{langSwitch.label}</a>

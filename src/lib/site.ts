@@ -3,8 +3,9 @@ import type { Locale } from "@/i18n/config";
 // Company facts shared by the contact section, the footer and the structured data.
 export const SITE_URL = "https://www.sivak.ai";
 
-// TODO: doplnit LinkedIn URL. While it is the placeholder, no LinkedIn link is shown anywhere.
-export const MIREK_LINKEDIN_URL = "https://www.linkedin.com/in/TODO";
+// Mirek's LinkedIn profile: the /ai-skoleni trainer section, the homepage contact card and JSON-LD sameAs.
+// Set it back to a "/in/TODO" placeholder and every LinkedIn link disappears.
+export const MIREK_LINKEDIN_URL = "https://www.linkedin.com/in/mireksivak/";
 export const MIREK_LINKEDIN: string | null = MIREK_LINKEDIN_URL.includes("/in/TODO") ? null : MIREK_LINKEDIN_URL;
 
 // Draft privacy policy, waiting for the legal check (see the comment in the page)
@@ -25,12 +26,13 @@ export type Person = {
   role: string;
   email: string;
   phone?: string;
+  linkedin?: string;
   vcard: string;
 };
 
 // Mirek is listed with email only; the phone number belongs to the key account manager.
 export const PEOPLE: Person[] = [
-  { name: "Mirek Sivák", role: "Founder & CEO", email: "mirek@sivak.ai", vcard: "/mirek-sivak.vcf" },
+  { name: "Mirek Sivák", role: "Founder & CEO", email: "mirek@sivak.ai", linkedin: MIREK_LINKEDIN ?? undefined, vcard: "/mirek-sivak.vcf" },
   {
     name: "Matouš Čep",
     role: "Key account manager",
@@ -71,7 +73,13 @@ export function organizationJsonLd(lang: Locale) {
     logo: `${SITE_URL}/brand/logo.svg`,
     identifier: { "@type": "PropertyValue", propertyID: "IČO", value: COMPANY.ico },
     address: { "@type": "PostalAddress", addressLocality: COMPANY.city, addressCountry: "CZ" },
-    founder: { "@type": "Person", name: FOUNDER.name, jobTitle: FOUNDER.role, email: FOUNDER.email },
+    founder: {
+      "@type": "Person",
+      name: FOUNDER.name,
+      jobTitle: FOUNDER.role,
+      email: FOUNDER.email,
+      ...(FOUNDER.linkedin ? { sameAs: [FOUNDER.linkedin] } : {}),
+    },
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "sales",

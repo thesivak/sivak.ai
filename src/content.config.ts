@@ -24,7 +24,8 @@ const home = defineCollection({
     nav: z.object({
       label: text,
       home: text,
-      items: z.array(z.object({ id: text, label: text })),
+      // href: a link to another page (e.g. /ai-skoleni) instead of the section #id
+      items: z.array(z.object({ id: text, label: text, href: z.string().optional() })),
       cta: text,
       open: text,
       close: text,
@@ -74,6 +75,8 @@ const home = defineCollection({
       ...section,
       lead: text,
       items: z.array(z.object({ title: text, text: text, tags: z.array(text) })),
+      // Teaser for /ai-skoleni under the service cards (Czech homepage only)
+      training: z.object({ label: text, title: text, text: text, cta: text, href: z.string() }).optional(),
     }),
     useCases: z.object({
       ...section,

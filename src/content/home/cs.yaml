@@ -21,6 +21,9 @@ nav:
       label: Z praxe
     - id: kontakt
       label: Kontakt
+    - id: ai-skoleni
+      label: AI školení
+      href: /ai-skoleni
   cta: Domluvit schůzku
   open: Otevřít menu
   close: Zavřít menu
@@ -244,6 +247,12 @@ services:
         - práce přes obrazovku
         - bez zásahu do systému
         - ve dne i v noci
+  training:
+    label: AI školení pro firmy
+    title: Jednodenní AI školení pro váš tým
+    text: Praktický den s ChatGPT a dalšími AI nástroji, automatizacemi a AI agenty. 35 000 Kč za jednodenní školení pro vaši firmu.
+    cta: Více o školení
+    href: /ai-skoleni
 useCases:
   id: priklady
   eyebrow: Kde agenti pomáhají

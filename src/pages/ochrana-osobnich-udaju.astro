@@ -8,6 +8,7 @@ import { LIMIT, WINDOW_MS } from "@/lib/server/rate-limit";
 import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 
 // DRAFT for Mirek's legal check: not final until every [DOPLNIT: …] is filled in and a lawyer has read it.
+// One placeholder remains: the Google Analytics data retention (Mirek's setting in GA).
 // Kept out of search engines (noindex) until then. Linked from the form via PRIVACY_POLICY_URL.
 // It describes what the code does; change both together:
 //  - fields and columns: src/lib/enquiry/fields.ts, src/lib/server/store.ts, migrations/
@@ -20,8 +21,9 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 //    when PUBLIC_GOOGLE_ADS_ID is set at build time, as the Ads tag itself
 //  - the `lang` cookie (src/lib/lang-routing.ts), sessionStorage (src/components/landing/enquiry-form.ts,
 //    written only with marketing consent), the consent record in localStorage (src/lib/consent.ts)
-// Open legal points for Mirek: the controller's details (src/lib/site.ts → COMPANY has values to
-// verify), the e-mail provider, the Google Analytics retention setting and the effective date.
+// Controller details as verified by Mirek in ARES and the commercial register on 27 October 2026.
+// Notifications: Cloudflare Email Service (src/lib/server/notify.ts) into Google Workspace mailboxes.
+// Open legal point for Mirek: the Google Analytics retention setting.
 // The form's checkbox is an acknowledgement, not consent (CONSENT_VERSION in fields.ts).
 const contact = PRIVACY_CONTACT_EMAIL;
 const ads = Boolean(import.meta.env.PUBLIC_GOOGLE_ADS_ID);
@@ -33,8 +35,9 @@ const html = `
 z poptávkového formuláře na stránce <a href="/ai-skoleni">AI školení pro firmy</a>.</p>
 
 <h2>Kdo údaje zpracovává</h2>
-<p>Správcem osobních údajů je [DOPLNIT: název právnické osoby], IČO [DOPLNIT: IČO], se sídlem
-[DOPLNIT: sídlo], který vystupuje pod značkou sivak.ai (dále „my“).</p>
+<p>Správcem osobních údajů je TheSivak s.r.o., IČO 23010282, se sídlem Bohdíkovská 2208/90, 787 01 Šumperk,
+zapsaná v obchodním rejstříku vedeném Krajským soudem v Ostravě, oddíl C, vložka 98925, která vystupuje pod
+značkou sivak.ai (dále „my“).</p>
 <p>S dotazy ke zpracování osobních údajů a s uplatněním svých práv se obracejte na e-mail ${mail}.</p>
 
 <h2>Jaké údaje zpracováváme</h2>
@@ -146,9 +149,11 @@ z vašeho prohlížeče smažeme.</p>
 subjektům, kromě těchto zpracovatelů a příjemců:</p>
 <ul>
   <li><strong>Cloudflare, Inc.</strong> – provoz webu (Cloudflare Workers), databáze poptávek (Cloudflare D1,
-    vytvořená v regionu západní Evropa) a ochrana formuláře (Cloudflare Turnstile);</li>
-  <li><strong>poskytovatel e-mailových služeb</strong> [DOPLNIT: poskytovatel] – doručení a uložení e-mailových
-    oznámení o nové poptávce, která obsahují údaje z formuláře a souhrn parametrů kampaně;</li>
+    vytvořená v regionu západní Evropa), ochrana formuláře (Cloudflare Turnstile) a odesílání e-mailových
+    oznámení o nové poptávce (Cloudflare Email Service). Oznámení obsahují údaje z formuláře a souhrn
+    parametrů kampaně;</li>
+  <li><strong>Google (Google Workspace)</strong> – e-mailové schránky našich pracovníků, do kterých oznámení
+    o poptávkách přicházejí;</li>
   <li><strong>Google Ireland Limited a Google LLC</strong> – Google Analytics${ads ? " a Google Ads" : ""}.</li>
 </ul>
 
@@ -156,8 +161,7 @@ subjektům, kromě těchto zpracovatelů a příjemců:</p>
 <p>Cloudflare a Google jsou součástí skupin se sídlem v USA, a údaje proto mohou být zpracovány i mimo
 Evropskou unii a Evropský hospodářský prostor. Takové předání se opírá o rozhodnutí Evropské komise
 o odpovídající ochraně údajů pro společnosti zapojené do EU-U.S. Data Privacy Framework, případně o standardní
-smluvní doložky schválené Evropskou komisí. Totéž platí pro poskytovatele e-mailových služeb, pokud údaje
-zpracovává mimo EU.</p>
+smluvní doložky schválené Evropskou komisí.</p>
 
 <h2>Vaše práva</h2>
 <p>Podle GDPR máte právo:</p>
@@ -174,7 +178,7 @@ zpracovává mimo EU.</p>
 <p>Svá práva uplatníte e-mailem na ${mail}. Odpovíme bez zbytečného odkladu, nejpozději do jednoho měsíce.</p>
 
 <h2>Účinnost</h2>
-<p>Tyto zásady jsou účinné od [DOPLNIT: datum účinnosti].</p>
+<p>Tyto zásady jsou účinné od 27. 10. 2026.</p>
 `;
 ---
 <Base

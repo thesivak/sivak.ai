@@ -7,7 +7,7 @@ import { COMPANY, PEOPLE } from "@/lib/site";
 interface Props {
   lang: Locale;
   t: {
-    nav: { home: string; items: { id: string; label: string }[] };
+    nav: { home: string; items: { id: string; label: string; href?: string }[] };
     langSwitch: { label: string };
     footer: { tagline: string; navLabel: string; contactLabel: string; operatedBy: string; idLabel: string; registry: string };
   };
@@ -30,7 +30,7 @@ const f = t.footer;
       <nav class="footer-col" aria-label={f.navLabel}>
         <h2>{f.navLabel}</h2>
         <ul>
-          {t.nav.items.map((item) => <li><a href={`#${item.id}`}>{item.label}</a></li>)}
+          {t.nav.items.map((item) => <li><a href={item.href ?? `#${item.id}`}>{item.label}</a></li>)}
         </ul>
       </nav>
       <div class="footer-col">

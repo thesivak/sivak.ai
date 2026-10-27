@@ -32,5 +32,17 @@ const ICONS: IconName[] = ["agent", "data", "flow", "terminal"];
         ))
       }
     </ul>
+    {
+      t.training && (
+        <div class="service-training reveal">
+          <div class="service-training-copy">
+            <p class="service-training-label">{t.training.label}</p>
+            <h3>{t.training.title}</h3>
+            <p>{t.training.text}</p>
+          </div>
+          <a class="btn btn-light" href={t.training.href}>{t.training.cta}<Icon name="arrow" /></a>
+        </div>
+      )
+    }
   </div>
 </section>
