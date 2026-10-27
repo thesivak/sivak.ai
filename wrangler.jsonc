@@ -16,15 +16,17 @@
 
   "assets": {
     "binding": "ASSETS",
-    // "/en" serves en.html, "/en/" redirects to "/en" — the same URLs as the Next.js site
+    // "/en" serves en.html. The asset server's own redirects for "/en/" or "/en.html" would be 307s;
+    // the Worker answers those variants first with a permanent 308 (src/lib/routing.ts).
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
-    // Static files are served without invoking the Worker, except:
-    //  - where the Worker decides the language: "/" (browser language, cookie), "/en" (?lang= switch),
-    //    "/en/" (308 to "/en" as before) and the old "/cs" URLs;
+    // Static files (pages, fonts, images) are served without invoking the Worker, except:
+    //  - URLs that are redirected to their canonical form with 308: anything ending in "/" or ".html",
+    //    the old "/cs" prefix, and "/" and "/en", which drop the old ?lang= parameter;
     //  - the enquiry API /api/poptavka (on-demand);
     //  - /robots.txt, which the Worker answers with "Disallow: /" on *.workers.dev only.
-    "run_worker_first": ["/", "/en", "/en/", "/cs", "/cs/*", "/api/*", "/robots.txt"]
+    // "*" matches across "/", so "/*/" is every path ending in a slash.
+    "run_worker_first": ["/", "/en", "/cs", "/cs/*", "/*/", "/*.html", "/api/*", "/robots.txt"]
   },
 
   "d1_databases": [

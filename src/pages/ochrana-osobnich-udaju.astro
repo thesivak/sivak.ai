@@ -18,7 +18,7 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 //  - Google Analytics on every page (src/layouts/Base.astro) under Google Consent Mode v2, with the cookie
 //    banner (src/components/CookieConsent.astro, src/lib/consent.ts); the Google Ads parts are shown only
 //    when PUBLIC_GOOGLE_ADS_ID is set at build time, as the Ads tag itself
-//  - the `lang` cookie (src/lib/lang-routing.ts), sessionStorage (src/components/landing/enquiry-form.ts,
+//  - the `lang` cookie (src/lib/routing.ts, src/components/language-hint.ts), sessionStorage (src/components/landing/enquiry-form.ts,
 //    written only with marketing consent), the consent record in localStorage (src/lib/consent.ts)
 // Controller details as verified by Mirek in ARES and the commercial register on 27 October 2026.
 // Notifications: Cloudflare Email Service (src/lib/server/notify.ts) into Google Workspace mailboxes.

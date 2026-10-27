@@ -1,11 +1,11 @@
 import { handle } from "@astrojs/cloudflare/handler";
-import { routeLanguage } from "@/lib/lang-routing";
+import { canonicalRedirect } from "@/lib/routing";
 import { errorCode } from "@/lib/server/log";
 import { pruneAttempts } from "@/lib/server/rate-limit";
 import { pruneEnquiries } from "@/lib/server/store";
 
-// The Worker entry: the language redirects first, then Astro, which serves the prerendered
-// pages from the asset store and renders the on-demand route (/api/poptavka).
+// The Worker entry: permanent redirects to the canonical URL first (src/lib/routing.ts), then Astro,
+// which serves the prerendered pages from the asset store and renders the on-demand route (/api/poptavka).
 // In production other static files never reach this code (assets.run_worker_first in wrangler.jsonc);
 // the preview environment sends everything through here so it can keep search engines out.
 //
@@ -30,11 +30,9 @@ export default {
       });
     }
 
-    let response = routeLanguage(request) ?? (await handle(request, env, ctx));
-    if (pathname === "/" || hidden) response = new Response(response.body, response);
-    // "/" depends on the browser language and the cookie, so caches must keep the variants apart
-    if (pathname === "/") response.headers.append("Vary", "Accept-Language, Cookie");
-    return hidden ? noindex(response) : response;
+    const redirect = canonicalRedirect(request);
+    const response = redirect ?? (await handle(request, env, ctx));
+    return hidden ? noindex(new Response(response.body, response)) : response;
   },
 
   // Hourly cron (wrangler.jsonc → triggers): deletes what the privacy policy says we no longer keep,
