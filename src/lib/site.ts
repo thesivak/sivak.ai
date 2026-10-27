@@ -65,11 +65,11 @@ export function initials(name: string): string {
     .join("");
 }
 
-// The organisation as ProfessionalService, with only what the site shows: the contact section lists both
+// The organisation (plain Organization: schema.org deprecates ProfessionalService), with only what the site shows: the contact section lists both
 // e-mail addresses and the account manager's phone, the footer the legal name, town and company ID.
 function organization() {
   return {
-    "@type": ["Organization", "ProfessionalService"],
+    "@type": "Organization",
     "@id": ORGANIZATION_ID,
     name: COMPANY.brand,
     legalName: COMPANY.legalName,
@@ -97,7 +97,7 @@ function organization() {
   };
 }
 
-export type ServiceInfo = { name: string; description: string; path: string; inLanguage?: string };
+export type ServiceInfo = { name: string; description: string; path: string };
 
 /**
  * The homepage's structured data as one graph: the website, the organisation and the services it offers
@@ -116,7 +116,6 @@ export function homeJsonLd(lang: Locale, services: ServiceInfo[]) {
         name: service.name,
         description: service.description,
         url: `${SITE_URL}${service.path}`,
-        inLanguage: service.inLanguage ?? lang,
         areaServed: { "@type": "Country", name: "CZ" },
         provider: { "@id": ORGANIZATION_ID },
       })),

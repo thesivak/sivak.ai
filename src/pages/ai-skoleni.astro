@@ -38,7 +38,7 @@ const jsonLd = [
     url,
     inLanguage: "cs",
     // The homepage's organisation node, by @id; no e-mail or phone on this page
-    provider: { "@type": ["Organization", "ProfessionalService"], "@id": ORGANIZATION_ID, name: COMPANY.brand, legalName: COMPANY.legalName, url: `${SITE_URL}/` },
+    provider: { "@type": "Organization", "@id": ORGANIZATION_ID, name: COMPANY.brand, legalName: COMPANY.legalName, url: `${SITE_URL}/` },
     instructor: {
       "@type": "Person",
       name: t.trainer.name,

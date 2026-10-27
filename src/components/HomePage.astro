@@ -26,7 +26,7 @@ const topics = await getTopics(lang);
 // The services for the JSON-LD: the three service pages, and the training (Czech only; no price here)
 const services: ServiceInfo[] = [
   ...topics.pages.map((page) => ({ name: page.service.name, description: page.service.description, path: page.path })),
-  { name: t.services.training!.label, description: t.services.training!.title, path: t.services.training!.href, inLanguage: "cs" },
+  { name: t.services.training!.label, description: t.services.training!.title, path: t.services.training!.href },
 ];
 const other: Locale = lang === "cs" ? "en" : "cs";
 const homeHref = localePath(lang);

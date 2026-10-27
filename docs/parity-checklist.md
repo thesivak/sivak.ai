@@ -154,7 +154,7 @@ The rows above record the parity check at migration time. Since then, deliberate
   without the slash or `.html`, query kept.
 - Homepage: title and description for search, process step 3 retitled "Pilotní projekt" / "Pilot
   project", links to the new service pages (service cards, process, a footer "Služby" / "Services"
-  column), JSON-LD as one `@graph` (WebSite, Organization + ProfessionalService, Services).
+  column), JSON-LD as one `@graph` (WebSite, Organization, Services).
 - Six new service pages (`/ai-agenti`, `/ai-automatizace`, `/pilotni-projekt`, `/en/…`), in the sitemap
   with hreflang and `<lastmod>`.
 - Footer and cookie-bar titles are `<p>`, not `<h2>`; sections and the hero slide in without fading;

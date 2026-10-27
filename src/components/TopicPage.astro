@@ -31,15 +31,24 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 const jsonLd = [
   {
+    // The page carries the language; Service has no inLanguage property
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${url}#webpage`,
+    url,
+    name: page.metadata.title,
+    inLanguage: lang,
+    mainEntity: { "@id": `${url}#service` },
+  },
+  {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${url}#service`,
     name: page.service.name,
     description: page.service.description,
     url,
-    inLanguage: lang,
     areaServed: { "@type": "Country", name: "CZ" },
-    provider: { "@id": ORGANIZATION_ID, "@type": ["Organization", "ProfessionalService"], name: "sivak.ai", url: `${SITE_URL}/` },
+    provider: { "@id": ORGANIZATION_ID, "@type": "Organization", name: "sivak.ai", url: `${SITE_URL}/` },
   },
   {
     "@context": "https://schema.org",
