@@ -100,6 +100,12 @@ const fields = [
 
         {/* Turnstile renders here once the visitor reaches the form (turnstile.ts); the height is reserved */}
         {turnstileSiteKey && <div class="lp-turnstile" data-turnstile-sitekey={turnstileSiteKey}></div>}
+        {/* The anti-robot check needs JavaScript; without it the server would refuse the enquiry */}
+        {turnstileSiteKey && (
+          <noscript>
+            <p class="lp-hint">Pro odeslání poptávky je potřeba zapnout JavaScript, bez něj neproběhne ochrana proti robotům.</p>
+          </noscript>
+        )}
 
         <div class="lp-submit">
           <button class="btn btn-light" type="submit">Odeslat poptávku<Icon name="arrow" /></button>
