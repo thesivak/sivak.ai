@@ -6,7 +6,7 @@
     "sha256": "5ed6d242dc6bc28abc06ea33d3c5ddb3eb82a8af8b62b4994d2b35ec5faaef86"
   },
   "format": "SVG paths, no embedded raster or fonts",
-  "geometrySource": "src/components/Logo.tsx",
+  "geometrySource": "src/components/logo.ts",
   "descriptor": "Accessible localized HTML, aligned below the wordmark",
   "assets": [
     {
@@ -34,7 +34,7 @@
       "sha256": "3beeab4fe29c1074aea3e8508a0d0e9b9df9b22c69c2c8bb5950f8f50cc7c35f"
     },
     {
-      "path": "src/app/icon.svg",
+      "path": "public/icon.svg",
       "purpose": "website icon",
       "color": "#0B1220 / #F2F0EB",
       "viewBox": "0 0 512 512",
