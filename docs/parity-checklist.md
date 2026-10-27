@@ -13,7 +13,8 @@ Every item from `docs/migration-inventory.md`, old behaviour vs new, and how it 
 - **HTML**: both builds' `/` and `/en` normalized (attributes sorted, scripts and asset `<link>`s
   dropped, whitespace collapsed) and diffed, `<head>` included; JSON-LD compared verbatim.
 - **Rendered text**: `document.body.innerText` of both, in Chromium → identical for `/` and `/en` at migration time
-  (since then deliberately different in the process step 3 title only, see "Content, layout and assets").
+  (since then deliberately different: the process step 3 title, and the site-wide cookie banner, see
+  "Content, layout and assets").
 - **Screenshots**: full-page Chromium screenshots at 1440 × 900 and 375 × 812 (reduced motion, so the
   animated console is deterministic), compared pixel by pixel.
 - **Behaviour**: Playwright scripts for the mobile menu, the agent console and the landing form.
@@ -71,7 +72,7 @@ All compared in the normalized HTML diff: no differences apart from the items no
 
 | Item | Result |
 | --- | --- |
-| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical at the time of the migration ✅. **One deliberate change since then** (commit 4a03e5b, Mirek's decision): process step 3 (`#postup` / `#process`) retitled to "První agent" / "First agent"; the step text is unchanged. The built `/` and `/en` differ from the migrated version only in that `<h3>`. |
+| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical at the time of the migration ✅. **One deliberate change since then** (commit 4a03e5b, Mirek's decision): process step 3 (`#postup` / `#process`) retitled to "První agent" / "First agent"; the step text is unchanged. **Second deliberate change** (Mirek's decision, cookie consent): every page now starts `<head>` with the Google Consent Mode v2 defaults, has the (hidden until needed) cookie banner as the first element of `<body>`, a "Nastavení cookies" / "Cookie settings" button in the footer's legal line, and the end-of-body GA snippet only calls `gtag('js')` and `gtag('config')` (the `gtag` definition moved to `<head>`). Apart from these, `/` and `/en` are unchanged. |
 | Czech no-break spaces (one-letter words, dashes) | kept (`src/lib/czech.ts`), visible in identical `innerText` ✅; one nbsp that lived in the JSX (`IČO 23010282`) was found by the text comparison and restored |
 | Section order, anchors (`#sluzby`, `#postup`, … / `#services`, …), skip link | identical HTML ✅ |
 | Stylesheet | `src/app/globals.css` → `src/styles/global.css`, unchanged (git rename, 100 %) ✅ |
@@ -129,6 +130,7 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | Preview build (`CLOUDFLARE_ENV=preview`, test keys, `IP_HASH_SALT` set) → row in the local `ai-skoleni-nahled` DB with `source = 'ai-skoleni-preview'`, none in `sivak-ai`; noindex header | ✅ |
 | Build without `PUBLIC_TURNSTILE_SITE_KEY` → "Formulář je dočasně nedostupný" notice instead of the form, build warning | ✅ |
 | Logs: only id, reason and error class/code, no personal data | `wrangler dev` output reviewed ✅ |
+| Cookie consent (empty profile, real gtag.js): first load → no `_ga*`, consent `default` denied, banner shown, focus not taken, CLS 0; Accept all → `_ga` + `_ga_S98V3B32ZL`; reload → `default` then `update` granted before config, banner hidden; footer link → focus into banner, toggles show the choice, withdraw → `_ga*` deleted at once and still absent 5 s later, consent `update` denied, focus back on the link; Reject all → no `_ga*`; expired (200 days) or old version → asked again, stray `_ga` deleted; Escape in settings → settings closed, banner stays, nothing stored; Accept/Reject same class and size; first Tab lands in the banner, focus ring 2px solid; `/en` English; JS off → no banner, no link, no cookies | Chromium 139 via DevTools Protocol against `wrangler dev` ✅ |
 | No `@sivak.ai` / `mailto:` in `/ai-skoleni`, `/ai-skoleni/odeslano` or the form's server messages; homepage footer keeps the addresses | grep of `dist/` ✅ |
 | Admin secrets missing, `ADMIN_PASSWORD` under 24 characters, or no D1 → `/admin/*` 503 "Admin not configured." (was 404 before the login limit) | `--var` overrides ✅ |
 | Admin login limit: 12 wrong logins in a row → 10 × 401, then 429 (`Retry-After: 900`), correct password also 429 while blocked; 25 wrong in parallel → 10 × 401 + 15 × 429; a correct login leaves no row; requests without credentials aren't counted; cron prunes old rows | curl + `wrangler d1 execute` ✅ |

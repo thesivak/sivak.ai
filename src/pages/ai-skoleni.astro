@@ -79,6 +79,6 @@ const jsonLd = [
     <EnquiryForm t={t.form} />
   </main>
   {/* No e-mail addresses on the landing page: the form is the only way to get in touch */}
-  <SiteFooter t={{ ...home, nav }} homeHref="/" switchHref="/en?lang=en" switchLang="en" contact={{ href: formHref, label: t.nav.cta }} />
+  <SiteFooter lang="cs" t={{ ...home, nav }} homeHref="/" switchHref="/en?lang=en" switchLang="en" contact={{ href: formHref, label: t.nav.cta }} />
   {adsId && <script is:inline slot="end" set:html={`gtag('config', ${JSON.stringify(adsId)});`} />}
 </Base>

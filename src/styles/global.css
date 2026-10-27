@@ -1242,6 +1242,19 @@ code { font: inherit; }
   color: var(--on-dark-3);
 }
 .footer-legal p:first-child { max-width: 82ch; }
+.footer-cookies {
+  margin-left: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.footer-cookies:hover { color: var(--ivory); }
+.footer-cookies[hidden] { display: none; }
 
 /* ——— Motion ——— */
 

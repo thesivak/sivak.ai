@@ -131,6 +131,35 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 | `DB` | D1 binding | Enquiries and rate limit; required (without it the form answers 503) |
 | `EMAIL` | send_email binding | Cloudflare Email Service (commented out in wrangler.jsonc) |
 
+## Cookie consent
+
+Every page that uses `src/layouts/Base.astro` (homepage cs/en, `/ai-skoleni`, the thank-you page, the
+privacy policy, 404) has the cookie banner (`src/components/CookieConsent.astro`, logic in
+`src/components/cookie-consent.ts`, shared values and texts in `src/lib/consent.ts`), with **Google
+Consent Mode v2**:
+
+- The first thing in `<head>` is an inline script: it defines `gtag`, sets `ad_storage`,
+  `analytics_storage`, `ad_user_data` and `ad_personalization` to `denied` (`wait_for_update: 500`,
+  `ads_data_redaction`) and, if there is a current stored choice, applies it with `gtag('consent',
+  'update', …)` — all before gtag.js and the `gtag('config', …)` calls at the end of `<body>`. Denied, the
+  Google tags set no cookies.
+- Banner: "Přijmout vše" / "Odmítnout vše" (same size and style) and "Nastavení" with toggles
+  Analytické (`analytics_storage`) and Marketingové (`ad_storage`, `ad_user_data`, `ad_personalization`);
+  Nezbytné always on, nothing pre-ticked. English on `/en`. Fixed to the viewport bottom (no layout
+  shift), non-modal; when reopened from the footer, focus moves into it and back to the link afterwards;
+  Escape closes the settings and never counts as a choice.
+- The choice is stored in `localStorage` (`sivak-ai-consent`: `{ v, at, analytics, marketing }`) for
+  **6 months**; expired, or `COOKIE_CONSENT_VERSION` changed (bump it when purposes or texts change), the
+  banner asks again and any `_ga*` / `_gcl_*` cookies are deleted.
+- Footer link "Nastavení cookies" / "Cookie settings" (homepage and landing footer, plus a button in the
+  privacy policy) reopens the banner. Withdrawing sets the consent types back to denied and deletes `_ga`,
+  `_ga_*` (and, without marketing consent, `_gcl_*`) host-only and on every parent domain (`www.sivak.ai`,
+  `.sivak.ai`).
+- The Google Ads conversion on `/ai-skoleni` fires only with marketing consent, and only when
+  `PUBLIC_GOOGLE_ADS_*` are set. The form keeps the campaign parameters in `sessionStorage` only with
+  marketing consent too.
+- Without JavaScript there is no banner and no footer link, and no Google tag runs either.
+
 ## The enquiry form
 
 `POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order. The visitor sees "přijali" (200 or
@@ -283,8 +312,9 @@ Commands need a logged-in `wrangler` on the sivak.ai account.
    work here. The Ads tag is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) stays on every page.
 5. **Content TODOs**: `MIREK_LINKEDIN_URL` in `src/lib/site.ts` (the LinkedIn button and `sameAs` stay
    hidden while it is the placeholder), and the privacy policy draft
-   `src/pages/ochrana-osobnich-udaju.astro`: fill in every `[DOPLNIT: …]`, have it checked, decide the
-   basis for the Google cookies (no cookie banner today), then drop its `noindex`.
+   `src/pages/ochrana-osobnich-udaju.astro`: fill in every `[DOPLNIT: …]` (controller, e-mail provider,
+   Google Analytics retention setting, effective date), have it checked, then drop its `noindex`.
+   The basis for the Google cookies is decided: consent, via the cookie banner (see "Cookie consent").
 6. **Deploy the Worker** `sivak-ai`: `npm run deploy` (build + `wrangler deploy`), or Workers Builds
    (connect the repository; build command `npm run build`, deploy command `npx wrangler deploy`,
    `NODE_VERSION=24` and the `PUBLIC_*` build variables). Check its `*.workers.dev` URL.
@@ -338,5 +368,4 @@ each database. Current: `0001_enquiries.sql`, `0002_admin_auth_failures.sql` (th
 ## Notes
 
 - `design/og/*.html` are the sources of the share images in `public/og/` (see `design/og/README.md`).
-- The site has no cookie banner; GA4 runs as it did on the Next.js site. The privacy policy draft leaves
-  the legal basis for the Google cookies as `[DOPLNIT]` for Mirek.
+- GA4 runs on every page as on the Next.js site, but only after consent (see "Cookie consent").

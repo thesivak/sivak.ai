@@ -56,5 +56,5 @@ const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
     <Faq t={t.faq} items={faq} index="08" />
     <Contact t={t.contact} />
   </main>
-  <SiteFooter t={t} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
+  <SiteFooter lang={lang} t={t} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
 </Base>

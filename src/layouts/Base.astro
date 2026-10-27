@@ -1,7 +1,9 @@
 ---
 import "@/styles/fonts.css";
 import "@/styles/global.css";
+import CookieConsent from "@/components/CookieConsent.astro";
 import type { Locale } from "@/i18n/config";
+import { consentHeadSnippet } from "@/lib/consent";
 import { GA_MEASUREMENT_ID, SITE_URL } from "@/lib/site";
 
 interface Props {
@@ -24,10 +26,11 @@ const ogTitle = Astro.props.ogTitle ?? title;
 const ogDescription = Astro.props.ogDescription ?? description;
 const image = new URL(ogImage.path, SITE_URL).href;
 
-// Google's snippet; `gtag` stays global so pages can send events (see the /ai-skoleni form)
+// Google Consent Mode v2: `gtag` and the consent defaults (all denied, or the stored choice) come first
+// in <head> (src/lib/consent.ts), so gtag.js and the config calls below never run without them.
+// With analytics_storage / ad_storage denied the Google tags set no cookies.
+// `gtag` stays global so pages can send events (see the /ai-skoleni form)
 const GTAG_SNIPPET = `
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', '${GA_MEASUREMENT_ID}');
     `;
@@ -46,6 +49,7 @@ const PRELOAD_FONTS = [
 <html lang={lang}>
   <head>
     <meta charset="utf-8" />
+    <script is:inline set:html={consentHeadSnippet()} />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     {PRELOAD_FONTS.map((font) => <link rel="preload" href={`/fonts/${font}.woff2`} as="font" crossorigin="" type="font/woff2" />)}
     <meta name="theme-color" content="#0B1220" />
@@ -72,6 +76,7 @@ const PRELOAD_FONTS = [
     <slot name="head" />
   </head>
   <body>
+    <CookieConsent lang={lang} />
     <slot />
     {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll("<", "\\u003c")} />)}
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>

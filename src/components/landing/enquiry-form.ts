@@ -2,6 +2,7 @@
 // Without JavaScript the browser validates the inputs and posts the form; the server redirects to a thank-you page.
 // With it: the same validation as the server, messages next to the fields, submission without leaving the page,
 // and the Google Ads conversion after a successful submit.
+import { TRACKING_STORAGE_KEY as STORAGE_KEY, readConsent } from "@/lib/consent";
 import { TRACKING_KEYS, validateEnquiry, type FieldErrors, type FieldName } from "@/lib/enquiry/fields";
 
 declare global {
@@ -12,27 +13,34 @@ declare global {
   }
 }
 
-const STORAGE_KEY = "sivak-ai-tracking";
 const FIELDS: FieldName[] = ["name", "company", "email", "phone", "participants", "note", "consent"];
 
-// Campaign parameters from the URL the visitor landed on, kept for the session in case they browse first
+// Campaign parameters from the URL the visitor landed on. Kept for the session (in case they browse
+// first) only with marketing consent: that storage isn't strictly necessary. Without it the values still
+// go with a submission made on the page they arrived on.
 function tracking(): Record<string, string> {
   const params = new URLSearchParams(window.location.search);
   const fromUrl = Object.fromEntries(TRACKING_KEYS.map((key) => [key, params.get(key) ?? ""]).filter(([, v]) => v));
-  if (Object.keys(fromUrl).length > 0) {
-    const value = { ...fromUrl, landing_url: window.location.pathname + window.location.search };
+  const mayStore = readConsent()?.marketing === true;
+  try {
+    if (!mayStore) {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } else if (Object.keys(fromUrl).length === 0) {
+      return JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "{}");
+    }
+  } catch {
+    // storage blocked or garbage: only this page's parameters
+  }
+  if (Object.keys(fromUrl).length === 0) return {};
+  const value = { ...fromUrl, landing_url: window.location.pathname + window.location.search };
+  if (mayStore) {
     try {
       sessionStorage.setItem(STORAGE_KEY, JSON.stringify(value));
     } catch {
       // storage blocked: the values still go with this submission
     }
-    return value;
   }
-  try {
-    return JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "{}");
-  } catch {
-    return {};
-  }
+  return value;
 }
 
 function values(form: HTMLFormElement): Record<string, string> {
@@ -140,10 +148,10 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
   });
 }
 
-// Google Ads conversion (only when PUBLIC_GOOGLE_ADS_ID and the label are set at build time),
-// plus a dataLayer event for Google Tag Manager or GA4.
+// Google Ads conversion: only when PUBLIC_GOOGLE_ADS_ID and the label are set at build time AND the
+// visitor allowed marketing cookies (ad_storage granted); otherwise nothing. Plus a dataLayer event.
 function reportConversion(sendTo: string | undefined) {
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ event: "ai_skoleni_lead" });
-  if (sendTo && typeof window.gtag === "function") window.gtag("event", "conversion", { send_to: sendTo });
+  if (sendTo && readConsent()?.marketing === true && typeof window.gtag === "function") window.gtag("event", "conversion", { send_to: sendTo });
 }

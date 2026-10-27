@@ -1,8 +1,11 @@
 ---
 import BrandLogo from "./BrandLogo.astro";
+import type { Locale } from "@/i18n/config";
+import { CONSENT_TEXT } from "@/lib/consent";
 import { COMPANY, PEOPLE } from "@/lib/site";
 
 interface Props {
+  lang: Locale;
   t: {
     nav: { home: string; items: { id: string; label: string }[] };
     langSwitch: { label: string };
@@ -14,7 +17,7 @@ interface Props {
   /** Replaces the e-mail addresses in the contact column (the landing page, where the form is the only contact) */
   contact?: { href: string; label: string };
 }
-const { t, homeHref, switchHref, switchLang, contact } = Astro.props;
+const { lang, t, homeHref, switchHref, switchLang, contact } = Astro.props;
 const f = t.footer;
 ---
 <footer class="site-footer">
@@ -43,7 +46,11 @@ const f = t.footer;
     {/* § 435 of the Czech Civil Code: name, seat, company ID and register entry */}
     <div class="footer-legal">
       <p>{f.operatedBy} {COMPANY.legalName}, {COMPANY.city}, {f.idLabel}{"\u00a0"}{COMPANY.ico}. {f.registry}</p>
-      <p>© {new Date().getFullYear()} {COMPANY.legalName}</p>
+      <p>
+        © {new Date().getFullYear()} {COMPANY.legalName}
+        {/* Reopens the cookie banner to change or withdraw consent; cookie-consent.ts unhides it (no JS, no Google tags) */}
+        <button type="button" class="footer-cookies" data-cookie-settings hidden>{CONSENT_TEXT[lang].footerLink}</button>
+      </p>
     </div>
   </div>
 </footer>
