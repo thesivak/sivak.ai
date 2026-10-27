@@ -12,7 +12,8 @@ Every item from `docs/migration-inventory.md`, old behaviour vs new, and how it 
   `Location` and `Set-Cookie` compared; static files compared byte for byte (`cmp`).
 - **HTML**: both builds' `/` and `/en` normalized (attributes sorted, scripts and asset `<link>`s
   dropped, whitespace collapsed) and diffed, `<head>` included; JSON-LD compared verbatim.
-- **Rendered text**: `document.body.innerText` of both, in Chromium → identical for `/` and `/en`.
+- **Rendered text**: `document.body.innerText` of both, in Chromium → identical for `/` and `/en` at migration time
+  (since then deliberately different in the process step 3 title only, see "Content, layout and assets").
 - **Screenshots**: full-page Chromium screenshots at 1440 × 900 and 375 × 812 (reduced motion, so the
   animated console is deterministic), compared pixel by pixel.
 - **Behaviour**: Playwright scripts for the mobile menu, the agent console and the landing form.
@@ -70,7 +71,7 @@ All compared in the normalized HTML diff: no differences apart from the items no
 
 | Item | Result |
 | --- | --- |
-| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical ✅ |
+| All copy (cs, en) | moved to `src/content/home/*.yaml` + `src/content/faq/*/*.md`; a YAML round-trip test confirmed the data equals the old JSON; rendered `innerText` identical at the time of the migration ✅. **One deliberate change since then** (commit 4a03e5b, Mirek's decision): the title of process step 3 (`#postup` / `#process`), CZ "Pilotní agent" → "První agent", EN "Pilot agent" → "First agent"; the step text is unchanged. The built `/` and `/en` differ from the migrated version only in that `<h3>`. |
 | Czech no-break spaces (one-letter words, dashes) | kept (`src/lib/czech.ts`), visible in identical `innerText` ✅; one nbsp that lived in the JSX (`IČO 23010282`) was found by the text comparison and restored |
 | Section order, anchors (`#sluzby`, `#postup`, … / `#services`, …), skip link | identical HTML ✅ |
 | Stylesheet | `src/app/globals.css` → `src/styles/global.css`, unchanged (git rename, 100 %) ✅ |
@@ -116,6 +117,7 @@ All compared in the normalized HTML diff: no differences apart from the items no
 | 6th submission from one IP within 10 min → 429 | curl ✅ |
 | 10 and 30 parallel submissions from one IP → exactly 5 admitted, the rest 429; attempts older than 23 h pruned | curl + `wrangler d1 execute` ✅ |
 | Body over 32 KiB sent chunked, without `Content-Length` → 413 | curl ✅ |
+| Hidden `consent_version`: current → 200 and stored as `consent_text_version`; stale or missing → 409 "Formulář se mezitím změnil…" (JSON) or 303 to `/ai-skoleni#formular-zmenen` (no JS, `:target` notice), nothing stored | curl + `wrangler d1 execute` ✅ |
 | `Cookie: lang=%` (malformed) → no preference: Czech homepage 200, or `/en` by `Accept-Language` | curl ✅ |
 | Hourly cron (`scheduled`): attempts > 23 h and enquiries > 24 months deleted | local explorer `scheduled` endpoint ✅ |
 | Secret set, no token → 400 | curl ✅ |

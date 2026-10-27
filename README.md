@@ -164,8 +164,13 @@ footer is unchanged). The form is the only contact path; only the privacy policy
    the enquiry is stored and in the admin.
 
 The checkbox ("Beru na vědomí…") acknowledges the privacy policy; it is not a GDPR consent, the legal
-basis is art. 6(1)(b). The column is still called `consent`; `consent_text_version` says which wording
-was shown (`2026-10-27-v2` since the change from "Souhlasím…").
+basis is art. 6(1)(b). The column is still called `consent`; `consent_text_version` stores the wording
+version **the page submitted** in the hidden field `consent_version` (`2026-10-27-v2` since the change from
+"Souhlasím…"). The server accepts only `SUPPORTED_CONSENT_VERSIONS` (`fields.ts`); anything else, or no
+field (an old cached page), gets **409** "Formulář se mezitím změnil. Obnovte prosím stránku…" as JSON,
+or without JavaScript a 303 back to `/ai-skoleni#formular-zmenen`, where `:target` shows the same
+message above a fresh form. When the wording changes: bump `CONSENT_VERSION`, add it to the list, and
+drop the old one once no old pages can be around.
 
 **Logs** carry the enquiry id, a reason and error class/code only: never names, company, e-mail, phone,
 note, IP, user agent, the e-mail subject or body, nor provider response bodies (`src/lib/server/log.ts`).

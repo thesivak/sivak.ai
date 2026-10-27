@@ -2,7 +2,7 @@
 import Eyebrow from "../Eyebrow.astro";
 import Icon from "../Icon.astro";
 import type { Landing } from "@/lib/content";
-import { CONSENT_TEXT, FIELD, LIMITS, TRACKING_KEYS } from "@/lib/enquiry/fields";
+import { CONSENT_TEXT, CONSENT_VERSION, FIELD, LIMITS, STALE_FORM_ANCHOR, STALE_FORM_MESSAGE, TRACKING_KEYS } from "@/lib/enquiry/fields";
 import { PRIVACY_POLICY_URL } from "@/lib/site";
 
 interface Props {
@@ -44,6 +44,8 @@ const fields = [
           <p>Omlouváme se, poptávku teď nelze odeslat. Zkuste to prosím znovu později.</p>
         </div>
       )}
+      {/* Shown (via :target) when a submission without JavaScript came from an outdated page: the server redirects here */}
+      {formAvailable && <p class="lp-stale" id={STALE_FORM_ANCHOR} role="alert">{STALE_FORM_MESSAGE}</p>}
       {formAvailable && <form class="lp-form" method="post" action="/api/poptavka" data-enquiry-form data-conversion={conversion || undefined} aria-describedby="form-required">
         <p class="lp-form-required" id="form-required">Pole označená * jsou povinná.</p>
         <div class="lp-fields">
@@ -88,6 +90,7 @@ const fields = [
         </div>
         {TRACKING_KEYS.map((key) => <input type="hidden" name={key} />)}
         <input type="hidden" name="landing_url" />
+        <input type="hidden" name={FIELD.consentVersion} value={CONSENT_VERSION} />
 
         <div class="lp-consent">
           <input id="f-consent" name={FIELD.consent} type="checkbox" value="on" required aria-describedby="consent-error" />

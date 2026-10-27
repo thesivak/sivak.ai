@@ -1,4 +1,4 @@
-import { CONSENT_VERSION, type Enquiry } from "@/lib/enquiry/fields";
+import type { Enquiry } from "@/lib/enquiry/fields";
 
 export type StoredEnquiry = {
   id: number;
@@ -32,7 +32,8 @@ export const COLUMNS: (keyof StoredEnquiry)[] = [
   "user_agent", "ip_hash", "notified_at",
 ];
 
-export type Meta = { createdAt: string; userAgent: string | null; ipHash: string | null; source: string };
+// consentVersion: the checkbox wording version the page submitted, already checked against SUPPORTED_CONSENT_VERSIONS
+export type Meta = { createdAt: string; userAgent: string | null; ipHash: string | null; source: string; consentVersion: string };
 
 export async function insertEnquiry(db: D1Database, enquiry: Enquiry, meta: Meta): Promise<number> {
   const t = enquiry.tracking;
@@ -46,7 +47,7 @@ export async function insertEnquiry(db: D1Database, enquiry: Enquiry, meta: Meta
     )
     .bind(
       meta.createdAt, meta.source, enquiry.name, enquiry.company, enquiry.email, enquiry.phone, enquiry.participants, enquiry.note,
-      meta.createdAt, CONSENT_VERSION,
+      meta.createdAt, meta.consentVersion,
       t.utm_source ?? null, t.utm_medium ?? null, t.utm_campaign ?? null, t.utm_term ?? null, t.utm_content ?? null,
       t.gclid ?? null, enquiry.landingUrl, meta.userAgent?.slice(0, 500) ?? null, meta.ipHash,
     )

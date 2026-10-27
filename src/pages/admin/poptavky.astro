@@ -51,8 +51,8 @@ const campaign = (e: StoredEnquiry) => [e.utm_source, e.utm_medium, e.utm_campai
 
       {!env.DB && (
         <p class="notice" role="status">
-          DB není nakonfigurovaná. Worker nemá binding <code>DB</code> (Cloudflare D1), poptávky se proto neukládají
-          – odcházejí jen e-mailem, případně do logu Workeru. Postup nastavení je v README.
+          DB není nakonfigurovaná. Worker nemá binding <code>DB</code> (Cloudflare D1), formulář proto poptávky
+          nepřijímá: návštěvníkům odpovídá 503 „zkuste to znovu později“, dokud binding nenastavíte. Postup je v README.
         </p>
       )}
       {dbError && (

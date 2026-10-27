@@ -12,6 +12,8 @@ export const FIELD = {
   // Honeypot: hidden from people, filled in by naive bots
   website: "website",
   turnstile: "cf-turnstile-response",
+  // Hidden: which checkbox wording the page showed (CONSENT_VERSION at build time)
+  consentVersion: "consent_version",
 } as const;
 
 export const LIMITS = {
@@ -29,6 +31,11 @@ export const LIMITS = {
 // basis is art. 6(1)(b), steps taken at their request before a contract (see /ochrana-osobnich-udaju).
 // v2: was "Souhlasím se zpracováním osobních údajů uvedených ve formuláři za účelem vyřízení mé poptávky."
 export const CONSENT_VERSION = "2026-10-27-v2";
+// Versions the server still accepts. A page with any other (or none, e.g. a cached old page) gets 409
+// "reload"; when the wording changes, add the new version here and drop the old one once pages are gone.
+export const SUPPORTED_CONSENT_VERSIONS: readonly string[] = [CONSENT_VERSION];
+export const STALE_FORM_ANCHOR = "formular-zmenen";
+export const STALE_FORM_MESSAGE = "Formulář se mezitím změnil. Obnovte prosím stránku a odešlete ho znovu.";
 export const CONSENT_TEXT =
   "Beru na vědomí, že údaje z formuláře zpracujete za účelem vyřízení mé poptávky.";
 

@@ -1,4 +1,4 @@
-import { FIELD, TRACKING_KEYS, validateEnquiry, type FieldErrors } from "@/lib/enquiry/fields";
+import { FIELD, STALE_FORM_ANCHOR, STALE_FORM_MESSAGE, SUPPORTED_CONSENT_VERSIONS, TRACKING_KEYS, validateEnquiry, type FieldErrors } from "@/lib/enquiry/fields";
 import { hmacSha256Hex } from "./crypto";
 import { siteMode, type ServerEnv } from "./env";
 import { errorCode } from "./log";
@@ -19,11 +19,13 @@ import { TEST_TOKEN, isTestSecret, verifyTurnstile } from "./turnstile";
 // Messages name no e-mail address: on /ai-skoleni the form is the only contact path.
 
 export const THANK_YOU_PATH = "/ai-skoleni/odeslano";
-const FORM_PATH = "/ai-skoleni#poptavka";
+const FORM_PAGE = "/ai-skoleni";
+const FORM_PATH = `${FORM_PAGE}#poptavka`;
 export const MAX_BODY = 32 * 1024;
 
 type Context = { env: ServerEnv; waitUntil: (promise: Promise<unknown>) => void };
-type Failure = { status: number; message: string; errors?: FieldErrors };
+// redirect: without JavaScript, send the browser there (303) instead of showing the error page
+type Failure = { status: number; message: string; errors?: FieldErrors; redirect?: string };
 
 const MESSAGES = {
   invalid: "Zkontrolujte prosím zvýrazněná pole.",
@@ -31,6 +33,7 @@ const MESSAGES = {
   robot: "Nepodařilo se ověřit, že nejste robot. Zkuste formulář odeslat znovu.",
   unavailable: "Formulář je teď dočasně nedostupný. Zkuste to prosím znovu později.",
   tooLarge: "Poptávka je příliš dlouhá. Zkraťte prosím poznámku.",
+  stale: STALE_FORM_MESSAGE,
   failed: "Poptávku se teď nepodařilo uložit. Zkuste to prosím znovu později.",
   ok: "Děkujeme, poptávku jsme přijali. Ozveme se vám co nejdříve.",
 };
@@ -157,6 +160,14 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
     return respond(null);
   }
 
+  // The page must have shown a checkbox wording we still accept; an old cached page has to be reloaded.
+  // Without JavaScript the browser goes back to a fresh form, where :target shows the same message.
+  const consentVersion = (fields[FIELD.consentVersion] ?? "").trim();
+  if (!SUPPORTED_CONSENT_VERSIONS.includes(consentVersion)) {
+    console.warn("[enquiry] unsupported consent_version; asked to reload", { missing: consentVersion === "" });
+    return respond({ status: 409, message: MESSAGES.stale, redirect: `${FORM_PAGE}#${STALE_FORM_ANCHOR}` });
+  }
+
   fillTrackingFromReferer(fields, request.headers.get("referer"));
   const result = validateEnquiry(fields);
   if (!result.ok) return respond({ status: 400, message: MESSAGES.invalid, errors: result.errors });
@@ -179,7 +190,7 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
   try {
     // Preview and development have their own databases; the source still says where a row came from
     const source = production ? "ai-skoleni" : `ai-skoleni-${mode}`;
-    id = await insertEnquiry(db, enquiry, { createdAt, userAgent: request.headers.get("user-agent"), ipHash, source });
+    id = await insertEnquiry(db, enquiry, { createdAt, userAgent: request.headers.get("user-agent"), ipHash, source, consentVersion });
   } catch (error) {
     console.error("[enquiry] storing failed; the visitor was asked to retry", { error: errorCode(error) });
     return respond({ status: 503, message: MESSAGES.failed });
@@ -205,6 +216,7 @@ function jsonResponse(failure: Failure | null): Response {
 
 function htmlResponse(failure: Failure | null): Response {
   if (!failure) return new Response(null, { status: 303, headers: { Location: THANK_YOU_PATH, "Cache-Control": "no-store" } });
+  if (failure.redirect) return new Response(null, { status: 303, headers: { Location: failure.redirect, "Cache-Control": "no-store" } });
   const errors = Object.values(failure.errors ?? {});
   const html = `<!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
