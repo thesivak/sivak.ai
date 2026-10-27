@@ -1,8 +1,8 @@
 # Copy of the English home page (/en). The FAQ questions and answers live in src/content/faq/en/*.md.
 # Schema: src/content.config.ts.
 metadata:
-  title: sivak.ai — AI agents and automation
-  description: We build AI agents that handle the work people do at a computer. They take over 80% of the routine, so your team can focus on the 20% that drives results.
+  title: AI agents and automation for businesses | sivak.ai
+  description: We build AI agents and automation around your processes. They take over 80% of routine computer work; a person approves key steps. ROI calculated up front.
 skipLink: Skip to content
 langSwitch:
   label: Česky
@@ -302,7 +302,7 @@ process:
     - title: ROI estimate
       text: We calculate how many hours the agent will save and when the investment pays back. You know before we start.
       output: savings estimate
-    - title: First agent
+    - title: Pilot project
       text: We build an agent for one process. Your people review its work while we measure the results.
       output: agent in operation
     - title: Operation and growth
