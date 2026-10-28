@@ -252,7 +252,7 @@ services:
   training:
     label: AI training for companies
     title: One-day AI training for your team
-    text: A practical day with ChatGPT and other AI tools, automation and AI agents, for everyone from assistants and HR to management. The training is held in Czech. 35 000 Kč for a one-day training for your company.
+    text: A practical day with ChatGPT and other AI tools, automation and AI agents, for everyone from assistants and HR to management. The training is held in Czech or English. 35 000 Kč for a one-day training for your company.
     cta: More about the training (in Czech)
     href: /ai-skoleni
     hreflang: cs
