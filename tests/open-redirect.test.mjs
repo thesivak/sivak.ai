@@ -8,16 +8,16 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const out = await build({
-  entryPoints: [`${root}src/lib/lang-routing.ts`],
+  entryPoints: [`${root}src/lib/routing.ts`],
   bundle: true,
   write: false,
   format: "esm",
   platform: "neutral",
   alias: { "@": `${root}src` },
 });
-const { routeLanguage } = await import(`data:text/javascript,${encodeURIComponent(out.outputFiles[0].text)}`);
+const { canonicalRedirect } = await import(`data:text/javascript,${encodeURIComponent(out.outputFiles[0].text)}`);
 
-const location = (path) => routeLanguage(new Request(`https://www.sivak.ai${path}`))?.headers.get("location");
+const location = (path) => canonicalRedirect(new Request(`https://www.sivak.ai${path}`))?.headers.get("location");
 
 for (const [path, expected] of [
   ["//x/", "/x"],
@@ -27,9 +27,14 @@ for (const [path, expected] of [
   ["/cs//x", "/x"],
   ["/cs//evil.example", "/evil.example"],
   ["/cs/\\x", "/x"],
+  ["/cs///x/", "/x"],
   ["/en/", "/en"],
+  ["/en/index.html/", "/en"],
+  ["/index.html", "/"],
+  ["/ai-skoleni.html", "/ai-skoleni"],
   ["/cs/ai-skoleni", "/ai-skoleni"],
-  ["//x/?lang=en", "/x/"],
+  ["/ai-agenti?lang=en", "/en/ai-agents"],
+  ["//x/?lang=en", "/x"],
 ]) {
   test(`${path} → ${expected}`, () => {
     const loc = location(path);

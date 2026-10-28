@@ -712,6 +712,19 @@ code { font: inherit; }
   letter-spacing: -.015em;
 }
 .service-card p { margin-top: 12px; color: var(--ink-3); text-wrap: pretty; }
+/* Link from a service card, or from the process section, to the service's own page */
+.service-more, .p-more a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--ink);
+  text-underline-offset: 4px;
+}
+.service-more { margin-top: 20px; }
+.service-more svg, .p-more svg { width: 18px; height: 18px; transition: transform .3s var(--ease); }
+.service-more:hover svg, .p-more a:hover svg { transform: translateX(3px); }
+.p-more { margin-top: clamp(32px, 4vw, 48px); }
 /* The /ai-skoleni teaser under the service cards (Czech homepage) */
 .service-training {
   display: flex;
@@ -1237,11 +1250,11 @@ code { font: inherit; }
   font-size: 15px;
   color: var(--on-dark-2);
 }
-.footer-top { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
+.footer-top { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px; }
 .footer-logo { display: inline-flex; color: var(--ivory); border-radius: 4px; }
 .footer-logo svg { width: auto; height: 28px; }
 .footer-brand p { max-width: 30ch; margin-top: 18px; }
-.footer-col h2 {
+.footer-col-title {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 500;
@@ -1285,8 +1298,10 @@ code { font: inherit; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @keyframes fade-in { from { opacity: 0; } }
-@keyframes rise { from { opacity: 0; transform: translateY(16px); } }
-@keyframes reveal { from { opacity: 0; transform: translateY(32px); } }
+/* Slide only, no fade: the hero text is painted at once, so it is the page's LCP element */
+@keyframes rise { from { transform: translateY(16px); } }
+/* Slide only, no fade: text that is half scrolled into view keeps its full contrast (WCAG 1.4.3) */
+@keyframes reveal { from { transform: translateY(32px); } }
 @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 
 @media (prefers-reduced-motion: no-preference) {

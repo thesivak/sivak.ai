@@ -2,7 +2,8 @@ import { FIELD, STALE_FORM_ANCHOR, STALE_FORM_MESSAGE, SUPPORTED_CONSENT_VERSION
 import { hmacSha256Hex } from "./crypto";
 import { siteMode, type ServerEnv } from "./env";
 import { errorCode } from "./log";
-import { escapeHtml, notifyEnquiry } from "./notify";
+import { escapeHtml } from "@/lib/escape";
+import { notifyEnquiry } from "./notify";
 import { allowAttempt } from "./rate-limit";
 import { insertEnquiry, markNotified } from "./store";
 import { TEST_TOKEN, isTestSecret, verifyTurnstile } from "./turnstile";

@@ -129,6 +129,7 @@ export function setupCookieConsent(banner: HTMLElement) {
     // No current choice (never asked, expired or a new version): nothing of Google's may stay behind
     deleteCookies(GA_COOKIE);
     deleteCookies(ADS_COOKIE);
-    open(null);
+    // After the first paint: the page's content renders first, the bar right after
+    requestAnimationFrame(() => requestAnimationFrame(() => open(null)));
   }
 }

@@ -1,0 +1,50 @@
+---
+import Icon from "./Icon.astro";
+import type { Locale } from "@/i18n/config";
+
+// Suggests the page's other-language version (language-hint.ts decides whether to show it). Written in
+// the target language, so "Switch to English" reaches the reader who needs it. Fixed under the header:
+// showing it moves nothing on the page.
+interface Props {
+  /** URL of the same page in the other language */
+  href: string;
+  lang: Locale;
+}
+const { href, lang } = Astro.props;
+const TEXT = {
+  en: { region: "Language", link: "Switch to English", close: "Close" },
+  cs: { region: "Jazyk", link: "Přepnout do češtiny", close: "Zavřít" },
+} as const;
+const t = TEXT[lang];
+---
+<div class="lh" role="region" aria-label={t.region} lang={lang} hidden data-language-hint data-target-lang={lang}>
+  <a class="lh-link" href={href} hreflang={lang} data-lang-switch={lang}>{t.link}<Icon name="arrow" /></a>
+  <button type="button" class="lh-close" aria-label={t.close} data-hint-close><Icon name="close" /></button>
+</div>
+
+<style>
+  .lh {
+    position: fixed;
+    z-index: 45;
+    top: calc(var(--header-h) + 12px);
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 4px 4px 14px;
+    border: 1px solid var(--line-dark-strong);
+    border-radius: 999px;
+    background: var(--navy-900);
+    box-shadow: 0 16px 32px -16px rgba(0, 0, 0, .6);
+    color: var(--on-dark);
+    font-size: 14px;
+  }
+  .lh[hidden] { display: none; }
+  .lh :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .lh-link { display: inline-flex; align-items: center; gap: 8px; padding: 6px 0; color: inherit; text-decoration: none; font-weight: 500; }
+  .lh-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .lh-link :global(svg) { width: 16px; height: 16px; }
+  .lh-close { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--on-dark-2); cursor: pointer; }
+  .lh-close:hover { color: var(--on-dark); background: rgba(242, 240, 235, .08); }
+  .lh-close :global(svg) { width: 16px; height: 16px; }
+</style>
