@@ -24,7 +24,7 @@ const here = Astro.url.pathname.replace(/(\.html|\/)$/, "") || "/";
         {nav.items.map((item) => <li><a href={item.href ?? `${sectionBase}#${item.id}`} hreflang={item.hreflang} aria-current={item.href === here ? "page" : undefined} data-close-menu>{item.label}</a></li>)}
       </ul>
       <div class="header-actions">
-        <a class="lang-link" href={switchHref} hreflang={switchLang} lang={switchLang} title={langSwitch.title}>{langSwitch.label}</a>
+        <a class="lang-link" href={switchHref} hreflang={switchLang} lang={switchLang} title={langSwitch.title} data-lang-switch={switchLang}>{langSwitch.label}</a>
         <a class="btn btn-light btn-sm" href={ctaHref} data-close-menu>{nav.cta}</a>
       </div>
     </nav>

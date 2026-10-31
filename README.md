@@ -10,9 +10,9 @@ Built with [Astro](https://astro.build) and deployed to **Cloudflare Workers wit
 ```
 Request ─▶ Cloudflare
            ├─ static asset (HTML, CSS, fonts, images, vCards) ─▶ served directly, no Worker run
-           └─ "/", "/en", "/en/", "/cs*", "/api/*", "/robots.txt"   (assets.run_worker_first)
+           └─ "/", "/en", "/cs*", "/*/", "/*.html", "/api/*", "/robots.txt"   (assets.run_worker_first)
                  ─▶ src/worker.ts
-                      ├─ language redirects (src/lib/lang-routing.ts)
+                      ├─ 308 to the canonical URL (src/lib/routing.ts)
                       └─ Astro handler ─▶ prerendered page from the asset store
                                         └─ on-demand route: POST /api/poptavka
                                              ├─ D1 binding DB (enquiries, rate limit)
@@ -23,26 +23,52 @@ Request ─▶ Cloudflare
 
 **Why Workers static assets, not Pages:** it is what Cloudflare recommends for new projects and
 what `@astrojs/cloudflare` v13+ targets; Pages gets no new features. One Worker serves the static
-pages and the few dynamic routes, the language redirect runs in front of the static `/` (Pages
+pages and the few dynamic routes, the canonical-URL redirects run in front of the static pages (Pages
 would need Functions plus `_routes.json` for the same), and D1, Email Service, Observability and
 Workers Builds all attach to the same Worker.
 
 Content pages are prerendered at build time (`output: "static"`); only `src/pages/api/*` sets
 `prerender = false` and runs on the Worker.
 
-### Language behaviour (same as the Next.js site)
+### URLs and languages
+
+Czech lives at `/`, English at `/en`. Pages that exist in both languages are listed in
+`src/i18n/pages.ts`: `/` ↔ `/en`, `/ai-agenti` ↔ `/en/ai-agents`, `/ai-automatizace` ↔
+`/en/ai-automation`, `/pilotni-projekt` ↔ `/en/pilot-project`. That list drives the language switch,
+hreflang, the sitemap and the `?lang=` compatibility redirect.
 
 | Request | Response |
 | --- | --- |
-| `/` with cookie `lang=en`, or without the cookie from a browser whose `Accept-Language` lists neither cs nor sk | 307 → `/en` |
-| `/` without `Accept-Language` (crawlers), Czech/Slovak browsers, cookie `lang=cs` | 200 Czech |
-| `/?lang=…`, `/en?lang=…` (the language switch links), `lang` = `cs` or `en` | 307 to the same URL without `lang`, sets `lang` cookie for a year |
-| `/cs`, `/cs/*` | 308 → `/`, `/*` |
-| `/en/` | 308 → `/en` |
+| `/`, whatever `Accept-Language` or cookie | 200 Czech. There is no language redirect: crawlers and browsers get the same page, no `Vary` needed. |
+| `/x/`, `/x.html`, `/x/index.html`, `/index.html`, `/en/` | 308 to `/x`, `/` or `/en`, query string kept |
+| `/cs`, `/cs/*` | 308 → `/`, `/*` (the old Czech prefix) |
+| `/?lang=en`, `/en?lang=cs` (old switch links) | 308 to that language's version of the page, without the parameter; sets the `lang` cookie |
 
-Only the home page is redirected by language. `/ai-skoleni` is Czech only and is never sent to
-English; `/en/ai-skoleni` is a 404 on purpose: the campaign targets Czech searches, and an English
-page with no English campaign would be untranslated duplicate content to maintain.
+The asset server would redirect these variants with 307 (`html_handling: auto-trailing-slash`), so
+the Worker takes them first: `run_worker_first` lists `"/*/"` and `"/*.html"` (`*` matches across
+`/`), plus `/`, `/en` and `/cs*` for the old prefix and parameter. Pages, fonts and images otherwise
+never run the Worker. `src/lib/routing.ts` does the redirects.
+
+The language switch (header, footer) links straight to the counterpart (`/` ↔ `/en`, each service
+page to its twin; `/ai-skoleni`, Czech only, to `/en`) and stores the choice in the `lang` cookie from
+JavaScript. Instead of a redirect, pages with a twin show a small suggestion after they have rendered
+(`src/components/LanguageHint.astro`, `language-hint.ts`): "Switch to English" on Czech pages when the
+browser lists neither cs nor sk, "Přepnout do češtiny" on English pages when it does. A stored choice
+wins over the browser; using or closing the suggestion stores one. It is fixed under the header (no
+layout shift) and appears after load (never the LCP element).
+
+`/ai-skoleni` is Czech only; `/en/ai-skoleni` is a 404 on purpose: the campaign targets Czech
+searches, and an English page with no English campaign would be untranslated duplicate content to
+maintain.
+
+### Service pages
+
+`/ai-agenti`, `/ai-automatizace`, `/pilotni-projekt` and their English twins come from
+`src/content/topic/{cs,en}.yaml` (twins under the same `key`), rendered by
+`src/components/TopicPage.astro` through `src/pages/[topic].astro` and `src/pages/en/[topic].astro`.
+Their copy only rearranges what the homepage and its FAQ already say; the schema requires a
+140–155-character description and 3–4 FAQ entries. Each has Service and FAQPage JSON-LD pointing at
+the homepage's organisation (`ORGANIZATION_ID` in `src/lib/site.ts`).
 
 ### Where things live
 
@@ -60,6 +86,8 @@ page with no English campaign would be untranslated duplicate content to maintai
 | `src/lib/enquiry/fields.ts` | Form fields, limits, the checkbox text and its version, validation (browser and server) |
 | `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** with `[DOPLNIT: …]` placeholders for the legal check |
 | `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification |
+| `src/lib/routing.ts`, `src/i18n/pages.ts` | Canonical-URL redirects; the pages that exist in both languages |
+| `src/content/topic/{cs,en}.yaml` | The service pages (see "Service pages") |
 | `migrations/` | D1 schema (`wrangler d1 migrations apply`) |
 | `wrangler.jsonc` | Worker config: assets, D1 binding (`sivak-ai`), vars, hourly cron, commented-out `send_email` |
 | `docs/` | Migration inventory and parity checklist |
@@ -90,8 +118,9 @@ another build.
 Useful local checks:
 
 ```sh
-curl -I -H 'Accept-Language: en' http://localhost:8787/          # 307 → /en
-curl -I -H 'Cookie: lang=%' http://localhost:8787/               # malformed cookie = no preference: 200 Czech
+curl -I -H 'Accept-Language: en' http://localhost:8787/          # 200 Czech: no language redirect
+curl -I http://localhost:8787/ai-skoleni/                         # 308 → /ai-skoleni
+curl -I http://localhost:8787/index.html                          # 308 → /
 npx wrangler d1 execute sivak-ai --local --command "SELECT * FROM enquiries"
 # the hourly retention cron, by hand:
 curl -X POST -H 'Content-Type: application/json' -d '{"cron":"0 * * * *"}' \
@@ -138,8 +167,10 @@ Consent Mode v2**:
 - The first thing in `<head>` is an inline script: it defines `gtag`, sets `ad_storage`,
   `analytics_storage`, `ad_user_data` and `ad_personalization` to `denied` (`wait_for_update: 500`,
   `ads_data_redaction`) and, if there is a current stored choice, applies it with `gtag('consent',
-  'update', …)` — all before gtag.js and the `gtag('config', …)` calls at the end of `<body>`. Denied, the
-  Google tags set no cookies.
+  'update', …)` — all before the `gtag('config', …)` calls at the end of `<body>`. gtag.js itself is
+  loaded after the page (window load, then idle time), off the critical path; the queued calls keep their
+  order, so Consent Mode stays "advanced" (cookieless pings while denied). Denied, the Google tags set no
+  cookies.
 - Banner: "Přijmout vše" / "Odmítnout vše" (same size and style) and "Nastavení" with toggles
   Analytické (`analytics_storage`) and Marketingové (`ad_storage`, `ad_user_data`, `ad_personalization`);
   Nezbytné always on, nothing pre-ticked. English on `/en`. Fixed to the viewport bottom (no layout
@@ -156,6 +187,21 @@ Consent Mode v2**:
   `PUBLIC_GOOGLE_ADS_*` are set. The form keeps the campaign parameters in `sessionStorage` only with
   marketing consent too.
 - Without JavaScript there is no banner and no footer link, and no Google tag runs either.
+
+## Performance
+
+- CSS is inlined into every page (`build.inlineStylesheets: "always"`), so no stylesheet blocks the
+  first paint (about 10 kB gzipped per page).
+- Only the Jost files are preloaded (`jost-latin`, `jost-latin-ext`); the mono face loads on demand.
+- Turnstile's `api.js` is not in the page: `src/components/landing/turnstile.ts` loads it with
+  `render=explicit` on the first focus or pointer press in the form, or when the form comes within 600 px
+  of the viewport, and renders into a slot that reserves the widget's height. A submit waits for the
+  token. `/ai-skoleni` preconnects to `challenges.cloudflare.com`.
+- Hero text slides in without fading, so it is painted at once and is the LCP element; the cookie bar
+  opens after the first paint, in two short paragraphs, so it never is.
+- Measured on `/ai-skoleni` (Chromium, 412 px, 4× CPU, 150 ms / 1.6 Mbit/s, no cache): FCP and LCP
+  2.4 s → 1.4 s. The homepage has a small layout shift right after the earlier first paint (CLS 0.078,
+  within "good" < 0.1; 0 with external CSS, which paints about 1 s later).
 
 ## The enquiry form
 
@@ -180,7 +226,7 @@ footer is unchanged). The form is the only contact path; only the privacy policy
    (the one deliberate exception, for bots).
 5. **Validation** (`src/lib/enquiry/fields.ts`, the same code the browser runs): name, company,
    e-mail and the checkbox required; phone optional but checked; participants 1–500; length limits.
-6. **Turnstile** siteverify. Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged warning
+6. **Turnstile** siteverify (the widget itself loads lazily, see "Performance"). Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged warning
    outside production only. Cloudflare's test keys (`1x00000000000000000000AA` /
    `1x0000000000000000000000000000000AA`) work in development and preview and are refused in production.
 7. **D1** insert with the checkbox time and wording version (`CONSENT_VERSION`), `utm_*`, `gclid`,

@@ -7,6 +7,8 @@ import { z } from "astro/zod";
 //   faq/{cs,en}/*.md         – home page FAQ, one Markdown file per question (answer = body)
 //   faq/ai-skoleni/*.md      – FAQ of the /ai-skoleni landing page
 //   landing/ai-skoleni.yaml  – the /ai-skoleni landing page
+//   topic/{cs,en}.yaml       – the service pages (/ai-agenti, /ai-automatizace, /pilotni-projekt and
+//                              their English twins), the twins side by side under the same `key`
 // The home page is mostly short labels in fixed structures (agents with steps, spec tables,
 // a permission manifest), so it stays structured data validated by the schemas below;
 // the free-text answers are Markdown.
@@ -14,6 +16,8 @@ import { z } from "astro/zod";
 const text = z.string().min(1);
 const pair = z.tuple([text, text]);
 const section = { id: text, eyebrow: text, title: text };
+// A link to another page of the site, e.g. a service page
+const pageLink = z.object({ label: text, href: z.string().startsWith("/") });
 
 const home = defineCollection({
   loader: glob({ pattern: "*.yaml", base: "./src/content/home" }),
@@ -75,7 +79,8 @@ const home = defineCollection({
     services: z.object({
       ...section,
       lead: text,
-      items: z.array(z.object({ title: text, text: text, tags: z.array(text) })),
+      // more: link to the service's own page
+      items: z.array(z.object({ title: text, text: text, tags: z.array(text), more: pageLink.optional() })),
       // Teaser for /ai-skoleni under the service cards
       training: z.object({ label: text, title: text, text: text, cta: text, href: z.string(), hreflang: z.string().optional() }).optional(),
     }),
@@ -92,6 +97,7 @@ const home = defineCollection({
       lead: text,
       outputLabel: text,
       steps: z.array(z.object({ title: text, text: text, output: text })),
+      more: pageLink.optional(),
     }),
     deployment: z.object({
       ...section,
@@ -138,6 +144,8 @@ const home = defineCollection({
       phoneLabel: text,
     }),
     footer: z.object({
+      // The service pages, a footer column of their own
+      services: z.object({ label: text, items: z.array(pageLink) }),
       tagline: text,
       navLabel: text,
       contactLabel: text,
@@ -203,4 +211,32 @@ const landing = defineCollection({
   }),
 });
 
-export const collections = { home, faq, landing };
+// The service pages. Content rule: only copy the site already has, rearranged (see the YAML headers).
+const topicItem = z.object({ title: text, text: text, output: text.optional(), tags: z.array(text).optional() });
+const topic = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/content/topic" }),
+  schema: z.object({
+    labels: z.object({ output: text, home: text }),
+    pages: z.array(
+      z.object({
+        key: z.enum(["agents", "automation", "pilot"]),
+        path: z.string().regex(/^\/[a-z0-9/-]+$/),
+        metadata: z.object({ title: text, description: text.min(140).max(155) }),
+        eyebrow: text,
+        title: text,
+        intro: z.array(text).min(1),
+        service: z.object({ name: text, description: text }),
+        sections: z.array(
+          z.discriminatedUnion("kind", [
+            z.object({ kind: z.literal("cards"), id: text, eyebrow: text, title: text, lead: text.optional(), items: z.array(topicItem).min(1) }),
+            z.object({ kind: z.literal("steps"), id: text, eyebrow: text, title: text, lead: text.optional(), items: z.array(topicItem).min(1) }),
+            z.object({ kind: z.literal("tags"), id: text, eyebrow: text, title: text, lead: text.optional(), tags: z.array(text).min(1) }),
+          ]),
+        ),
+        faq: z.array(z.object({ question: text, answer: text })).min(3).max(4),
+      }),
+    ),
+  }),
+});
+
+export const collections = { home, faq, landing, topic };

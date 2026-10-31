@@ -1,5 +1,6 @@
 import type { Enquiry } from "@/lib/enquiry/fields";
 import { flag, isProduction, type ServerEnv } from "./env";
+import { escapeHtml } from "@/lib/escape";
 import { errorCode } from "./log";
 
 // Tells the addresses in ENQUIRY_NOTIFY_TO (mirek@ and matous@) about a new enquiry, through Cloudflare
@@ -15,8 +16,6 @@ export type NotifyResult = { sent: boolean; reason?: string; messageId?: string 
 
 const SENDER_NAME = "sivak.ai – poptávky";
 
-const ESCAPES: Record<string, string> = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
-export const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ESCAPES[c]);
 
 function rows(enquiry: Enquiry, id: number): [string, string][] {
   const t = enquiry.tracking;

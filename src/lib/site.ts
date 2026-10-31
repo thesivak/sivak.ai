@@ -2,6 +2,8 @@ import type { Locale } from "@/i18n/config";
 
 // Company facts shared by the contact section, the footer and the structured data.
 export const SITE_URL = "https://www.sivak.ai";
+// The organisation's node in the homepage JSON-LD; other pages refer to it by this @id
+export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 // Mirek's LinkedIn profile: the /ai-skoleni trainer section, the homepage contact card and JSON-LD sameAs.
 // Set it back to a "/in/TODO" placeholder and every LinkedIn link disappears.
@@ -63,16 +65,20 @@ export function initials(name: string): string {
     .join("");
 }
 
-export function organizationJsonLd(lang: Locale) {
+// The organisation (plain Organization: schema.org deprecates ProfessionalService), with only what the site shows: the contact section lists both
+// e-mail addresses and the account manager's phone, the footer the legal name, town and company ID.
+function organization() {
   return {
-    "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": ORGANIZATION_ID,
     name: COMPANY.brand,
     legalName: COMPANY.legalName,
-    url: lang === "cs" ? `${SITE_URL}/` : `${SITE_URL}/en`,
+    url: `${SITE_URL}/`,
     logo: `${SITE_URL}/brand/logo.svg`,
+    image: `${SITE_URL}/og/cs.png`,
     identifier: { "@type": "PropertyValue", propertyID: "IČO", value: COMPANY.ico },
     address: { "@type": "PostalAddress", addressLocality: COMPANY.city, addressCountry: "CZ" },
+    areaServed: { "@type": "Country", name: "CZ" },
     founder: {
       "@type": "Person",
       name: FOUNDER.name,
@@ -88,5 +94,31 @@ export function organizationJsonLd(lang: Locale) {
       telephone: ACCOUNT_MANAGER.phone?.replaceAll(" ", ""),
       availableLanguage: ["cs", "en"],
     },
+  };
+}
+
+export type ServiceInfo = { name: string; description: string; path: string };
+
+/**
+ * The homepage's structured data as one graph: the website, the organisation and the services it offers
+ * (each with the organisation's @id as provider; no prices). Other pages point at ORGANIZATION_ID.
+ */
+export function homeJsonLd(lang: Locale, services: ServiceInfo[]) {
+  const home = lang === "cs" ? `${SITE_URL}/` : `${SITE_URL}/en`;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "WebSite", "@id": `${home}#website`, url: home, name: COMPANY.brand, inLanguage: lang, publisher: { "@id": ORGANIZATION_ID } },
+      organization(),
+      ...services.map((service) => ({
+        "@type": "Service",
+        "@id": `${SITE_URL}${service.path}#service`,
+        name: service.name,
+        description: service.description,
+        url: `${SITE_URL}${service.path}`,
+        areaServed: { "@type": "Country", name: "CZ" },
+        provider: { "@id": ORGANIZATION_ID },
+      })),
+    ],
   };
 }

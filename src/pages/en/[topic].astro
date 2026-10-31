@@ -1,0 +1,13 @@
+---
+import TopicPage from "@/components/TopicPage.astro";
+import { getTopics, type Topic } from "@/lib/content";
+
+// English service pages: /en/ai-agents, /en/ai-automation, /en/pilot-project (src/content/topic/en.yaml)
+export async function getStaticPaths() {
+  const { pages } = await getTopics("en");
+  return pages.map((page) => ({ params: { topic: page.path.replace(/^\/en\//, "") }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: Topic };
+---
+<TopicPage lang="en" page={page} />

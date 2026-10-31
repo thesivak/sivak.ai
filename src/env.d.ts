@@ -25,6 +25,8 @@ declare namespace Cloudflare {
 interface Env extends Cloudflare.Env {}
 
 interface ImportMetaEnv {
+  /** YYYY-MM-DD of the build (astro.config.mjs) */
+  readonly BUILD_DATE: string;
   readonly PUBLIC_TURNSTILE_SITE_KEY?: string;
   readonly PUBLIC_GOOGLE_ADS_ID?: string;
   readonly PUBLIC_GOOGLE_ADS_CONVERSION_LABEL?: string;

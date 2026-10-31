@@ -1,8 +1,8 @@
 # Texty české domovské stránky (/). Otázky a odpovědi sekce FAQ jsou v src/content/faq/cs/*.md.
 # Schéma: src/content.config.ts. Pevné mezery za jednopísmennými předložkami doplní web sám.
 metadata:
-  title: sivak.ai – AI agenti a automatizace
-  description: Stavíme AI agenty, kteří zvládnou práci, jakou lidé dělají u počítače. Převezmou 80 % rutiny a vašemu týmu zůstane 20 % práce, která přináší výsledky.
+  title: AI agenti a automatizace pro firmy | sivak.ai
+  description: Stavíme AI agenty a automatizace na míru vašim procesům. Převezmou 80 % rutiny u počítače, důležité kroky schvaluje člověk. Návratnost spočítáme předem.
 skipLink: Přeskočit na obsah
 langSwitch:
   label: English
@@ -229,6 +229,9 @@ services:
         - zákaznická podpora
         - kontrola dokumentů
         - testování aplikací
+      more:
+        label: Více o AI agentech
+        href: /ai-agenti
     - title: AI nad vašimi daty
       text: Napojíme AI na ERP, CRM i tabulky. Zeptáte se běžnou větou a dostanete odpověď s čísly.
       tags:
@@ -241,6 +244,9 @@ services:
         - e-mail → ERP
         - e-shop → účetnictví
         - CRM → fakturace
+      more:
+        label: Více o automatizaci
+        href: /ai-automatizace
     - title: Roboti pro starý software
       text: Obsluhují programy bez API – Helios, DOSové aplikace i interní systémy, které nikdo nechce přepisovat.
       tags:
@@ -299,12 +305,15 @@ process:
     - title: Výpočet návratnosti
       text: Spočítáme, kolik hodin agent ušetří a kdy se investice vrátí. Víte to dřív, než začneme.
       output: odhad úspory
-    - title: První agent
+    - title: Pilotní projekt
       text: Postavíme agenta na jeden proces. Vaši lidé kontrolují jeho práci a my měříme výsledky.
       output: agent v provozu
     - title: Provoz a rozšíření
       text: Agenta provozujeme, hlídáme a zlepšujeme. Když se osvědčí, převezme další práci.
       output: přehled odvedené práce
+  more:
+    label: Jak probíhá pilotní projekt
+    href: /pilotni-projekt
 deployment:
   id: nasazeni
   eyebrow: Kde agenti běží
@@ -400,6 +409,15 @@ contact:
   emailLabel: E-mail
   phoneLabel: Telefon
 footer:
+  services:
+    label: Služby
+    items:
+      - label: AI agenti
+        href: /ai-agenti
+      - label: Automatizace procesů
+        href: /ai-automatizace
+      - label: Pilotní projekt
+        href: /pilotni-projekt
   tagline: AI agenti a automatizace pro české firmy.
   navLabel: Web
   contactLabel: Kontakt

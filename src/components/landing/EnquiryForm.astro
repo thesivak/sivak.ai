@@ -98,7 +98,14 @@ const fields = [
           <p class="lp-error" id="consent-error"></p>
         </div>
 
-        {turnstileSiteKey && <div class="cf-turnstile" data-sitekey={turnstileSiteKey} data-language="cs" data-theme="light" data-size="flexible"></div>}
+        {/* Turnstile renders here once the visitor reaches the form (turnstile.ts); the height is reserved */}
+        {turnstileSiteKey && <div class="lp-turnstile" data-turnstile-sitekey={turnstileSiteKey}></div>}
+        {/* The anti-robot check needs JavaScript; without it the server would refuse the enquiry */}
+        {turnstileSiteKey && (
+          <noscript>
+            <p class="lp-hint">Pro odeslání poptávky je potřeba zapnout JavaScript, bez něj neproběhne ochrana proti robotům.</p>
+          </noscript>
+        )}
 
         <div class="lp-submit">
           <button class="btn btn-light" type="submit">Odeslat poptávku<Icon name="arrow" /></button>
@@ -113,8 +120,6 @@ const fields = [
     </div>
   </div>
 </section>
-
-{turnstileSiteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
 
 <script>
   import { enhanceEnquiryForm } from "./enquiry-form";

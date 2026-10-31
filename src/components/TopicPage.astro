@@ -1,0 +1,162 @@
+---
+import Base from "@/layouts/Base.astro";
+import SiteHeader from "./SiteHeader.astro";
+import SiteFooter from "./SiteFooter.astro";
+import Eyebrow from "./Eyebrow.astro";
+import Icon from "./Icon.astro";
+import Faq from "./sections/Faq.astro";
+import { localePath, type Locale } from "@/i18n/config";
+import { twinPair } from "@/i18n/pages";
+import { escapeHtml } from "@/lib/escape";
+import { getHome, getTopics, type Topic } from "@/lib/content";
+import { ORGANIZATION_ID, SITE_URL } from "@/lib/site";
+
+// One service page (/ai-agenti, /ai-automatizace, /pilotni-projekt and the English twins), from
+// src/content/topic/{cs,en}.yaml. Same header, footer and contact as the homepage; the call to action
+// goes to the homepage's contact section.
+interface Props {
+  lang: Locale;
+  page: Topic;
+}
+const { lang, page } = Astro.props;
+const home = await getHome(lang);
+const { labels } = await getTopics(lang);
+const other: Locale = lang === "cs" ? "en" : "cs";
+const homeHref = localePath(lang);
+const contactHref = `${homeHref}#${home.contact.id}`;
+const pair = twinPair(page.path)!;
+const absolute = (path: string) => (path === "/" ? SITE_URL : `${SITE_URL}${path}`);
+const url = absolute(page.path);
+const pad = (n: number) => String(n).padStart(2, "0");
+
+const jsonLd = [
+  {
+    // The page carries the language; Service has no inLanguage property
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": `${url}#webpage`,
+    url,
+    name: page.metadata.title,
+    inLanguage: lang,
+    mainEntity: { "@id": `${url}#service` },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${url}#service`,
+    name: page.service.name,
+    description: page.service.description,
+    url,
+    areaServed: { "@type": "Country", name: "CZ" },
+    provider: { "@id": ORGANIZATION_ID, "@type": "Organization", name: "sivak.ai", url: `${SITE_URL}/` },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: page.faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
+  },
+];
+const faqItems = page.faq.map((item) => ({ question: item.question, answerHtml: `<p>${escapeHtml(item.answer)}</p>` }));
+---
+<Base
+  lang={lang}
+  title={page.metadata.title}
+  description={page.metadata.description}
+  canonical={url}
+  alternates={[
+    { hreflang: "cs", href: absolute(pair.cs) },
+    { hreflang: "en", href: absolute(pair.en) },
+    { hreflang: "x-default", href: absolute(pair.cs) },
+  ]}
+  ogImage={{ path: `/og/${lang}.png?v=2`, alt: page.metadata.title }}
+  jsonLd={jsonLd}
+  languageTwin={pair[other]}
+>
+  <a class="skip-link" href="#main">{home.skipLink}</a>
+  <SiteHeader nav={home.nav} langSwitch={home.langSwitch} homeHref={homeHref} ctaHref={contactHref} switchHref={pair[other]} switchLang={other} sectionBase={homeHref} />
+  <main id="main">
+    <section class="hero topic-hero" aria-labelledby="hero-title">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="container">
+        <div class="hero-copy topic-hero-copy">
+          <p class="hero-eyebrow"><i aria-hidden="true"></i>{page.eyebrow}</p>
+          <h1 class="hero-title" id="hero-title">{page.title}</h1>
+          {page.intro.map((paragraph) => <p class="hero-lead">{paragraph}</p>)}
+          <div class="hero-actions">
+            <a class="btn btn-light" href={contactHref}>{home.contact.cta}<Icon name="arrow" /></a>
+            <a class="btn btn-ghost" href={homeHref}>{labels.home}</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {
+      page.sections.map((section, i) => (
+        <section class={`section light topic-section${section.kind === "steps" ? " process" : ""}`} id={section.id} aria-labelledby={`${section.id}-title`}>
+          <div class="container">
+            <div class="section-head reveal">
+              <Eyebrow index={pad(i + 1)}>{section.eyebrow}</Eyebrow>
+              <h2 class="section-title" id={`${section.id}-title`}>{section.title}</h2>
+              {section.lead && <p class="section-lead">{section.lead}</p>}
+            </div>
+            {section.kind === "cards" && (
+              <ul class="service-grid topic-cards reveal">
+                {section.items.map((item) => (
+                  <li class="service-card">
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                    {item.output && <p class="topic-output"><span>{labels.output}</span>{item.output}</p>}
+                    {item.tags && <ul class="tags">{item.tags.map((tag) => <li>{tag}</li>)}</ul>}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {section.kind === "steps" && (
+              <ol class="p-steps reveal">
+                {section.items.map((item, n) => (
+                  <li class="p-step">
+                    <span class="p-node" aria-hidden="true">{pad(n + 1)}</span>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                    {item.output && <p class="p-output"><span>{labels.output}</span>{item.output}</p>}
+                  </li>
+                ))}
+              </ol>
+            )}
+            {section.kind === "tags" && <ul class="tags topic-tags reveal">{section.tags.map((tag) => <li>{tag}</li>)}</ul>}
+          </div>
+        </section>
+      ))
+    }
+
+    <Faq t={{ id: home.faq.id, eyebrow: home.faq.eyebrow, title: home.faq.title }} items={faqItems} index={pad(page.sections.length + 1)} />
+
+    <section class="section dark topic-cta" aria-labelledby="topic-cta-title">
+      <div class="container">
+        <div class="section-head reveal">
+          <Eyebrow index={pad(page.sections.length + 2)}>{home.contact.eyebrow}</Eyebrow>
+          <h2 class="section-title" id="topic-cta-title">{home.contact.title}</h2>
+          <p class="section-lead">{home.contact.lead}</p>
+          <a class="btn btn-light topic-cta-button" href={contactHref}>{home.contact.cta}<Icon name="arrow" /></a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <SiteFooter lang={lang} t={home} sectionBase={homeHref} homeHref={homeHref} switchHref={pair[other]} switchLang={other} />
+</Base>
+
+<style>
+  .topic-hero-copy { max-width: 760px; }
+  .topic-hero .hero-lead + .hero-lead { margin-top: 14px; }
+  .topic-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+  .topic-cards .service-card h3 { margin-top: 0; }
+  .topic-cards .tags { padding-top: 24px; }
+  .topic-output { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; margin-top: auto; padding-top: 20px; font-family: var(--mono); font-size: 13px; color: var(--ink-2); }
+  .topic-output span { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .topic-tags { margin-top: clamp(32px, 4vw, 48px); padding-top: 0; }
+  .topic-cta-button { margin-top: 32px; }
+</style>

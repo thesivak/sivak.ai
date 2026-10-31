@@ -1,12 +1,25 @@
 import type { APIRoute } from "astro";
+import { TWIN_PAGES } from "@/i18n/pages";
 import { SITE_URL } from "@/lib/site";
 
+// Prerendered at build time; <lastmod> is the day of the build (BUILD_DATE, astro.config.mjs), when the
+// content was last published.
 type Entry = { loc: string; priority: number; alternates?: Record<string, string> };
 
-const home = { cs: `${SITE_URL}/`, en: `${SITE_URL}/en` };
+const absolute = (path: string) => (path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`);
+const lastmod: string = import.meta.env.BUILD_DATE;
+
+// Every page that exists in both languages, each language with its alternates (cs, en, x-default = cs)
+const twins: Entry[] = TWIN_PAGES.flatMap((pair) => {
+  const alternates = { cs: absolute(pair.cs), en: absolute(pair.en), "x-default": absolute(pair.cs) };
+  const home = pair.cs === "/";
+  return [
+    { loc: absolute(pair.cs), priority: home ? 1 : 0.8, alternates },
+    { loc: absolute(pair.en), priority: home ? 0.8 : 0.6, alternates },
+  ];
+});
 const ENTRIES: Entry[] = [
-  { loc: home.cs, priority: 1, alternates: home },
-  { loc: home.en, priority: 0.8, alternates: home },
+  ...twins,
   // Czech only, so no alternates
   { loc: `${SITE_URL}/ai-skoleni`, priority: 0.9 },
 ];
@@ -17,6 +30,7 @@ export const GET: APIRoute = () => {
       "<url>",
       `<loc>${loc}</loc>`,
       ...Object.entries(alternates).map(([lang, href]) => `<xhtml:link rel="alternate" hreflang="${lang}" href="${href}" />`),
+      `<lastmod>${lastmod}</lastmod>`,
       "<changefreq>monthly</changefreq>",
       `<priority>${priority}</priority>`,
       "</url>",

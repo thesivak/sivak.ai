@@ -1,8 +1,8 @@
 # Copy of the English home page (/en). The FAQ questions and answers live in src/content/faq/en/*.md.
 # Schema: src/content.config.ts.
 metadata:
-  title: sivak.ai — AI agents and automation
-  description: We build AI agents that handle the work people do at a computer. They take over 80% of the routine, so your team can focus on the 20% that drives results.
+  title: AI agents and automation for businesses | sivak.ai
+  description: We build AI agents and automation around your processes. They take over 80% of routine computer work; a person approves key steps. ROI calculated up front.
 skipLink: Skip to content
 langSwitch:
   label: Česky
@@ -231,6 +231,9 @@ services:
         - customer support
         - document checks
         - app testing
+      more:
+        label: More about AI agents
+        href: /en/ai-agents
     - title: AI on top of your data
       text: We connect AI to your ERP, CRM and spreadsheets. Ask in plain language and get answers backed by numbers.
       tags:
@@ -243,6 +246,9 @@ services:
         - email → ERP
         - e-shop → accounting
         - CRM → invoicing
+      more:
+        label: More about automation
+        href: /en/ai-automation
     - title: Robots for legacy software
       text: They operate programs with no API — Helios, DOS applications and in-house systems no one wants to rewrite.
       tags:
@@ -302,12 +308,15 @@ process:
     - title: ROI estimate
       text: We calculate how many hours the agent will save and when the investment pays back. You know before we start.
       output: savings estimate
-    - title: First agent
+    - title: Pilot project
       text: We build an agent for one process. Your people review its work while we measure the results.
       output: agent in operation
     - title: Operation and growth
       text: We run, monitor and improve the agent. Once it proves itself, it takes on more work.
       output: report of work done
+  more:
+    label: How the pilot project works
+    href: /en/pilot-project
 deployment:
   id: deployment
   eyebrow: Where agents run
@@ -403,6 +412,15 @@ contact:
   emailLabel: Email
   phoneLabel: Phone
 footer:
+  services:
+    label: Services
+    items:
+      - label: AI agents
+        href: /en/ai-agents
+      - label: Process automation
+        href: /en/ai-automation
+      - label: Pilot project
+        href: /en/pilot-project
   tagline: AI agents and automation for business.
   navLabel: Site
   contactLabel: Contact

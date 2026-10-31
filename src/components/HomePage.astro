@@ -13,8 +13,8 @@ import CaseStudy from "./sections/CaseStudy.astro";
 import Faq from "./sections/Faq.astro";
 import Contact from "./sections/Contact.astro";
 import { localePath, type Locale } from "@/i18n/config";
-import { getFaq, getHome } from "@/lib/content";
-import { SITE_URL, organizationJsonLd } from "@/lib/site";
+import { getFaq, getHome, getTopics } from "@/lib/content";
+import { SITE_URL, homeJsonLd, type ServiceInfo } from "@/lib/site";
 
 interface Props {
   lang: Locale;
@@ -22,9 +22,16 @@ interface Props {
 const { lang } = Astro.props;
 const t = await getHome(lang);
 const faq = await getFaq(lang);
+const topics = await getTopics(lang);
+// The services for the JSON-LD: the three service pages, and the training (Czech only; no price here)
+const services: ServiceInfo[] = [
+  ...topics.pages.map((page) => ({ name: page.service.name, description: page.service.description, path: page.path })),
+  { name: t.services.training!.label, description: t.services.training!.title, path: t.services.training!.href },
+];
 const other: Locale = lang === "cs" ? "en" : "cs";
 const homeHref = localePath(lang);
-const switchHref = `${localePath(other)}?lang=${other}`;
+// The other language's homepage; the click stores the choice (language-hint.ts)
+const switchHref = localePath(other);
 const contactHref = `#${t.contact.id}`;
 // The Next.js site wrote the Czech URLs without the trailing slash: https://www.sivak.ai
 const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
@@ -41,7 +48,8 @@ const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
   ]}
   // ?v=2: the share image changed with the slogan; LinkedIn and Slack cache by URL
   ogImage={{ path: `/og/${lang}.png?v=2`, alt: t.metadata.title }}
-  jsonLd={[organizationJsonLd(lang)]}
+  jsonLd={[homeJsonLd(lang, services)]}
+  languageTwin={localePath(other)}
 >
   <a class="skip-link" href="#main">{t.skipLink}</a>
   {/* Absolute section links ("/#sluzby", "/en#services"): the same header works on every page */}

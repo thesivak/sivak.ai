@@ -2,6 +2,7 @@
 import "@/styles/fonts.css";
 import "@/styles/global.css";
 import CookieConsent from "@/components/CookieConsent.astro";
+import LanguageHint from "@/components/LanguageHint.astro";
 import type { Locale } from "@/i18n/config";
 import { consentHeadSnippet } from "@/lib/consent";
 import { GA_MEASUREMENT_ID, SITE_URL } from "@/lib/site";
@@ -19,9 +20,11 @@ interface Props {
   /** e.g. "noindex" for pages that should stay out of search */
   robots?: string;
   jsonLd?: object[];
+  /** URL of this page in the other language, for the "Switch to English" suggestion (pages with a twin) */
+  languageTwin?: string;
 }
 
-const { lang, title, description, canonical, alternates = [], ogImage, robots, jsonLd = [] } = Astro.props;
+const { lang, title, description, canonical, alternates = [], ogImage, robots, jsonLd = [], languageTwin } = Astro.props;
 const ogTitle = Astro.props.ogTitle ?? title;
 const ogDescription = Astro.props.ogDescription ?? description;
 const image = new URL(ogImage.path, SITE_URL).href;
@@ -29,21 +32,28 @@ const image = new URL(ogImage.path, SITE_URL).href;
 // Google Consent Mode v2: `gtag` and the consent defaults (all denied, or the stored choice) come first
 // in <head> (src/lib/consent.ts), so gtag.js and the config calls below never run without them.
 // With analytics_storage / ad_storage denied the Google tags set no cookies.
-// `gtag` stays global so pages can send events (see the /ai-skoleni form)
+// `gtag` stays global so pages can send events (see the /ai-skoleni form).
+// gtag.js itself loads after the page (load + idle), off the critical path. The calls above queue in
+// dataLayer until then, after the consent defaults, so Consent Mode stays "advanced" (cookieless pings
+// while denied) and nothing is sent before the defaults apply.
 const GTAG_SNIPPET = `
       gtag('js', new Date());
       gtag('config', '${GA_MEASUREMENT_ID}');
+      (function () {
+        function load() {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';
+          document.head.appendChild(s);
+        }
+        function idle() { 'requestIdleCallback' in window ? requestIdleCallback(load, { timeout: 3000 }) : setTimeout(load, 1500); }
+        document.readyState === 'complete' ? idle() : addEventListener('load', idle, { once: true });
+      })();
     `;
 
-// The latin and latin-ext files every page needs, preloaded as next/font did
-const PRELOAD_FONTS = [
-  "ibm-plex-mono-400-latin-ext",
-  "ibm-plex-mono-500-latin-ext",
-  "jost-latin",
-  "ibm-plex-mono-400-latin",
-  "jost-latin-ext",
-  "ibm-plex-mono-500-latin",
-];
+// Only the text face of headings and copy is preloaded (Czech needs latin-ext for č, ř, ů…). The mono
+// face (labels, eyebrows) loads on demand with font-display: swap instead of competing for the first bytes.
+const PRELOAD_FONTS = ["jost-latin", "jost-latin-ext"];
 ---
 <!doctype html>
 <html lang={lang}>
@@ -80,10 +90,16 @@ const PRELOAD_FONTS = [
   </head>
   <body>
     <CookieConsent lang={lang} />
+    {languageTwin && <LanguageHint href={languageTwin} lang={lang === "cs" ? "en" : "cs"} />}
     <slot />
-    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll("<", "\\u003c")} />)}
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
+    {/* Plain spaces in structured data: the Czech copy's no-break spaces are only for line breaking */}
+    {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replaceAll("\u00a0", " ").replaceAll("<", "\\u003c")} />)}
     <script is:inline set:html={GTAG_SNIPPET} />
     <slot name="end" />
+    <script>
+      import { setupLanguage } from "@/components/language-hint";
+
+      setupLanguage();
+    </script>
   </body>
 </html>

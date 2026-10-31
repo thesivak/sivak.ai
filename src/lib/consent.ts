@@ -57,7 +57,9 @@ gtag('consent','update',{analytics_storage:c.analytics===true?'granted':'denied'
 export const CONSENT_TEXT = {
   cs: {
     title: "Cookies na sivak.ai",
-    text: "Rádi bychom měřili návštěvnost webu (Google Analytics) a účinnost našich reklam (Google Ads). Tyto cookies použijeme jen s vaším souhlasem. Volbu můžete kdykoli změnit odkazem Nastavení cookies v patičce.",
+    // Two paragraphs, the same wording as before: smaller text blocks than the page's own (never the LCP element)
+    text: "Rádi bychom měřili návštěvnost webu (Google Analytics) a účinnost našich reklam (Google Ads). Tyto cookies použijeme jen s vaším souhlasem.",
+    change: "Volbu můžete kdykoli změnit odkazem Nastavení cookies v patičce.",
     policy: "Zásady zpracování osobních údajů",
     accept: "Přijmout vše",
     reject: "Odmítnout vše",
@@ -74,7 +76,8 @@ export const CONSENT_TEXT = {
   },
   en: {
     title: "Cookies on sivak.ai",
-    text: "We would like to measure visits to the site (Google Analytics) and the effect of our ads (Google Ads). We only use these cookies with your consent. You can change your choice at any time via Cookie settings in the footer.",
+    text: "We would like to measure visits to the site (Google Analytics) and the effect of our ads (Google Ads). We only use these cookies with your consent.",
+    change: "You can change your choice at any time via Cookie settings in the footer.",
     policy: "Privacy policy (in Czech)",
     accept: "Accept all",
     reject: "Reject all",
