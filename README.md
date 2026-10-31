@@ -68,7 +68,30 @@ maintain.
 `src/components/TopicPage.astro` through `src/pages/[topic].astro` and `src/pages/en/[topic].astro`.
 Their copy only rearranges what the homepage and its FAQ already say; the schema requires a
 140–155-character description and 3–4 FAQ entries. Each has Service and FAQPage JSON-LD pointing at
-the homepage's organisation (`ORGANIZATION_ID` in `src/lib/site.ts`).
+the homepage's organisation (`ORGANIZATION_ID` in `src/lib/site.ts`), and a BreadcrumbList
+(Domů/Home → the page) with the canonical URLs. `/ai-skoleni` has Course (with the price as an Offer,
+VAT excluded), BreadcrumbList and FAQPage.
+
+### Sitemap `<lastmod>`
+
+`/sitemap.xml` lists every page in `SITEMAP_PAGES` (`src/i18n/pages.ts`): the twins with hreflang
+alternates, the Czech-only pages (`CZECH_ONLY_PAGES`, i.e. `/ai-skoleni`) without any. Each `<lastmod>`
+is the time of the last commit that changed **that page's own sources**, read from the committed
+`src/data/lastmod.json`, not the build date (which would mark every page as changed on every deploy).
+
+Why a committed file: Workers Builds may clone the repository shallow, where `git log` only sees the
+last commit, so the dates cannot be computed during the deploy build. `scripts/gen-lastmod.mjs`
+computes them locally with the full history (`git log -1 --format=%cI -- <sources>`) and refuses to
+run in a shallow clone. A page's sources are its route, its own components and its copy; for a
+service page only its own entry in `src/content/topic/{cs,en}.yaml`. Shared chrome (layout, header,
+footer, global CSS, `src/lib/site.ts`) is left out on purpose. The list is `SOURCES` in the script.
+
+**When to regenerate:** whenever you change a page's content or template, run `npm run lastmod` and
+commit `src/data/lastmod.json` with the change (uncommitted sources count as changed now). A new page in
+the sitemap needs its sources added to the script. `npm run lastmod:check` (also part of `npm test`)
+fails when the file is missing a page or is behind git by a day or more (a squash merge re-dates
+commits; same-day is accepted); it is skipped in a shallow clone. If a page is missing from the file,
+the build warns and that URL gets no `<lastmod>`: never the build date.
 
 ### Where things live
 
@@ -88,6 +111,7 @@ the homepage's organisation (`ORGANIZATION_ID` in `src/lib/site.ts`).
 | `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification |
 | `src/lib/routing.ts`, `src/i18n/pages.ts` | Canonical-URL redirects; the pages that exist in both languages |
 | `src/content/topic/{cs,en}.yaml` | The service pages (see "Service pages") |
+| `src/data/lastmod.json`, `scripts/gen-lastmod.mjs` | The sitemap's `<lastmod>` per page (see "Sitemap `<lastmod>`") |
 | `migrations/` | D1 schema (`wrangler d1 migrations apply`) |
 | `wrangler.jsonc` | Worker config: assets, D1 binding (`sivak-ai`), vars, hourly cron, commented-out `send_email` |
 | `docs/` | Migration inventory and parity checklist |
@@ -108,6 +132,8 @@ npm run db:migrate:local              # builds once, then creates the tables in 
 npm run dev                           # Astro dev server on http://localhost:4321 (runs in workerd, local D1)
 npm run preview                       # production build served by `wrangler dev --local` on http://localhost:8787
 npm run check && npm run lint         # astro check (TypeScript) and ESLint
+npm test                              # unit tests, including npm run lastmod:check
+npm run lastmod                       # after changing a page: refresh src/data/lastmod.json, commit it
 ```
 
 (`npm run preview` is local only.)

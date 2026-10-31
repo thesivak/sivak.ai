@@ -16,7 +16,10 @@
     "db:migrate:local": "astro build && wrangler d1 migrations apply sivak-ai --local",
     "db:migrate:remote": "wrangler d1 migrations apply sivak-ai --remote -c wrangler.jsonc",
     "deploy": "astro build && wrangler deploy",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "lastmod": "node scripts/gen-lastmod.mjs",
+    "lastmod:check": "node scripts/gen-lastmod.mjs --check",
+    "verify:seo": "node scripts/verify-seo.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.4.2",

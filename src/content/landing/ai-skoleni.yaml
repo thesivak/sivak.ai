@@ -3,13 +3,14 @@
 # Pravidla obsahu: žádná vymyšlená čísla, reference ani citace klientů. O Mirkovi a sivak.ai jen
 # ověřená fakta: Mirek Sivák je Founder & CEO sivak.ai; sivak.ai staví AI agenty pro firmy;
 # reference Factory přesně tak, jak je popsaná v části reference. Nic dalšího bez Mirkova ověření.
-# "35 000 Kč" je zapsané s pevnými mezerami, aby se částka nezalomila.
+# "35 000 Kč" a "bez DPH" jsou zapsané s pevnými mezerami (U+00A0), aby se částka nezalomila.
+# Cena je bez DPH: Mirek to výslovně chce u ceny uvádět (vat u hero.price a price).
 
 metadata:
   title: AI školení pro firmy – jednodenní praktický workshop | sivak.ai
-  description: Jednodenní AI školení pro zaměstnance, management i CEO. ChatGPT a další nástroje, prompty, automatizace, AI agenti a bezpečná práce s daty. 35 000 Kč.
+  description: Jednodenní AI školení pro zaměstnance, management i CEO. ChatGPT a další nástroje, prompty, automatizace, AI agenti a bezpečná práce s daty. 35 000 Kč bez DPH.
   ogTitle: Jednodenní AI školení pro firmy
-  ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po automatizace a AI agenty. Školí Mirek Sivák. 35 000 Kč za jednodenní školení pro vaši firmu.
+  ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po automatizace a AI agenty. Školí Mirek Sivák. 35 000 Kč bez DPH za jednodenní školení pro vaši firmu.
 
 nav:
   items:
@@ -34,7 +35,8 @@ hero:
   trainerLabel: Školí
   trainerNote: Vede sivak.ai, která staví AI agenty pro firmy.
   price:
-    figure: 35 000 Kč
+    figure: 35 000 Kč
+    vat: bez DPH
     unit: za jednodenní školení pro vaši firmu
   primary: Nezávazně poptat školení
   secondary: Co se váš tým naučí
@@ -136,7 +138,8 @@ price:
   id: cena
   eyebrow: Cena
   title: Jedna cena za celý den
-  figure: 35 000 Kč
+  figure: 35 000 Kč
+  vat: bez DPH
   unit: za jednodenní školení pro vaši firmu
   includedLabel: V ceně
   included:

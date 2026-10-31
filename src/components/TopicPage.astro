@@ -9,7 +9,7 @@ import { localePath, type Locale } from "@/i18n/config";
 import { twinPair } from "@/i18n/pages";
 import { escapeHtml } from "@/lib/escape";
 import { getHome, getTopics, type Topic } from "@/lib/content";
-import { ORGANIZATION_ID, SITE_URL } from "@/lib/site";
+import { ORGANIZATION_ID, SITE_URL, breadcrumbJsonLd } from "@/lib/site";
 
 // One service page (/ai-agenti, /ai-automatizace, /pilotni-projekt and the English twins), from
 // src/content/topic/{cs,en}.yaml. Same header, footer and contact as the homepage; the call to action
@@ -50,6 +50,11 @@ const jsonLd = [
     areaServed: { "@type": "Country", name: "CZ" },
     provider: { "@id": ORGANIZATION_ID, "@type": "Organization", name: "sivak.ai", url: `${SITE_URL}/` },
   },
+  // Home is the canonical homepage URL (https://www.sivak.ai, https://www.sivak.ai/en)
+  breadcrumbJsonLd([
+    { name: lang === "cs" ? "Domů" : "Home", url: absolute(homeHref) },
+    { name: page.service.name, url },
+  ]),
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
