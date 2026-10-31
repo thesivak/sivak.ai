@@ -256,7 +256,7 @@ services:
   training:
     label: AI školení pro firmy
     title: Jednodenní AI školení pro váš tým
-    text: Praktický den s ChatGPT a dalšími AI nástroji, automatizacemi a AI agenty. 35 000 Kč za jednodenní školení pro vaši firmu.
+    text: Praktický den s ChatGPT a dalšími AI nástroji, automatizacemi a AI agenty. 35 000 Kč bez DPH za jednodenní školení pro vaši firmu.
     cta: Více o školení
     href: /ai-skoleni
 useCases:
