@@ -175,7 +175,8 @@ const landing = defineCollection({
       lead: text,
       trainerLabel: text,
       trainerNote: text,
-      price: z.object({ figure: text, unit: text }),
+      // vat: "bez DPH" next to the figure
+      price: z.object({ figure: text, vat: text, unit: text }),
       primary: text,
       secondary: text,
     }),
@@ -198,6 +199,7 @@ const landing = defineCollection({
     price: z.object({
       ...section,
       figure: text,
+      vat: text,
       unit: text,
       includedLabel: text,
       included: z.array(text),

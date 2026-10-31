@@ -28,7 +28,7 @@ const trainer = t.trainer;
       <p class="lp-hero-trainer-note">{h.trainerNote}</p>
     </div>
     <p class="lp-hero-lead">{h.lead}</p>
-    <p class="lp-hero-price"><strong>{h.price.figure}</strong> <span>{h.price.unit}</span></p>
+    <p class="lp-hero-price"><strong>{h.price.figure} <span class="lp-vat">{h.price.vat}</span></strong> <span>{h.price.unit}</span></p>
     <div class="lp-hero-actions">
       <a class="btn btn-light" href={formHref}>{h.primary}<Icon name="arrow" /></a>
       <a class="lp-hero-link" href={programHref}>{h.secondary}</a>

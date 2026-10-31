@@ -14,7 +14,7 @@ import Faq from "@/components/sections/Faq.astro";
 import EnquiryForm from "@/components/landing/EnquiryForm.astro";
 import LandingSubnav from "@/components/landing/LandingSubnav.astro";
 import { getFaq, getHome, getLanding } from "@/lib/content";
-import { COMPANY, MIREK_LINKEDIN, ORGANIZATION_ID, PEOPLE, SITE_URL } from "@/lib/site";
+import { COMPANY, MIREK_LINKEDIN, ORGANIZATION_ID, PEOPLE, SITE_URL, breadcrumbJsonLd } from "@/lib/site";
 
 // The Google Ads landing page for "AI školení". Czech only: there is no /en/ai-skoleni (see README).
 const t = await getLanding("ai-skoleni");
@@ -46,10 +46,22 @@ const jsonLd = [
       worksFor: { "@type": "Organization", name: COMPANY.brand },
       ...(MIREK_LINKEDIN ? { sameAs: [MIREK_LINKEDIN] } : {}),
     },
-    offers: { "@type": "Offer", price: "35000", priceCurrency: "CZK", category: "Paid", url: `${url}#${t.price.id}` },
+    // The visible price: 35 000 Kč bez DPH (src/content/landing/ai-skoleni.yaml)
+    offers: {
+      "@type": "Offer",
+      price: 35000,
+      priceCurrency: "CZK",
+      category: "Paid",
+      url: `${url}#${t.price.id}`,
+      priceSpecification: { "@type": "UnitPriceSpecification", price: 35000, priceCurrency: "CZK", valueAddedTaxIncluded: false },
+    },
     // FAQ "Probíhá školení u nás ve firmě, nebo online?": either, as agreed with the client
     hasCourseInstance: { "@type": "CourseInstance", courseMode: ["onsite", "online"], courseWorkload: "P1D" },
   },
+  breadcrumbJsonLd([
+    { name: "Domů", url: SITE_URL },
+    { name: "AI školení", url },
+  ]),
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",

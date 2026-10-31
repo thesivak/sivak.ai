@@ -122,3 +122,12 @@ export function homeJsonLd(lang: Locale, services: ServiceInfo[]) {
     ],
   };
 }
+
+/** BreadcrumbList for a subpage: home first, the page last; absolute URLs as in the pages' canonicals. */
+export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({ "@type": "ListItem", position: i + 1, name: item.name, item: item.url })),
+  };
+}

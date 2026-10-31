@@ -308,7 +308,9 @@
   background: var(--paper);
   box-shadow: 0 30px 60px -40px rgba(11, 18, 32, .35);
 }
-.lp-price-figure { font-size: clamp(48px, 6vw, 76px); font-weight: 500; line-height: 1; letter-spacing: -.035em; white-space: nowrap; }
+/* The figure and "bez DPH" carry no-break spaces; between them the line may break on narrow cards */
+.lp-price-figure { font-size: clamp(48px, 6vw, 76px); font-weight: 500; line-height: 1; letter-spacing: -.035em; }
+.lp-price-figure .lp-vat { font-size: 22px; letter-spacing: 0; color: var(--ink-2); white-space: nowrap; }
 .lp-price-unit { margin-top: 12px; font-size: 18px; color: var(--ink-2); }
 .lp-price-label {
   margin-top: 32px;
