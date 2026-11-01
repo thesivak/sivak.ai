@@ -2,7 +2,7 @@
 import BrandLogo from "./BrandLogo.astro";
 import type { Locale } from "@/i18n/config";
 import { CONSENT_TEXT } from "@/lib/consent";
-import { COMPANY, PEOPLE } from "@/lib/site";
+import { COMPANY, PEOPLE, seatAddress } from "@/lib/site";
 
 interface Props {
   lang: Locale;
@@ -15,6 +15,7 @@ interface Props {
       navLabel: string;
       contactLabel: string;
       operatedBy: string;
+      seatLabel: string;
       idLabel: string;
       registry: string;
     };
@@ -61,7 +62,7 @@ const f = t.footer;
     </div>
     {/* § 435 of the Czech Civil Code: name, seat, company ID and register entry */}
     <div class="footer-legal">
-      <p>{f.operatedBy} {COMPANY.legalName}, {COMPANY.city}, {f.idLabel}{"\u00a0"}{COMPANY.ico}. {f.registry}</p>
+      <p>{f.operatedBy} {COMPANY.legalName}, {f.seatLabel} {seatAddress(lang)}, {f.idLabel}{"\u00a0"}{COMPANY.ico}. {f.registry}</p>
       <p>
         © {new Date().getFullYear()} {COMPANY.legalName}
         {/* Reopens the cookie banner to change or withdraw consent; cookie-consent.ts unhides it (no JS, no Google tags) */}

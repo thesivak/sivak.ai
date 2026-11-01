@@ -120,7 +120,7 @@ Scroll reveal (`.reveal`) and the hero entrance are pure CSS
 | `twitter:card` | `summary_large_image` | |
 | `twitter:title`, `twitter:description`, `twitter:image` | = title, description, OG image | |
 | icon | `<link rel="icon" href="/icon.svg?icon.c607bc5c.svg" sizes="any" type="image/svg+xml">` | |
-| JSON-LD | `Organization` from `organizationJsonLd()` (name, legalName, url `https://www.sivak.ai/` or `/en`, logo, IČO identifier, address Šumperk CZ, founder Mirek Sivák with jobTitle and email, sales contactPoint Matouš Čep with e-mail, phone, languages) at the end of the page body | |
+| JSON-LD | `Organization` from `organizationJsonLd()` (name, legalName, url `https://www.sivak.ai/` or `/en`, logo, IČO identifier, address Šumperk CZ (**since 1 November 2026** the seat The Flow Building, Václavské náměstí 47, Praha 1: `COMPANY.seat` in `src/lib/site.ts`), founder Mirek Sivák with jobTitle and email, sales contactPoint Matouš Čep with e-mail, phone, languages) at the end of the page body | |
 
 OG images are screenshots of `design/og/og-{cs,en}.html` (see `design/og/README.md`).
 

@@ -150,6 +150,8 @@ const home = defineCollection({
       navLabel: text,
       contactLabel: text,
       operatedBy: text,
+      // Before the seat in the footer's legal line ("se sídlem" / "registered office")
+      seatLabel: text,
       idLabel: text,
       registry: text,
     }),
