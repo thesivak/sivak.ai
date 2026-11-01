@@ -19,9 +19,30 @@ export const GA_MEASUREMENT_ID = "G-S98V3B32ZL";
 export const COMPANY = {
   brand: "sivak.ai",
   legalName: "TheSivak s.r.o.",
-  city: "Šumperk",
   ico: "23010282",
+  // The seat (sídlo) as stated on the site: Mirek's decision of 1 November 2026, ahead of the notarial
+  // seat change in the commercial register. Shown in the footer's legal line, the privacy policy
+  // (controller), the vCards and the Organization JSON-LD. The register entry (court, section, insert) is
+  // unchanged in src/content/home/{cs,en}.yaml and the privacy policy until the court records the move.
+  seat: {
+    building: "The Flow Building",
+    street: "Václavské náměstí 47",
+    postalCode: "110 00",
+    locality: { cs: "Praha 1", en: "Prague 1" },
+  },
 };
+
+/**
+ * The seat on one line. English uses the English name of the city and adds the country
+ * ("…, 110 00 Prague 1, Czech Republic"); the building and street keep their Czech names in both.
+ * Postal code and district number are joined with no-break spaces so they never split across lines.
+ */
+export function seatAddress(lang: Locale): string {
+  const { building, street, postalCode, locality } = COMPANY.seat;
+  const nb = (text: string) => text.replaceAll(" ", "\u00a0");
+  const line = `${building}, ${street}, ${nb(postalCode)} ${nb(locality[lang])}`;
+  return lang === "cs" ? line : `${line}, Czech Republic`;
+}
 
 export type Person = {
   name: string;
@@ -66,7 +87,7 @@ export function initials(name: string): string {
 }
 
 // The organisation (plain Organization: schema.org deprecates ProfessionalService), with only what the site shows: the contact section lists both
-// e-mail addresses and the account manager's phone, the footer the legal name, town and company ID.
+// e-mail addresses and the account manager's phone, the footer the legal name, seat and company ID.
 function organization() {
   return {
     "@type": "Organization",
@@ -77,7 +98,14 @@ function organization() {
     logo: `${SITE_URL}/brand/logo.svg`,
     image: `${SITE_URL}/og/cs.png`,
     identifier: { "@type": "PropertyValue", propertyID: "IČO", value: COMPANY.ico },
-    address: { "@type": "PostalAddress", addressLocality: COMPANY.city, addressCountry: "CZ" },
+    address: {
+      "@type": "PostalAddress",
+      name: COMPANY.seat.building,
+      streetAddress: COMPANY.seat.street,
+      addressLocality: COMPANY.seat.locality.cs,
+      postalCode: COMPANY.seat.postalCode.replaceAll(" ", ""),
+      addressCountry: "CZ",
+    },
     areaServed: { "@type": "Country", name: "CZ" },
     founder: {
       "@type": "Person",

@@ -3,7 +3,7 @@ import Base from "@/layouts/Base.astro";
 import BrandLogo from "@/components/BrandLogo.astro";
 import { czechSpacingHtml } from "@/lib/czech";
 import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_MONTHS, TRACKING_STORAGE_KEY } from "@/lib/consent";
-import { GA_MEASUREMENT_ID, PRIVACY_CONTACT_EMAIL } from "@/lib/site";
+import { COMPANY, GA_MEASUREMENT_ID, PRIVACY_CONTACT_EMAIL, seatAddress } from "@/lib/site";
 import { LIMIT, WINDOW_MS } from "@/lib/server/rate-limit";
 import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 
@@ -20,7 +20,9 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 //    when PUBLIC_GOOGLE_ADS_ID is set at build time, as the Ads tag itself
 //  - the `lang` cookie (src/lib/routing.ts, src/components/language-hint.ts), sessionStorage (src/components/landing/enquiry-form.ts,
 //    written only with marketing consent), the consent record in localStorage (src/lib/consent.ts)
-// Controller details as verified by Mirek in ARES and the commercial register on 27 October 2026.
+// Controller details as verified by Mirek in ARES and the commercial register on 27 October 2026, except the seat:
+// since 1 November 2026 it is The Flow Building (COMPANY.seat in src/lib/site.ts), Mirek's decision ahead of the
+// notarial seat change; the register entry (Krajský soud v Ostravě, C 98925) stays until the court records the move.
 // Notifications: Cloudflare Email Service (src/lib/server/notify.ts) into Google Workspace mailboxes.
 // Open legal point for Mirek: the Google Analytics retention setting.
 // The form's checkbox is an acknowledgement, not consent (CONSENT_VERSION in fields.ts).
@@ -34,7 +36,7 @@ const html = `
 z poptávkového formuláře na stránce <a href="/ai-skoleni">AI školení pro firmy</a>.</p>
 
 <h2>Kdo údaje zpracovává</h2>
-<p>Správcem osobních údajů je TheSivak s.r.o., IČO 23010282, se sídlem Bohdíkovská 2208/90, 787 01 Šumperk,
+<p>Správcem osobních údajů je ${COMPANY.legalName}, IČO ${COMPANY.ico}, se sídlem ${seatAddress("cs")},
 zapsaná v obchodním rejstříku vedeném Krajským soudem v Ostravě, oddíl C, vložka 98925, která vystupuje pod
 značkou sivak.ai (dále „my“).</p>
 <p>S dotazy ke zpracování osobních údajů a s uplatněním svých práv se obracejte na e-mail ${mail}.</p>
