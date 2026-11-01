@@ -50,7 +50,8 @@ export function buildMessage(enquiry: Enquiry, id: number, origin: string, page 
     .map(([k, v]) => `${k}: ${v}`)
     .join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\n`;
   const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;color:#0B1220">
-<h1 style="font-size:18px">Nová poptávka AI školení</h1>
+<h1 style="font-size:18px">Nová poptávka AI školení${escapeHtml(english)}</h1>
+<p style="font-size:14px">Odesláno ze stránky ${escapeHtml(`${host}${page}`)}</p>
 <table cellpadding="6" style="border-collapse:collapse;font-size:14px">${list
     .map(
       ([k, v]) =>

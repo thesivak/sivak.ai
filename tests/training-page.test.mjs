@@ -9,13 +9,22 @@ import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
+// The Worker runtime module is not available in Node: an empty `env` is enough for what these tests call
+const workersStub = {
+  name: "cloudflare-workers-stub",
+  setup(b) {
+    b.onResolve({ filter: /^cloudflare:workers$/ }, () => ({ path: "cloudflare:workers", namespace: "stub" }));
+    b.onLoad({ filter: /.*/, namespace: "stub" }, () => ({ contents: "export const env = {};", loader: "js" }));
+  },
+};
 const bundle = async (entry) => {
-  const out = await build({ entryPoints: [`${root}${entry}`], bundle: true, write: false, format: "esm", platform: "neutral", alias: { "@": `${root}src` } });
+  const out = await build({ entryPoints: [`${root}${entry}`], bundle: true, write: false, format: "esm", platform: "neutral", alias: { "@": `${root}src` }, plugins: [workersStub] });
   return import(`data:text/javascript,${encodeURIComponent(out.outputFiles[0].text)}`);
 };
 const { TWIN_PAGES, SITEMAP_PAGES, CZECH_ONLY_PAGES, pageIn } = await bundle("src/i18n/pages.ts");
 const { canonicalRedirect } = await bundle("src/lib/routing.ts");
 const { CONSENT, SUPPORTED_CONSENT_VERSIONS, formLang, validateEnquiry } = await bundle("src/lib/enquiry/fields.ts");
+const { buildMessage } = await bundle("src/lib/server/notify.ts");
 const read = (path) => readFileSync(`${root}${path}`, "utf8");
 const NBSP = " ";
 
@@ -68,4 +77,13 @@ test("the form validates in the page's language", () => {
   assert.equal(validateEnquiry({ email: "x" }).errors.email, "Zadejte platnou e-mailovou adresu.");
   const valid = { name: "Jane Doe", company: "Acme", email: "jane@example.com", consent: "on" };
   assert.equal(validateEnquiry(valid, "en").ok, true);
+});
+
+test("the notification names the form's page in the subject, text and HTML", () => {
+  const enquiry = { name: "Jane Doe", company: "Acme", email: "jane@example.com", phone: null, participants: null, note: null, consent: true, tracking: {}, landingUrl: null };
+  const en = buildMessage(enquiry, 1, "https://www.sivak.ai", "/en/ai-training");
+  assert.match(en.subject, /anglická stránka/);
+  assert.ok(en.text.includes("www.sivak.ai/en/ai-training") && en.html.includes("www.sivak.ai/en/ai-training"));
+  const cs = buildMessage(enquiry, 2, "https://www.sivak.ai");
+  assert.ok(cs.html.includes("www.sivak.ai/ai-skoleni") && !cs.subject.includes("anglická"));
 });

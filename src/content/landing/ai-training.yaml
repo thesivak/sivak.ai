@@ -8,7 +8,7 @@ metadata:
   title: AI training for companies – a one-day hands-on workshop | sivak.ai
   description: One-day AI training for employees, managers and CEOs. ChatGPT and other tools, prompting, automation, AI agents and working safely with data. 35 000 Kč excl. VAT.
   ogTitle: One-day AI training for companies
-  ogDescription: A hands-on day with AI for your whole team – from ChatGPT and prompting to automation and AI agents. Led by Mirek Sivák. 35 000 Kč excl. VAT for a one-day training for your company.
+  ogDescription: A hands-on day with AI for your whole team – from ChatGPT and prompting to automation and AI agents. Led by Mirek Sivák. 35 000 Kč excl. VAT for a one-day workshop for your company.
 
 nav:
   label: On this page
@@ -36,7 +36,7 @@ hero:
   price:
     figure: 35 000 Kč
     vat: excl. VAT
-    unit: for a one-day training for your company
+    unit: for a one-day workshop for your company
   primary: Send a no-obligation enquiry
   secondary: What your team will learn
 
@@ -139,7 +139,7 @@ price:
   title: One price for the whole day
   figure: 35 000 Kč
   vat: excl. VAT
-  unit: for a one-day training for your company
+  unit: for a one-day workshop for your company
   includedLabel: Included
   included:
     - a full day of hands-on training
