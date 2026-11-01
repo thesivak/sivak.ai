@@ -1,7 +1,8 @@
 # sivak.ai
 
-Company website of sivak.ai (TheSivak s.r.o.): Czech at `/`, English at `/en`, and the
-Czech-only Google Ads landing page `/ai-skoleni` with an enquiry form.
+Company website of sivak.ai (TheSivak s.r.o.): Czech at `/`, English at `/en`, and the one-day AI
+training page with an enquiry form: `/ai-skoleni` (Czech, the Google Ads landing page) and its English
+twin `/en/ai-training`.
 
 Built with [Astro](https://astro.build) and deployed to **Cloudflare Workers with static assets**.
 
@@ -50,16 +51,24 @@ the Worker takes them first: `run_worker_first` lists `"/*/"` and `"/*.html"` (`
 never run the Worker. `src/lib/routing.ts` does the redirects.
 
 The language switch (header, footer) links straight to the counterpart (`/` ↔ `/en`, each service
-page to its twin; `/ai-skoleni`, Czech only, to `/en`) and stores the choice in the `lang` cookie from
+page to its twin, `/ai-skoleni` ↔ `/en/ai-training`) and stores the choice in the `lang` cookie from
 JavaScript. Instead of a redirect, pages with a twin show a small suggestion after they have rendered
 (`src/components/LanguageHint.astro`, `language-hint.ts`): "Switch to English" on Czech pages when the
 browser lists neither cs nor sk, "Přepnout do češtiny" on English pages when it does. A stored choice
 wins over the browser; using or closing the suggestion stores one. It is fixed under the header (no
 layout shift) and appears after load (never the LCP element).
 
-`/ai-skoleni` is Czech only; `/en/ai-skoleni` is a 404 on purpose: the campaign targets Czech
-searches, and an English page with no English campaign would be untranslated duplicate content to
-maintain.
+### Training page
+
+`/ai-skoleni` and its English twin `/en/ai-training` (`/en/ai-skoleni` stays a 404) are one template,
+`src/components/landing/TrainingPage.astro`, with the copy in `src/content/landing/{ai-skoleni,ai-training}.yaml`
+and `src/content/faq/{ai-skoleni,ai-training}/*.md`: keep the two in step. Both have hreflang cs/en
+(x-default = cs), Course (with the price as an Offer, VAT excluded, `inLanguage` per page),
+BreadcrumbList and FAQPage. The enquiry form is the same on both and posts to `/api/poptavka` with a
+hidden `lang` field: the English page gets English labels, validation and server messages, its own
+checkbox wording (`CONSENT.en` in `src/lib/enquiry/fields.ts`, its own version), and without JavaScript
+the thank-you page `/en/ai-training/thank-you`. Its enquiries are stored with `source` `ai-training`
+and the notification e-mail names the English page. The privacy policy it links to is Czech only.
 
 ### Service pages
 
@@ -69,13 +78,12 @@ maintain.
 Their copy only rearranges what the homepage and its FAQ already say; the schema requires a
 140–155-character description and 3–4 FAQ entries. Each has Service and FAQPage JSON-LD pointing at
 the homepage's organisation (`ORGANIZATION_ID` in `src/lib/site.ts`), and a BreadcrumbList
-(Domů/Home → the page) with the canonical URLs. `/ai-skoleni` has Course (with the price as an Offer,
-VAT excluded), BreadcrumbList and FAQPage.
+(Domů/Home → the page) with the canonical URLs.
 
 ### Sitemap `<lastmod>`
 
 `/sitemap.xml` lists every page in `SITEMAP_PAGES` (`src/i18n/pages.ts`): the twins with hreflang
-alternates, the Czech-only pages (`CZECH_ONLY_PAGES`, i.e. `/ai-skoleni`) without any. Each `<lastmod>`
+alternates, the Czech-only pages (`CZECH_ONLY_PAGES`, none at the moment) without any. Each `<lastmod>`
 is the time of the last commit that changed **that page's own sources**, read from the committed
 `src/data/lastmod.json`, not the build date (which would mark every page as changed on every deploy).
 
@@ -98,8 +106,8 @@ the build warns and that URL gets no `<lastmod>`: never the build date.
 | Path | What |
 | --- | --- |
 | `src/content/home/{cs,en}.yaml` | Home page copy (structured: agents, steps, spec tables, manifest) |
-| `src/content/faq/{cs,en,ai-skoleni}/*.md` | FAQ entries, one Markdown file per question |
-| `src/content/landing/ai-skoleni.yaml` | Landing page copy |
+| `src/content/faq/{cs,en,ai-skoleni,ai-training}/*.md` | FAQ entries, one Markdown file per question |
+| `src/content/landing/{ai-skoleni,ai-training}.yaml` | Training page copy, Czech and English |
 | `src/content.config.ts` | Schemas for all of the above (the build fails on missing or misspelt fields) |
 | `src/lib/site.ts` | Company facts, people, `MIREK_LINKEDIN_URL` (TODO, hidden while a placeholder), `PRIVACY_POLICY_URL`, GA ID |
 | `src/components/`, `src/components/sections/` | Home page components (ported 1:1 from React) |
@@ -233,7 +241,7 @@ Consent Mode v2**:
 
 `POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order. The visitor sees "přijali" (200 or
 the 303 to the thank-you page) **only once the row is stored in D1**; every refusal is an error asking to try again later.
-**No e-mail address appears anywhere on `/ai-skoleni`** (messages, notice, success state, thank-you page,
+**No e-mail address appears anywhere on `/ai-skoleni` or `/en/ai-training`** (messages, notice, success state, thank-you page,
 footer: `SiteFooter`'s `contact` prop swaps the addresses for a link to the form there; the homepage
 footer is unchanged). The form is the only contact path; only the privacy policy names a contact e-mail.
 

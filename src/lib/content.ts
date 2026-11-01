@@ -15,10 +15,11 @@ export async function getHome(lang: Locale): Promise<Home> {
   return lang === "cs" ? czechSpacing(entry.data) : entry.data;
 }
 
-export async function getLanding(id: string): Promise<Landing> {
+/** A landing page's copy (src/content/landing/<id>.yaml): "ai-skoleni" (Czech) or "ai-training" (English). */
+export async function getLanding(id: "ai-skoleni" | "ai-training"): Promise<Landing> {
   const entry = await getEntry("landing", id);
   if (!entry) throw new Error(`Missing src/content/landing/${id}.yaml`);
-  return czechSpacing(entry.data);
+  return id === "ai-skoleni" ? czechSpacing(entry.data) : entry.data;
 }
 
 /** The service pages of one language (src/content/topic/{cs,en}.yaml). */
@@ -30,10 +31,13 @@ export async function getTopics(lang: Locale): Promise<Topics> {
 
 export type FaqItem = { question: string; answerHtml: string };
 
-/** FAQ of one folder in src/content/faq ("cs", "en", "ai-skoleni"), in `order`, answers rendered to HTML. */
+// The English FAQ folders; the others are Czech and get Czech spacing
+const ENGLISH_FAQ = ["en", "ai-training"];
+
+/** FAQ of one folder in src/content/faq ("cs", "en", "ai-skoleni", "ai-training"), in `order`, answers rendered to HTML. */
 export async function getFaq(folder: string): Promise<FaqItem[]> {
   const entries = await getCollection("faq", (entry) => entry.id.startsWith(`${folder}/`));
-  const czech = folder !== "en";
+  const czech = !ENGLISH_FAQ.includes(folder);
   return entries
     .sort((a, b) => a.data.order - b.data.order)
     .map((entry: FaqEntry) => {

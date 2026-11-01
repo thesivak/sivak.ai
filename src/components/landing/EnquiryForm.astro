@@ -2,13 +2,61 @@
 import Eyebrow from "../Eyebrow.astro";
 import Icon from "../Icon.astro";
 import type { Landing } from "@/lib/content";
-import { CONSENT_TEXT, CONSENT_VERSION, FIELD, LIMITS, STALE_FORM_ANCHOR, STALE_FORM_MESSAGE, TRACKING_KEYS } from "@/lib/enquiry/fields";
+import type { Locale } from "@/i18n/config";
+import { CONSENT, FIELD, LIMITS, STALE_FORM_ANCHOR, STALE_FORM_MESSAGES, TRACKING_KEYS } from "@/lib/enquiry/fields";
 import { PRIVACY_POLICY_URL } from "@/lib/site";
 
 interface Props {
   t: Landing["form"];
+  lang: Locale;
 }
-const { t } = Astro.props;
+const { t, lang } = Astro.props;
+
+// The form's fixed wording; validation messages are in src/lib/enquiry/fields.ts
+const TEXT = {
+  cs: {
+    name: "Jméno a příjmení",
+    company: "Firma",
+    email: "E-mail",
+    phone: "Telefon",
+    phoneHint: "Nepovinné. Zavoláme, jen pokud si to přejete.",
+    participants: "Počet účastníků",
+    participantsHint: "Stačí odhad.",
+    note: "Poznámka nebo preferovaný termín",
+    noteHint: "Např. kdo se zúčastní, co vás nejvíc zajímá, kdy by se vám školení hodilo.",
+    required: "Pole označená * jsou povinná.",
+    unavailableTitle: "Formulář je dočasně nedostupný",
+    unavailable: "Omlouváme se, poptávku teď nelze odeslat. Zkuste to prosím znovu později.",
+    details: "Podrobnosti:",
+    privacy: "Zásady zpracování osobních údajů",
+    noscript: "Pro odeslání poptávky je potřeba zapnout JavaScript, bez něj neproběhne ochrana proti robotům.",
+    submit: "Odeslat poptávku",
+    successTitle: "Děkujeme, poptávku jsme přijali",
+    success: "Ozveme se vám co nejdříve a probereme program i termín.",
+  },
+  en: {
+    name: "Full name",
+    company: "Company",
+    email: "Email",
+    phone: "Phone",
+    phoneHint: "Optional. We will only call if you want us to.",
+    participants: "Number of participants",
+    participantsHint: "An estimate is fine.",
+    note: "Note or preferred date",
+    noteHint: "For example who will attend, what interests you most, when the training would suit you.",
+    required: "Fields marked * are required.",
+    unavailableTitle: "The form is temporarily unavailable",
+    unavailable: "Sorry, enquiries cannot be sent right now. Please try again later.",
+    details: "Details:",
+    // The privacy policy exists in Czech only
+    privacy: "Privacy policy (in Czech)",
+    noscript: "Please enable JavaScript to send the enquiry: the anti-robot check needs it.",
+    submit: "Send enquiry",
+    successTitle: "Thank you, we have received your enquiry",
+    success: "We will get back to you as soon as possible to discuss the program and the date.",
+  },
+}[lang];
+const consent = CONSENT[lang];
 
 // Public keys are read at build time; without them the widget / conversion simply isn't there
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
@@ -16,17 +64,17 @@ const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
 // secret, required in production) would refuse every enquiry: show a notice instead of the form.
 // Only `astro dev` keeps the form without the widget; there the server has no secret and skips the check.
 const formAvailable = Boolean(turnstileSiteKey) || import.meta.env.DEV;
-if (!formAvailable) console.warn("[enquiry] PUBLIC_TURNSTILE_SITE_KEY is not set: /ai-skoleni shows a notice instead of the form");
+if (!formAvailable) console.warn("[enquiry] PUBLIC_TURNSTILE_SITE_KEY is not set: the training pages show a notice instead of the form");
 const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
 const adsLabel = import.meta.env.PUBLIC_GOOGLE_ADS_CONVERSION_LABEL;
 const conversion = adsId && adsLabel ? `${adsId}/${adsLabel}` : "";
 
 const fields = [
-  { name: FIELD.name, label: "Jméno a příjmení", type: "text", autocomplete: "name", required: true, maxlength: LIMITS.name.max, minlength: LIMITS.name.min },
-  { name: FIELD.company, label: "Firma", type: "text", autocomplete: "organization", required: true, maxlength: LIMITS.company.max, minlength: LIMITS.company.min },
-  { name: FIELD.email, label: "E-mail", type: "email", autocomplete: "email", required: true, maxlength: LIMITS.email.max },
-  { name: FIELD.phone, label: "Telefon", type: "tel", autocomplete: "tel", required: false, maxlength: LIMITS.phone.max, hint: "Nepovinné. Zavoláme, jen pokud si to přejete." },
-  { name: FIELD.participants, label: "Počet účastníků", type: "number", required: false, min: LIMITS.participants.min, max: LIMITS.participants.max, inputmode: "numeric", hint: "Stačí odhad." },
+  { name: FIELD.name, label: TEXT.name, type: "text", autocomplete: "name", required: true, maxlength: LIMITS.name.max, minlength: LIMITS.name.min },
+  { name: FIELD.company, label: TEXT.company, type: "text", autocomplete: "organization", required: true, maxlength: LIMITS.company.max, minlength: LIMITS.company.min },
+  { name: FIELD.email, label: TEXT.email, type: "email", autocomplete: "email", required: true, maxlength: LIMITS.email.max },
+  { name: FIELD.phone, label: TEXT.phone, type: "tel", autocomplete: "tel", required: false, maxlength: LIMITS.phone.max, hint: TEXT.phoneHint },
+  { name: FIELD.participants, label: TEXT.participants, type: "number", required: false, min: LIMITS.participants.min, max: LIMITS.participants.max, inputmode: "numeric", hint: TEXT.participantsHint },
 ] as const;
 ---
 <section class="section dark contact lp-form-section" id={t.id} aria-labelledby={`${t.id}-title`}>
@@ -40,14 +88,14 @@ const fields = [
     <div class="lp-form-card">
       {!formAvailable && (
         <div class="lp-unavailable" role="note">
-          <h3>Formulář je dočasně nedostupný</h3>
-          <p>Omlouváme se, poptávku teď nelze odeslat. Zkuste to prosím znovu později.</p>
+          <h3>{TEXT.unavailableTitle}</h3>
+          <p>{TEXT.unavailable}</p>
         </div>
       )}
       {/* Shown (via :target) when a submission without JavaScript came from an outdated page: the server redirects here */}
-      {formAvailable && <p class="lp-stale" id={STALE_FORM_ANCHOR} role="alert">{STALE_FORM_MESSAGE}</p>}
+      {formAvailable && <p class="lp-stale" id={STALE_FORM_ANCHOR} role="alert">{STALE_FORM_MESSAGES[lang]}</p>}
       {formAvailable && <form class="lp-form" method="post" action="/api/poptavka" data-enquiry-form data-conversion={conversion || undefined} aria-describedby="form-required">
-        <p class="lp-form-required" id="form-required">Pole označená * jsou povinná.</p>
+        <p class="lp-form-required" id="form-required">{TEXT.required}</p>
         <div class="lp-fields">
           {
             fields.map((field) => {
@@ -76,9 +124,9 @@ const fields = [
             })
           }
           <div class="lp-field lp-field-note">
-            <label for="f-note">Poznámka nebo preferovaný termín</label>
+            <label for="f-note">{TEXT.note}</label>
             <textarea id="f-note" name={FIELD.note} rows="4" maxlength={LIMITS.note.max} aria-describedby="note-hint note-error"></textarea>
-            <p class="lp-hint" id="note-hint">Např. kdo se zúčastní, co vás nejvíc zajímá, kdy by se vám školení hodilo.</p>
+            <p class="lp-hint" id="note-hint">{TEXT.noteHint}</p>
             <p class="lp-error" id="note-error"></p>
           </div>
         </div>
@@ -90,11 +138,12 @@ const fields = [
         </div>
         {TRACKING_KEYS.map((key) => <input type="hidden" name={key} />)}
         <input type="hidden" name="landing_url" />
-        <input type="hidden" name={FIELD.consentVersion} value={CONSENT_VERSION} />
+        <input type="hidden" name={FIELD.consentVersion} value={consent.version} />
+        <input type="hidden" name={FIELD.lang} value={lang} />
 
         <div class="lp-consent">
           <input id="f-consent" name={FIELD.consent} type="checkbox" value="on" required aria-describedby="consent-error" />
-          <label for="f-consent">{CONSENT_TEXT} Podrobnosti: <a href={PRIVACY_POLICY_URL} target="_blank" rel="noopener">Zásady zpracování osobních údajů</a><span aria-hidden="true"> *</span></label>
+          <label for="f-consent">{consent.text} {TEXT.details} <a href={PRIVACY_POLICY_URL} target="_blank" rel="noopener" hreflang={lang === "cs" ? undefined : "cs"}>{TEXT.privacy}</a><span aria-hidden="true"> *</span></label>
           <p class="lp-error" id="consent-error"></p>
         </div>
 
@@ -103,19 +152,19 @@ const fields = [
         {/* The anti-robot check needs JavaScript; without it the server would refuse the enquiry */}
         {turnstileSiteKey && (
           <noscript>
-            <p class="lp-hint">Pro odeslání poptávky je potřeba zapnout JavaScript, bez něj neproběhne ochrana proti robotům.</p>
+            <p class="lp-hint">{TEXT.noscript}</p>
           </noscript>
         )}
 
         <div class="lp-submit">
-          <button class="btn btn-light" type="submit">Odeslat poptávku<Icon name="arrow" /></button>
+          <button class="btn btn-light" type="submit">{TEXT.submit}<Icon name="arrow" /></button>
           <p class="lp-status" role="status" aria-live="polite" data-status></p>
         </div>
       </form>}
       <div class="lp-success" data-success hidden tabindex="-1">
         <span class="lp-success-icon"><Icon name="check" /></span>
-        <h3>Děkujeme, poptávku jsme přijali</h3>
-        <p>Ozveme se vám co nejdříve a probereme program i termín.</p>
+        <h3>{TEXT.successTitle}</h3>
+        <p>{TEXT.success}</p>
       </div>
     </div>
   </div>

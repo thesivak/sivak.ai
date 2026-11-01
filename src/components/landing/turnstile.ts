@@ -69,7 +69,8 @@ export function lazyTurnstile(form: HTMLFormElement): Turnstile | null {
       .then((api) => {
         widgetId = api.render(slot, {
           sitekey: slot.dataset.turnstileSitekey,
-          language: "cs",
+          // The page's language ("cs" / "en")
+          language: document.documentElement.lang === "en" ? "en" : "cs",
           theme: "light",
           size: "flexible",
           callback: (token: string) => {

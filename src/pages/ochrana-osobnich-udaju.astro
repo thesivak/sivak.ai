@@ -25,7 +25,9 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 // notarial seat change; the register entry (Krajský soud v Ostravě, C 98925) stays until the court records the move.
 // Notifications: Cloudflare Email Service (src/lib/server/notify.ts) into Google Workspace mailboxes.
 // Open legal point for Mirek: the Google Analytics retention setting.
-// The form's checkbox is an acknowledgement, not consent (CONSENT_VERSION in fields.ts).
+// The form's checkbox is an acknowledgement, not consent (CONSENT in fields.ts, one wording and version per language).
+// The training form is on /ai-skoleni and on its English twin /en/ai-training: same fields, same processing;
+// the stored `source` (ai-skoleni / ai-training) records which page it came from.
 const contact = PRIVACY_CONTACT_EMAIL;
 const ads = Boolean(import.meta.env.PUBLIC_GOOGLE_ADS_ID);
 const windowMinutes = WINDOW_MS / 60_000;
@@ -33,7 +35,9 @@ const mail = `<a href="mailto:${contact}">${contact}</a>`;
 
 const html = `
 <p>Tyto zásady popisují, jak zpracováváme osobní údaje návštěvníků webu www.sivak.ai, především údaje
-z poptávkového formuláře na stránce <a href="/ai-skoleni">AI školení pro firmy</a>.</p>
+z poptávkového formuláře na stránce <a href="/ai-skoleni">AI školení pro firmy</a> a na její anglické verzi
+<a href="/en/ai-training" hreflang="en" lang="en">AI training for companies</a>. Oba formuláře jsou stejné
+a údaje z nich zpracováváme stejně.</p>
 
 <h2>Kdo údaje zpracovává</h2>
 <p>Správcem osobních údajů je ${COMPANY.legalName}, IČO ${COMPANY.ico}, se sídlem ${seatAddress("cs")},
@@ -46,7 +50,8 @@ značkou sivak.ai (dále „my“).</p>
 <ul>
   <li>jméno a příjmení, firma a e-mail (povinné),</li>
   <li>telefon, počet účastníků a poznámka nebo preferovaný termín (nepovinné),</li>
-  <li>čas odeslání a verze textu u zaškrtávacího pole, které jste potvrdili.</li>
+  <li>čas odeslání a verze textu u zaškrtávacího pole, které jste potvrdili,</li>
+  <li>ze které stránky jste poptávku odeslali (česká /ai-skoleni, nebo anglická /en/ai-training).</li>
 </ul>
 <h3>Odkud jste na stránku přišli</h3>
 <ul>
@@ -74,7 +79,7 @@ Bez souhlasu běží značka v režimu Google Consent Mode: cookies neukládá a
 dostávat jen základní technické údaje o zobrazení stránky bez identifikátorů z cookies.</p>
 ${
   ads
-    ? `<p>Na stránce AI školení měříme se souhlasem s marketingovými cookies také konverze z reklam Google Ads:
+    ? `<p>Na stránkách AI školení (české i anglické) měříme se souhlasem s marketingovými cookies také konverze z reklam Google Ads:
 po úspěšném odeslání poptávky prohlížeč pošle Google Ads informaci, že konverze proběhla. Bez tohoto souhlasu
 se konverze neodesílá. Obsah formuláře Googlu nepředáváme.</p>`
     : ""

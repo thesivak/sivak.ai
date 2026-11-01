@@ -1,0 +1,132 @@
+---
+import Base from "@/layouts/Base.astro";
+// after Base, so its rules come after global.css and can refine it
+import "@/styles/landing.css";
+import SiteHeader from "@/components/SiteHeader.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
+import LandingHero from "./LandingHero.astro";
+import Audience from "./Audience.astro";
+import Program from "./Program.astro";
+import Trainer from "./Trainer.astro";
+import Reference from "./Reference.astro";
+import Price from "./Price.astro";
+import Faq from "@/components/sections/Faq.astro";
+import EnquiryForm from "./EnquiryForm.astro";
+import LandingSubnav from "./LandingSubnav.astro";
+import { localePath, type Locale } from "@/i18n/config";
+import { twinPair } from "@/i18n/pages";
+import { getFaq, getHome, getLanding } from "@/lib/content";
+import { COMPANY, MIREK_LINKEDIN, ORGANIZATION_ID, PEOPLE, SITE_URL, breadcrumbJsonLd } from "@/lib/site";
+
+// The one-day AI training page: /ai-skoleni (Czech, the Google Ads landing page) and its English twin
+// /en/ai-training. Copy in src/content/landing/{ai-skoleni,ai-training}.yaml and
+// src/content/faq/{ai-skoleni,ai-training}/*.md. No e-mail address or phone number anywhere on it:
+// the enquiry form is the only way to get in touch.
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const COPY = {
+  cs: { landing: "ai-skoleni", courseName: "Jednodenní AI školení pro firmy", home: "Domů", crumb: "AI školení", og: "/og/ai-skoleni.png" },
+  en: { landing: "ai-training", courseName: "One-day AI training for companies", home: "Home", crumb: "AI training", og: "/og/en-ai-training.png" },
+} as const;
+const copy = COPY[lang];
+const other: Locale = lang === "cs" ? "en" : "cs";
+const pair = twinPair(lang === "cs" ? "/ai-skoleni" : "/en/ai-training")!;
+const absolute = (path: string) => (path === "/" ? SITE_URL : `${SITE_URL}${path}`);
+
+const t = await getLanding(copy.landing);
+const home = await getHome(lang);
+const faq = await getFaq(copy.landing);
+const homeHref = localePath(lang);
+const url = absolute(pair[lang]);
+const formHref = `#${t.form.id}`;
+// The top navbar is the homepage's (same items, CTA and language switch); the page's own sections are in
+// LandingSubnav under it, and in the footer
+const nav = { ...home.nav, items: t.nav.items, cta: t.nav.cta };
+const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
+
+const COURSE_LANGUAGES = ["cs", "en"];
+const plain = (html: string) => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+const founder = PEOPLE[0];
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: copy.courseName,
+    description: plain(t.metadata.description),
+    url,
+    // The training is held in Czech or English (FAQ "V jakém jazyce…" / "What language…"), on both pages
+    inLanguage: COURSE_LANGUAGES,
+    // The homepage's organisation node, by @id; no e-mail or phone on this page
+    provider: { "@type": "Organization", "@id": ORGANIZATION_ID, name: COMPANY.brand, legalName: COMPANY.legalName, url: `${SITE_URL}/` },
+    instructor: {
+      "@type": "Person",
+      name: t.trainer.name,
+      jobTitle: founder.role,
+      worksFor: { "@type": "Organization", name: COMPANY.brand },
+      ...(MIREK_LINKEDIN ? { sameAs: [MIREK_LINKEDIN] } : {}),
+    },
+    // The visible price: 35 000 Kč bez DPH / excl. VAT (src/content/landing/*.yaml)
+    offers: {
+      "@type": "Offer",
+      price: 35000,
+      priceCurrency: "CZK",
+      category: "Paid",
+      url: `${url}#${t.price.id}`,
+      priceSpecification: { "@type": "UnitPriceSpecification", price: 35000, priceCurrency: "CZK", valueAddedTaxIncluded: false },
+    },
+    // FAQ "Probíhá školení u nás ve firmě, nebo online?": either, as agreed with the client
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: ["onsite", "online"], courseWorkload: "P1D", inLanguage: COURSE_LANGUAGES },
+  },
+  // Home is the canonical homepage URL (https://www.sivak.ai, https://www.sivak.ai/en)
+  breadcrumbJsonLd([
+    { name: copy.home, url: absolute(homeHref) },
+    { name: copy.crumb, url },
+  ]),
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: plain(item.question),
+      acceptedAnswer: { "@type": "Answer", text: plain(item.answerHtml) },
+    })),
+  },
+];
+---
+<Base
+  lang={lang}
+  title={t.metadata.title}
+  description={t.metadata.description}
+  canonical={url}
+  alternates={[
+    { hreflang: "cs", href: absolute(pair.cs) },
+    { hreflang: "en", href: absolute(pair.en) },
+    { hreflang: "x-default", href: absolute(pair.cs) },
+  ]}
+  ogTitle={t.metadata.ogTitle}
+  ogDescription={t.metadata.ogDescription}
+  ogImage={{ path: copy.og, alt: t.metadata.ogTitle }}
+  jsonLd={jsonLd}
+  languageTwin={pair[other]}
+>
+  {/* The form's Turnstile loads late (on interaction); the connection is ready by then */}
+  <link slot="head" rel="preconnect" href="https://challenges.cloudflare.com" />
+  <a class="skip-link" href="#main">{home.skipLink}</a>
+  <SiteHeader nav={home.nav} langSwitch={home.langSwitch} homeHref={homeHref} ctaHref={`${homeHref}#${home.contact.id}`} switchHref={pair[other]} switchLang={other} sectionBase={homeHref} />
+  <LandingSubnav items={t.nav.items} cta={t.nav.cta} ctaHref={formHref} label={t.nav.label} />
+  <main id="main">
+    <LandingHero t={t} formHref={formHref} programHref={`#${t.program.id}`} />
+    <Audience t={t.audience} />
+    <Program t={t.program} />
+    <Trainer t={t.trainer} />
+    <Reference t={t.reference} linkHref={`${homeHref}#${home.services.id}`} />
+    <Price t={t.price} formHref={formHref} />
+    <Faq t={t.faq} items={faq} index="06" />
+    <EnquiryForm t={t.form} lang={lang} />
+  </main>
+  {/* No e-mail addresses on the training page: the form is the only way to get in touch */}
+  <SiteFooter lang={lang} t={{ ...home, nav }} homeHref={homeHref} switchHref={pair[other]} switchLang={other} contact={{ href: formHref, label: t.nav.cta }} />
+  {adsId && <script is:inline slot="end" set:html={`gtag('config', ${JSON.stringify(adsId)});`} />}
+</Base>

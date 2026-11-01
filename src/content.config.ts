@@ -6,7 +6,9 @@ import { z } from "astro/zod";
 //   home/{cs,en}.yaml        – the home page, one YAML file per language
 //   faq/{cs,en}/*.md         – home page FAQ, one Markdown file per question (answer = body)
 //   faq/ai-skoleni/*.md      – FAQ of the /ai-skoleni landing page
+//   faq/ai-training/*.md     – FAQ of its English twin /en/ai-training
 //   landing/ai-skoleni.yaml  – the /ai-skoleni landing page
+//   landing/ai-training.yaml – the English training page /en/ai-training, same structure
 //   topic/{cs,en}.yaml       – the service pages (/ai-agenti, /ai-automatizace, /pilotni-projekt and
 //                              their English twins), the twins side by side under the same `key`
 // The home page is mostly short labels in fixed structures (agents with steps, spec tables,
@@ -28,8 +30,8 @@ const home = defineCollection({
     nav: z.object({
       label: text,
       home: text,
-      // href: a link to another page (e.g. /ai-skoleni) instead of the section #id;
-      // hreflang: that page's language when it differs from this one (the Czech-only /ai-skoleni from /en)
+      // href: a link to another page (e.g. /ai-skoleni, /en/ai-training) instead of the section #id;
+      // hreflang: that page's language when it differs from this one
       items: z.array(z.object({ id: text, label: text, href: z.string().optional(), hreflang: z.string().optional() })),
       cta: text,
       open: text,
@@ -81,7 +83,7 @@ const home = defineCollection({
       lead: text,
       // more: link to the service's own page
       items: z.array(z.object({ title: text, text: text, tags: z.array(text), more: pageLink.optional() })),
-      // Teaser for /ai-skoleni under the service cards
+      // Teaser for the training page (/ai-skoleni, /en/ai-training) under the service cards
       training: z.object({ label: text, title: text, text: text, cta: text, href: z.string(), hreflang: z.string().optional() }).optional(),
     }),
     useCases: z.object({
@@ -169,7 +171,8 @@ const landing = defineCollection({
   loader: glob({ pattern: "*.yaml", base: "./src/content/landing" }),
   schema: z.object({
     metadata: z.object({ title: text, description: text, ogTitle: text, ogDescription: text }),
-    nav: z.object({ items: z.array(z.object({ id: text, label: text })), cta: text }),
+    // label: the section bar's aria-label ("Na této stránce" / "On this page")
+    nav: z.object({ label: text, items: z.array(z.object({ id: text, label: text })), cta: text }),
     hero: z.object({
       eyebrow: text,
       title: text,
@@ -177,7 +180,7 @@ const landing = defineCollection({
       lead: text,
       trainerLabel: text,
       trainerNote: text,
-      // vat: "bez DPH" next to the figure
+      // vat: "bez DPH" / "excl. VAT" next to the figure
       price: z.object({ figure: text, vat: text, unit: text }),
       primary: text,
       secondary: text,

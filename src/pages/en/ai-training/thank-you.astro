@@ -1,0 +1,35 @@
+---
+import Base from "@/layouts/Base.astro";
+import BrandLogo from "@/components/BrandLogo.astro";
+import Icon from "@/components/Icon.astro";
+
+// Where the English enquiry form lands without JavaScript (303 from /api/poptavka); the twin of
+// /ai-skoleni/odeslano. Not for search engines.
+---
+<Base
+  lang="en"
+  title="Thank you for your enquiry – sivak.ai"
+  description="We have received your AI training enquiry and will get back to you as soon as possible."
+  ogImage={{ path: "/og/en.png?v=2", alt: "One-day AI training for companies" }}
+  robots="noindex"
+>
+  <main id="main" class="hero not-found">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <a class="header-logo" href="/en" aria-label="sivak.ai – home"><BrandLogo /></a>
+      <p class="hero-eyebrow"><i aria-hidden="true"></i>Enquiry sent</p>
+      <h1 class="hero-title">Thank you, <span class="hero-accent">we'll be in touch</span></h1>
+      <p class="hero-lead">We have received your enquiry for the one-day AI training. We will get back to you soon to go through the program and the date, and send a confirmation.</p>
+      <div class="hero-actions">
+        <a class="btn btn-light" href="/en/ai-training">Back to the training page<Icon name="arrow" /></a>
+        <a class="btn btn-ghost" href="/en">What else we do</a>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .not-found { min-height: 100svh; }
+  .not-found .header-logo { margin-bottom: 64px; }
+  .not-found .header-logo :global(svg) { height: 28px; width: auto; }
+</style>

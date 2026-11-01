@@ -27,7 +27,7 @@
     //  - the enquiry API /api/poptavka (on-demand);
     //  - /robots.txt, which the Worker answers with "Disallow: /" on *.workers.dev only.
     // "*" matches across "/", so "/*/" is every path ending in a slash.
-    "run_worker_first": ["/", "/en", "/ai-agenti", "/en/ai-agents", "/ai-automatizace", "/en/ai-automation", "/pilotni-projekt", "/en/pilot-project", "/cs", "/cs/*", "/*/", "/*.html", "/api/*", "/robots.txt"]
+    "run_worker_first": ["/", "/en", "/ai-agenti", "/en/ai-agents", "/ai-automatizace", "/en/ai-automation", "/pilotni-projekt", "/en/pilot-project", "/ai-skoleni", "/en/ai-training", "/cs", "/cs/*", "/*/", "/*.html", "/api/*", "/robots.txt"]
   },
 
   "d1_databases": [

@@ -1,0 +1,161 @@
+# Copy of the English training page /en/ai-training, the twin of /ai-skoleni (src/content/landing/ai-skoleni.yaml).
+# The questions and answers are in src/content/faq/ai-training/*.md. Schema: src/content.config.ts.
+# Same content rules as the Czech page: no made-up figures, references or client quotes; about Mirek and
+# sivak.ai only the verified facts the Czech page states. Keep the two pages in step.
+# "35 000 Kč" and "excl. VAT" are written with no-break spaces (U+00A0), as on /en, so the price never wraps.
+
+metadata:
+  title: AI training for companies – a one-day hands-on workshop | sivak.ai
+  description: One-day AI training for employees, managers and CEOs. ChatGPT and other tools, prompting, automation, AI agents and working safely with data. 35 000 Kč excl. VAT.
+  ogTitle: One-day AI training for companies
+  ogDescription: A hands-on day with AI for your whole team – from ChatGPT and prompting to automation and AI agents. Led by Mirek Sivák. 35 000 Kč excl. VAT for a one-day workshop for your company.
+
+nav:
+  label: On this page
+  items:
+    - id: who-its-for
+      label: Who it's for
+    - id: program
+      label: Program
+    - id: trainer
+      label: Trainer
+    - id: price
+      label: Price
+    - id: faq
+      label: FAQ
+  cta: Enquire now
+
+hero:
+  eyebrow: AI training for companies
+  title: One-day AI training
+  titleAccent: for your team
+  lead: A hands-on day for your people – ChatGPT and other AI tools, automating routine work, and AI agents. We show how to use them in everyday work and get ahead of the competition.
+  # Trainer card; the name and role come from the trainer section
+  trainerLabel: Led by
+  trainerNote: Runs sivak.ai, which builds AI agents for businesses.
+  price:
+    figure: 35 000 Kč
+    vat: excl. VAT
+    unit: for a one-day workshop for your company
+  primary: Send a no-obligation enquiry
+  secondary: What your team will learn
+
+audience:
+  id: who-its-for
+  eyebrow: Who it's for
+  title: For everyone who works at a computer
+  lead: We run the training for a single team or the whole company, and choose the examples and exercises based on who will be in the room.
+  items:
+    - title: Employees
+      text: Assistants, HR, sales, accounting, marketing. They learn to use AI for everyday work – emails, documents, spreadsheets, summaries and research – and to spot when not to trust the result.
+    - title: Managers
+      text: Team and department leads. Where AI saves the team time, how to set rules for using it, and how to check what AI prepares.
+    - title: CEOs and leadership
+      text: Owners and directors. What AI can really do today, where it pays off first in the company, and what AI agents mean for how the business runs.
+  note: A mixed group is fine – we put the program together so that everyone takes something away.
+
+program:
+  id: program
+  eyebrow: The day's program
+  title: What your team will learn in one day
+  lead: From ChatGPT through automation to AI agents. Little theory, lots of work on examples from your company – everyone tries the tools for themselves.
+  parts:
+    - label: Morning
+      blocks:
+        - title: How AI works and what to expect from it
+          text: An overview of the tools and how they differ, without technical jargon.
+          points:
+            - ChatGPT, Claude, Gemini and Microsoft Copilot
+            - what AI does well and where it gets things wrong
+            - why AI sometimes makes things up and how to tell
+        - title: Prompting in practice
+          text: How to give AI tasks so the result is right the first time.
+          points:
+            - context, role, examples and output format
+            - working with documents, spreadsheets and longer texts
+            - your own library of proven prompts
+        - title: AI in your everyday work
+          text: Demos and exercises on tasks the participants deal with every day.
+          points:
+            - emails, meeting notes, summaries and translations
+            - briefings, overviews and research for management
+            - job ads, internal communication and HR documents
+    - label: Afternoon
+      blocks:
+        - title: Security and company rules
+          text: How to work with AI so that company and personal data stay safe.
+          points:
+            - what data does not belong in AI
+            - personal data, GDPR and company accounts
+            - drafting simple rules for using AI in the company
+        - title: Introduction to AI agents and automation
+          text: What comes after chat – agents that take over routine computer work.
+          points:
+            - the difference between a chat and an AI agent
+            - which routine tasks can be automated
+            - examples of agents from our own work
+            - the agent prepares, a person decides
+        - title: Workshop on your tasks, and Q&A
+          text: Participants try AI on their own work and ask about anything.
+          points:
+            - working through participants' real tasks
+            - questions and answers
+            - where to start in your company to get ahead of the competition
+  note: An indicative program. Before the training we tailor it to your company, the make-up of the group and the tools you use.
+
+trainer:
+  id: trainer
+  eyebrow: Your trainer
+  title: Led by the founder of sivak.ai
+  name: Mirek Sivák
+  role: Founder & CEO, sivak.ai
+  bio:
+    - Mirek is the founder and CEO of sivak.ai, which builds AI agents for businesses. For a tech startup in Belgium, sivak.ai built Factory – a team of AI agents tailored to the startup's work.
+    - In the training he shows how to give AI work, how to check what it prepares, and where a person has to make the call.
+  facts:
+    - Founder & CEO of sivak.ai
+    - sivak.ai builds AI agents for businesses
+    - "Reference: Factory, a team of AI agents for a tech startup in Belgium"
+  linkedinLabel: LinkedIn profile
+
+reference:
+  id: reference
+  eyebrow: Reference
+  title: From our work
+  name: Factory
+  client: Tech startup in Belgium
+  text:
+    - For a tech startup in Belgium we built Factory – a team of AI agents tailored to its work. We don't name the client.
+    - We bring what we learned on this project into the training – how to give agents work, how to check their output, and where a person has to make the call.
+  facts:
+    - Team of AI agents
+    - Tech startup
+    - Belgium
+  link: How we build AI agents
+
+price:
+  id: price
+  eyebrow: Price
+  title: One price for the whole day
+  figure: 35 000 Kč
+  vat: excl. VAT
+  unit: for a one-day workshop for your company
+  includedLabel: Included
+  included:
+    - a full day of hands-on training
+    - an initial call and a program tailored to your company
+    - exercises on tasks from your own work
+    - room for questions all day
+    - held in Czech or English
+  cta: Enquire now
+
+faq:
+  id: faq
+  eyebrow: FAQ
+  title: What companies ask us
+
+form:
+  id: enquiry
+  eyebrow: Enquiry
+  title: Send a no-obligation enquiry
+  lead: Fill in a few details. We will get back to you, go through the program and the date, and send a confirmation. The enquiry does not commit you to anything.
