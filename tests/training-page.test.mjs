@@ -87,3 +87,25 @@ test("the notification names the form's page in the subject, text and HTML", () 
   const cs = buildMessage(enquiry, 2, "https://www.sivak.ai");
   assert.ok(cs.html.includes("www.sivak.ai/ai-skoleni") && !cs.subject.includes("anglická"));
 });
+
+test("held in Czech or English, said on both pages, the /en card and in the Course data", () => {
+  assert.match(read("src/content/faq/ai-training/07-language.md"), /Czech or English/);
+  assert.match(read("src/content/faq/ai-skoleni/07-jazyk.md"), /V češtině, nebo v angličtině/);
+  assert.match(read("src/content/landing/ai-training.yaml"), /held in Czech or English/);
+  assert.match(read("src/content/landing/ai-skoleni.yaml"), /v češtině, nebo v angličtině/);
+  assert.match(read("src/content/home/en.yaml"), /held in Czech or English/);
+  assert.match(read("src/components/landing/TrainingPage.astro"), /COURSE_LANGUAGES = \["cs", "en"\]/);
+});
+
+test("the English share image is a 1200 × 630 PNG, used by the English page", () => {
+  const png = readFileSync(`${root}public/og/en-ai-training.png`);
+  assert.equal(png.subarray(1, 4).toString(), "PNG");
+  assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630]);
+  assert.match(read("src/components/landing/TrainingPage.astro"), /og: "\/og\/en-ai-training\.png"/);
+});
+
+test("the privacy policy names both training forms and keeps its effective date", () => {
+  const policy = read("src/pages/ochrana-osobnich-udaju.astro");
+  assert.ok(policy.includes('href="/ai-skoleni"') && policy.includes('href="/en/ai-training"'));
+  assert.match(policy, /účinné od 1\. 11\. 2026/);
+});

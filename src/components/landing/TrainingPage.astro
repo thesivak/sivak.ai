@@ -28,7 +28,7 @@ interface Props {
 const { lang } = Astro.props;
 const COPY = {
   cs: { landing: "ai-skoleni", courseName: "Jednodenní AI školení pro firmy", home: "Domů", crumb: "AI školení", og: "/og/ai-skoleni.png" },
-  en: { landing: "ai-training", courseName: "One-day AI training for companies", home: "Home", crumb: "AI training", og: "/og/en.png?v=2" },
+  en: { landing: "ai-training", courseName: "One-day AI training for companies", home: "Home", crumb: "AI training", og: "/og/en-ai-training.png" },
 } as const;
 const copy = COPY[lang];
 const other: Locale = lang === "cs" ? "en" : "cs";
@@ -46,6 +46,7 @@ const formHref = `#${t.form.id}`;
 const nav = { ...home.nav, items: t.nav.items, cta: t.nav.cta };
 const adsId = import.meta.env.PUBLIC_GOOGLE_ADS_ID;
 
+const COURSE_LANGUAGES = ["cs", "en"];
 const plain = (html: string) => html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
 const founder = PEOPLE[0];
 const jsonLd = [
@@ -55,7 +56,8 @@ const jsonLd = [
     name: copy.courseName,
     description: plain(t.metadata.description),
     url,
-    inLanguage: lang,
+    // The training is held in Czech or English (FAQ "V jakém jazyce…" / "What language…"), on both pages
+    inLanguage: COURSE_LANGUAGES,
     // The homepage's organisation node, by @id; no e-mail or phone on this page
     provider: { "@type": "Organization", "@id": ORGANIZATION_ID, name: COMPANY.brand, legalName: COMPANY.legalName, url: `${SITE_URL}/` },
     instructor: {
@@ -75,7 +77,7 @@ const jsonLd = [
       priceSpecification: { "@type": "UnitPriceSpecification", price: 35000, priceCurrency: "CZK", valueAddedTaxIncluded: false },
     },
     // FAQ "Probíhá školení u nás ve firmě, nebo online?": either, as agreed with the client
-    hasCourseInstance: { "@type": "CourseInstance", courseMode: ["onsite", "online"], courseWorkload: "P1D" },
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: ["onsite", "online"], courseWorkload: "P1D", inLanguage: COURSE_LANGUAGES },
   },
   // Home is the canonical homepage URL (https://www.sivak.ai, https://www.sivak.ai/en)
   breadcrumbJsonLd([

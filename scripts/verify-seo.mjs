@@ -61,7 +61,9 @@ for (const [lang, path] of Object.entries(TRAINING)) {
   const course = jsonLd(html(path)).find((b) => b["@type"] === "Course");
   const offer = course?.offers;
   const spec = offer?.priceSpecification;
-  ok(course?.inLanguage === lang && course?.url === `${SITE}${path}`, `${path} Course inLanguage ${course?.inLanguage}, url ${course?.url}`);
+  // The course is held in Czech or English, whichever page describes it
+  const languages = JSON.stringify(["cs", "en"]);
+  ok(JSON.stringify(course?.inLanguage) === languages && JSON.stringify(course?.hasCourseInstance?.inLanguage) === languages && course?.url === `${SITE}${path}`, `${path} (${lang}) Course + CourseInstance inLanguage ${JSON.stringify(course?.inLanguage)}, url ${course?.url}`);
   ok(offer?.["@type"] === "Offer" && offer.price === 35000 && offer.priceCurrency === "CZK", `${path} Course Offer 35000 CZK`);
   ok(spec?.["@type"] === "UnitPriceSpecification" && spec.price === 35000 && spec.priceCurrency === "CZK" && spec.valueAddedTaxIncluded === false, `${path} UnitPriceSpecification 35000 CZK, valueAddedTaxIncluded false`);
   ok(jsonLd(html(path)).some((b) => b["@type"] === "FAQPage" && b.mainEntity?.length === 9), `${path} FAQPage with 9 questions`);
@@ -103,6 +105,17 @@ ok(!sk.includes("/en/ai-skoleni") && !sitemap.includes("/en/ai-skoleni"), "no /e
 const englishPages = ["/en", "/en/ai-agents", "/en/ai-automation", "/en/pilot-project", TRAINING.en];
 ok(englishPages.every((p) => !/href="\/ai-skoleni[#"]/.test(html(p).replace(/<a [^>]*data-lang-switch[^>]*>/g, ""))), "EN pages: no link to /ai-skoleni (except the language switch)");
 ok(englishPages.every((p) => html(p).includes('href="/en/ai-training"') && !visible(html(p)).includes("(CZ)")), 'EN pages link to /en/ai-training, no "(CZ)"');
+
+console.log("== share images of the training pages");
+// og:image and twitter:image: absolute, the page's own 1200 × 630 PNG in public/og
+const meta = (h, attr, name) => h.match(new RegExp(`<meta ${attr}="${name}" content="([^"]+)"`))?.[1];
+for (const [path, h, file] of [[TRAINING.cs, sk, "ai-skoleni.png"], [TRAINING.en, en, "en-ai-training.png"]]) {
+  const image = meta(h, "property", "og:image");
+  ok(image === `${SITE}/og/${file}` && meta(h, "name", "twitter:image") === image, `${path} og:image = twitter:image = ${image}`);
+  const png = readFileSync(`${dist}/og/${file}`);
+  const [width, height] = [png.readUInt32BE(16), png.readUInt32BE(20)];
+  ok(width === 1200 && height === 630 && meta(h, "property", "og:image:width") === "1200" && meta(h, "property", "og:image:height") === "630", `${path} ${file} is ${width}×${height}, meta 1200×630`);
+}
 
 console.log("== visible price");
 const count = (text, s) => text.split(s).length - 1;
