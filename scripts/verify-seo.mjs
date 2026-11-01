@@ -1,6 +1,7 @@
 /* global process, console, URL */
 // `npm run verify:seo`: checks the built site in dist/client (run `npm run build` first): JSON-LD,
-// sitemap lastmod, hreflang of /ai-skoleni, the visible training price and the content rules.
+// sitemap lastmod, hreflang of the training pages (/ai-skoleni ↔ /en/ai-training), the visible training
+// price and the content rules.
 // Exits 1 when a check fails.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -35,7 +36,10 @@ const PAGES = {
   "/en/ai-agents": "/en",
   "/en/ai-automation": "/en",
   "/en/pilot-project": "/en",
+  "/en/ai-training": "/en",
 };
+// The training page and its English twin
+const TRAINING = { cs: "/ai-skoleni", en: "/en/ai-training" };
 for (const [path, home] of Object.entries(PAGES)) {
   const h = html(path);
   let blocks = [];
@@ -53,11 +57,15 @@ for (const [path, home] of Object.entries(PAGES)) {
   ok(items.at(-1)?.item === canonical(h), `${path} last item = page canonical ${canonical(h)}`);
   ok(items.every((it) => it.item?.startsWith(`${SITE}/`) || it.item === SITE), `${path} breadcrumb URLs on ${SITE}`);
 }
-const course = jsonLd(html("/ai-skoleni")).find((b) => b["@type"] === "Course");
-const offer = course?.offers;
-const spec = offer?.priceSpecification;
-ok(offer?.["@type"] === "Offer" && offer.price === 35000 && offer.priceCurrency === "CZK", "/ai-skoleni Course Offer 35000 CZK");
-ok(spec?.["@type"] === "UnitPriceSpecification" && spec.price === 35000 && spec.priceCurrency === "CZK" && spec.valueAddedTaxIncluded === false, "UnitPriceSpecification 35000 CZK, valueAddedTaxIncluded false");
+for (const [lang, path] of Object.entries(TRAINING)) {
+  const course = jsonLd(html(path)).find((b) => b["@type"] === "Course");
+  const offer = course?.offers;
+  const spec = offer?.priceSpecification;
+  ok(course?.inLanguage === lang && course?.url === `${SITE}${path}`, `${path} Course inLanguage ${course?.inLanguage}, url ${course?.url}`);
+  ok(offer?.["@type"] === "Offer" && offer.price === 35000 && offer.priceCurrency === "CZK", `${path} Course Offer 35000 CZK`);
+  ok(spec?.["@type"] === "UnitPriceSpecification" && spec.price === 35000 && spec.priceCurrency === "CZK" && spec.valueAddedTaxIncluded === false, `${path} UnitPriceSpecification 35000 CZK, valueAddedTaxIncluded false`);
+  ok(jsonLd(html(path)).some((b) => b["@type"] === "FAQPage" && b.mainEntity?.length === 9), `${path} FAQPage with 9 questions`);
+}
 
 console.log("== sitemap lastmod");
 const sitemap = readFileSync(`${dist}/sitemap.xml`, "utf8");
@@ -73,13 +81,28 @@ for (const u of urls) {
 }
 ok(urls.length === Object.keys(manifest).length, `sitemap has ${urls.length} URLs, manifest ${Object.keys(manifest).length}`);
 
-console.log("== hreflang /ai-skoleni");
-const sk = html("/ai-skoleni");
-const head = sk.slice(0, sk.indexOf("</head>"));
-ok(!/<link rel="alternate"[^>]*hreflang/.test(head), "/ai-skoleni <head> has no hreflang alternates");
+console.log("== hreflang /ai-skoleni ↔ /en/ai-training");
+const sk = html(TRAINING.cs);
+const en = html(TRAINING.en);
+const expected = { cs: `${SITE}${TRAINING.cs}`, en: `${SITE}${TRAINING.en}`, "x-default": `${SITE}${TRAINING.cs}` };
+const headAlternates = (h) =>
+  Object.fromEntries([...h.slice(0, h.indexOf("</head>")).matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)].map((m) => [m[1], m[2]]));
+for (const [path, h] of [[TRAINING.cs, sk], [TRAINING.en, en]]) {
+  ok(JSON.stringify(headAlternates(h)) === JSON.stringify(expected), `${path} <head> hreflang cs, en, x-default = ${JSON.stringify(headAlternates(h))}`);
+  const loc = urls.find((u) => u.loc === `${SITE}${path}`);
+  ok(JSON.stringify(loc?.alternates) === JSON.stringify(Object.values(expected)), `sitemap ${path} alternates ${loc?.alternates.join(", ")}`);
+}
+ok(canonical(en) === expected.en, `/en/ai-training canonical ${canonical(en)}`);
+ok(/<html lang="en"/.test(en) && /<title>[^<]*AI training[^<]*<\/title>/.test(en) && /<meta name="description" content="[^"]+"/.test(en), "/en/ai-training: lang en, English title, description");
+// The language switch (header and footer) on each page points at the other one
+const switches = (h) => [...h.matchAll(/<a [^>]*data-lang-switch="[^"]+"[^>]*>/g)].map((m) => m[0].match(/href="([^"]+)"/)?.[1]);
+ok(switches(sk).length >= 2 && switches(sk).every((href) => href === TRAINING.en), `/ai-skoleni language switch → ${[...new Set(switches(sk))]}`);
+ok(switches(en).length >= 2 && switches(en).every((href) => href === TRAINING.cs), `/en/ai-training language switch → ${[...new Set(switches(en))]}`);
 ok(!sk.includes("/en/ai-skoleni") && !sitemap.includes("/en/ai-skoleni"), "no /en/ai-skoleni in the page or the sitemap");
-ok(urls.find((u) => u.loc === `${SITE}/ai-skoleni`)?.alternates.length === 0, "sitemap /ai-skoleni has no alternates");
-ok(!urls.some((u) => u.alternates.some((a) => a.includes("ai-skoleni"))), "no sitemap alternate points at /ai-skoleni");
+// English pages link to the English training page, never to the Czech one, and say no "(CZ)"
+const englishPages = ["/en", "/en/ai-agents", "/en/ai-automation", "/en/pilot-project", TRAINING.en];
+ok(englishPages.every((p) => !/href="\/ai-skoleni[#"]/.test(html(p).replace(/<a [^>]*data-lang-switch[^>]*>/g, ""))), "EN pages: no link to /ai-skoleni (except the language switch)");
+ok(englishPages.every((p) => html(p).includes('href="/en/ai-training"') && !visible(html(p)).includes("(CZ)")), 'EN pages link to /en/ai-training, no "(CZ)"');
 
 console.log("== visible price");
 const count = (text, s) => text.split(s).length - 1;
@@ -88,17 +111,23 @@ const enPrice = `${PRICE} excl.${NBSP}VAT`;
 const skText = visible(sk);
 ok(count(skText, csPrice) >= 1, `/ai-skoleni shows "35 000 Kč bez DPH" ${count(skText, csPrice)}×`);
 ok(count(skText, PRICE) === count(skText, csPrice), "/ai-skoleni: every price is followed by bez DPH");
-for (const [path, label] of [["/", csPrice], ["/en", enPrice]]) {
+for (const [path, label] of [["/", csPrice], ["/en", enPrice], [TRAINING.en, enPrice]]) {
   const text = visible(html(path));
   ok(count(text, label) >= 1 && count(text, PRICE) === count(text, label), `${path} shows "${label.replaceAll(NBSP, " ")}" (${count(text, label)}× of ${count(text, PRICE)} prices)`);
 }
-ok(!/35 000/.test(skText + visible(html("/")) + visible(html("/en"))), "no plain-space 35 000");
+ok(!/35 000/.test(skText + visible(html("/")) + visible(html("/en")) + visible(en)), "no plain-space 35 000");
 
 console.log("== content rules");
 const all = ["/", "/en", ...Object.keys(PAGES)].map((p) => [p, visible(html(p))]);
 ok(all.every(([, t]) => !/dotac|subsid/i.test(t)), "no dotace/subsidies");
 ok(all.every(([, t]) => !/pilotní agent/i.test(t)), 'no "pilotní agent"');
-ok(/Mirek Sivák/.test(skText) && all.every(([, t]) => !/Mirek Sivak\b|Miroslav Sivák/.test(t)), 'name is "Mirek Sivák"');
+ok(/Mirek Sivák/.test(skText) && /Mirek Sivák/.test(visible(en)) && all.every(([, t]) => !/Mirek Sivak\b|Miroslav|Miroslava/.test(t)), 'name is "Mirek Sivák"');
+// The training pages: the form is the only contact, so no e-mail address or phone number in the whole HTML
+// (head, JSON-LD and footer included)
+for (const [path, h] of [[TRAINING.cs, sk], [TRAINING.en, en]]) {
+  ok(!/mailto:|tel:|@sivak\.ai|\+420/.test(h), `${path}: no e-mail address or phone number`);
+  ok(!/dotac|subsid|\bgrants?\b/i.test(h), `${path}: no dotace/subsidies/grants, keywords included`);
+}
 
 console.log(failures ? `\n${failures} FAILED` : "\nALL CHECKS PASSED");
 process.exit(failures ? 1 : 0);

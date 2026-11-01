@@ -5,10 +5,12 @@ interface Props {
   items: { id: string; label: string }[];
   cta: string;
   ctaHref: string;
+  /** e.g. "Na této stránce" / "On this page" */
+  label: string;
 }
-const { items, cta, ctaHref } = Astro.props;
+const { items, cta, ctaHref, label } = Astro.props;
 ---
-<nav class="lp-subnav" aria-label="Na této stránce">
+<nav class="lp-subnav" aria-label={label}>
   <div class="container lp-subnav-inner">
     <ul class="lp-subnav-links">
       {items.map((item) => <li><a href={`#${item.id}`}>{item.label}</a></li>)}

@@ -36,13 +36,17 @@ function rows(enquiry: Enquiry, id: number): [string, string][] {
 // A test submission (name or company starting with "TEST") is marked in the subject
 export const isTestEnquiry = (enquiry: Pick<Enquiry, "name" | "company">) => enquiry.name.startsWith("TEST") || enquiry.company.startsWith("TEST");
 
-/** `origin` is the site the form was sent from (e.g. https://www.sivak.ai), named in the first line. */
-export function buildMessage(enquiry: Enquiry, id: number, origin: string) {
+/**
+ * `origin` is the site the form was sent from (e.g. https://www.sivak.ai) and `page` the form's page
+ * (/ai-skoleni, or /en/ai-training for the English one), both named in the first line.
+ */
+export function buildMessage(enquiry: Enquiry, id: number, origin: string, page = "/ai-skoleni") {
   const prefix = isTestEnquiry(enquiry) ? "[TEST] " : "";
-  const subject = `${prefix}Poptávka AI školení: ${enquiry.company} (${enquiry.name})`.replace(/[\r\n]+/g, " ").slice(0, 200);
+  const english = page.startsWith("/en/") ? " (anglická stránka)" : "";
+  const subject = `${prefix}Poptávka AI školení${english}: ${enquiry.company} (${enquiry.name})`.replace(/[\r\n]+/g, " ").slice(0, 200);
   const list = rows(enquiry, id);
   const host = new URL(origin).host;
-  const text = `Nová poptávka jednodenního AI školení z ${host}/ai-skoleni\n\n${list
+  const text = `Nová poptávka jednodenního AI školení z ${host}${page}\n\n${list
     .map(([k, v]) => `${k}: ${v}`)
     .join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\n`;
   const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;color:#0B1220">
@@ -58,7 +62,7 @@ export function buildMessage(enquiry: Enquiry, id: number, origin: string) {
   return { subject, text, html };
 }
 
-export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number, origin: string): Promise<NotifyResult> {
+export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number, origin: string, page?: string): Promise<NotifyResult> {
   const recipients = (env.ENQUIRY_NOTIFY_TO ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const from = env.ENQUIRY_FROM_EMAIL?.trim();
 
@@ -77,7 +81,7 @@ export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number
     return { sent: false, reason: skip ?? "not configured" };
   }
 
-  const message = buildMessage(enquiry, id, origin);
+  const message = buildMessage(enquiry, id, origin, page);
   try {
     const result = await env.EMAIL.send({
       from: { email: from, name: SENDER_NAME },

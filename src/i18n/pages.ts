@@ -7,11 +7,13 @@ export const TWIN_PAGES: Record<Locale, string>[] = [
   { cs: "/ai-agenti", en: "/en/ai-agents" },
   { cs: "/ai-automatizace", en: "/en/ai-automation" },
   { cs: "/pilotni-projekt", en: "/en/pilot-project" },
+  // The one-day AI training (the Czech page is the Google Ads landing page)
+  { cs: "/ai-skoleni", en: "/en/ai-training" },
 ];
 
-// Pages in Czech only: no hreflang alternates and no English URL in the sitemap.
-// /ai-skoleni is the Czech Google Ads landing page; /en/ai-skoleni is a 404 on purpose (see README).
-export const CZECH_ONLY_PAGES: string[] = ["/ai-skoleni"];
+// Pages in Czech only: no hreflang alternates and no English URL in the sitemap. None at the moment;
+// /ai-skoleni has had its English twin /en/ai-training since November 2026.
+export const CZECH_ONLY_PAGES: string[] = [];
 
 /** Every indexable page, in sitemap order: the twins (Czech, then English), then the Czech-only pages. */
 export const SITEMAP_PAGES: string[] = [...TWIN_PAGES.flatMap((pair) => [pair.cs, pair.en]), ...CZECH_ONLY_PAGES];

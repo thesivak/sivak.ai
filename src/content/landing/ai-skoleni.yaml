@@ -13,6 +13,7 @@ metadata:
   ogDescription: Praktický den s umělou inteligencí pro celý tým – od ChatGPT a promptů po automatizace a AI agenty. Školí Mirek Sivák. 35 000 Kč bez DPH za jednodenní školení pro vaši firmu.
 
 nav:
+  label: Na této stránce
   items:
     - id: pro-koho
       label: Pro koho

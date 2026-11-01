@@ -1,10 +1,10 @@
-// Progressive enhancement of the /ai-skoleni enquiry form.
+// Progressive enhancement of the training enquiry form (/ai-skoleni, /en/ai-training), in the form's language.
 // Without JavaScript the browser validates the inputs and posts the form; the server redirects to a thank-you page.
 // With it: the same validation as the server, messages next to the fields, submission without leaving the page,
 // and the Google Ads conversion after a successful submit. Turnstile loads only once the visitor gets to the
 // form (turnstile.ts); the submit waits for its token.
 import { TRACKING_STORAGE_KEY as STORAGE_KEY, readConsent } from "@/lib/consent";
-import { TRACKING_KEYS, validateEnquiry, type FieldErrors, type FieldName } from "@/lib/enquiry/fields";
+import { TRACKING_KEYS, formLang, validateEnquiry, type FieldErrors, type FieldName } from "@/lib/enquiry/fields";
 import { lazyTurnstile } from "./turnstile";
 
 declare global {
@@ -15,6 +15,25 @@ declare global {
 }
 
 const FIELDS: FieldName[] = ["name", "company", "email", "phone", "participants", "note", "consent"];
+// Status line under the submit button
+const STATUS = {
+  cs: {
+    invalid: "Zkontrolujte prosím zvýrazněná pole.",
+    verifying: "Ověřujeme, že nejste robot…",
+    robot: "Nepodařilo se ověřit, že nejste robot. Zkuste formulář odeslat znovu.",
+    sending: "Odesíláme poptávku…",
+    failed: "Poptávku se nepodařilo odeslat. Zkuste to prosím znovu.",
+    offline: "Spojení se nezdařilo. Zkontrolujte připojení k internetu a zkuste to znovu.",
+  },
+  en: {
+    invalid: "Please check the highlighted fields.",
+    verifying: "Checking that you are not a robot…",
+    robot: "We could not verify that you are not a robot. Please try sending the form again.",
+    sending: "Sending your enquiry…",
+    failed: "Your enquiry could not be sent. Please try again.",
+    offline: "Connection failed. Please check your internet connection and try again.",
+  },
+};
 // How long a submit waits for Turnstile, e.g. while the visitor answers an interactive check
 const TOKEN_WAIT_MS = 60_000;
 
@@ -60,6 +79,9 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
   const button = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
   const success = form.parentElement!.querySelector<HTMLElement>("[data-success]")!;
   const touched = new Set<FieldName>();
+  // The hidden `lang` field (missing = cs): messages here and from the server in the page's language
+  const lang = formLang(values(form));
+  const say = STATUS[lang];
   form.noValidate = true;
 
   const saved = tracking();
@@ -92,24 +114,24 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
     const name = (event.target as HTMLInputElement).name as FieldName;
     if (!FIELDS.includes(name)) return;
     touched.add(name);
-    const result = validateEnquiry(values(form));
+    const result = validateEnquiry(values(form), lang);
     showErrors(result.ok ? {} : result.errors, touched);
   });
   form.addEventListener("input", (event) => {
     const name = (event.target as HTMLInputElement).name as FieldName;
     if (!touched.has(name)) return;
-    const result = validateEnquiry(values(form));
+    const result = validateEnquiry(values(form), lang);
     showErrors(result.ok ? {} : result.errors, new Set([name]));
   });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const data = values(form);
-    const result = validateEnquiry(data);
+    const result = validateEnquiry(data, lang);
     FIELDS.forEach((name) => touched.add(name));
     if (!result.ok) {
       showErrors(result.errors);
-      status.textContent = "Zkontrolujte prosím zvýrazněná pole.";
+      status.textContent = say.invalid;
       focusFirstError(result.errors);
       return;
     }
@@ -119,15 +141,15 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
     form.setAttribute("aria-busy", "true");
     try {
       if (turnstile) {
-        status.textContent = "Ověřujeme, že nejste robot…";
+        status.textContent = say.verifying;
         try {
           await turnstile.token(TOKEN_WAIT_MS);
         } catch {
-          status.textContent = "Nepodařilo se ověřit, že nejste robot. Zkuste formulář odeslat znovu.";
+          status.textContent = say.robot;
           return;
         }
       }
-      status.textContent = "Odesíláme poptávku…";
+      status.textContent = say.sending;
       const res = await fetch(form.action, {
         method: "POST",
         body: new FormData(form),
@@ -136,7 +158,7 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
       const answer = (await res.json().catch(() => ({}))) as { ok?: boolean; message?: string; errors?: FieldErrors };
       if (!res.ok || !answer.ok) {
         showErrors(answer.errors ?? {});
-        status.textContent = answer.message ?? "Poptávku se nepodařilo odeslat. Zkuste to prosím znovu.";
+        status.textContent = answer.message ?? say.failed;
         focusFirstError(answer.errors ?? {});
         turnstile?.reset();
         return;
@@ -152,7 +174,7 @@ export function enhanceEnquiryForm(form: HTMLFormElement) {
       success.hidden = false;
       success.focus();
     } catch {
-      status.textContent = "Spojení se nezdařilo. Zkontrolujte připojení k internetu a zkuste to znovu.";
+      status.textContent = say.offline;
       turnstile?.reset();
     } finally {
       button.disabled = false;

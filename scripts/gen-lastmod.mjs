@@ -22,18 +22,23 @@ const literal = (path) => `:(literal)${path}`;
 // What a page is made of: its route, its own components and its copy. Shared chrome (the Base layout,
 // header, footer, global styles, src/lib/site.ts, the homepage's nav and contact strings reused
 // elsewhere) is left out on purpose: a footer tweak does not make every page "modified".
+function training(page, copy) {
+  return [
+    page,
+    "src/components/landing",
+    "src/components/sections/Faq.astro",
+    "src/styles/landing.css",
+    `src/content/landing/${copy}.yaml`,
+    `src/content/faq/${copy}`,
+  ];
+}
 const HOME = ["src/components/HomePage.astro", "src/components/sections", "src/components/AgentConsole.astro", "src/components/agent-console.ts"];
 const SOURCES = {
   "/": ["src/pages/index.astro", ...HOME, "src/content/home/cs.yaml", "src/content/faq/cs"],
   "/en": ["src/pages/en.astro", ...HOME, "src/content/home/en.yaml", "src/content/faq/en"],
-  "/ai-skoleni": [
-    "src/pages/ai-skoleni.astro",
-    "src/components/landing",
-    "src/components/sections/Faq.astro",
-    "src/styles/landing.css",
-    "src/content/landing/ai-skoleni.yaml",
-    "src/content/faq/ai-skoleni",
-  ],
+  // The training page and its English twin share the template (src/components/landing) but not the copy
+  "/ai-skoleni": training("src/pages/ai-skoleni.astro", "ai-skoleni"),
+  "/en/ai-training": training("src/pages/en/ai-training.astro", "ai-training"),
 };
 // Service pages: the template, and only their own entry of src/content/topic/{cs,en}.yaml (plus the
 // shared `labels` above `pages:`), so editing one service page does not touch its siblings' dates

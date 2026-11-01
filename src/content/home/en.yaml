@@ -21,11 +21,9 @@ nav:
       label: In practice
     - id: contact
       label: Contact
-    # The training page is in Czech only
     - id: ai-training
-      label: AI training (CZ)
-      href: /ai-skoleni
-      hreflang: cs
+      label: AI training
+      href: /en/ai-training
   cta: Book a meeting
   open: Open menu
   close: Close menu
@@ -259,9 +257,8 @@ services:
     label: AI training for companies
     title: One-day AI training for your team
     text: A practical day with ChatGPT and other AI tools, automation and AI agents, for everyone from assistants and HR to management. The training is held in Czech. 35 000 Kč excl. VAT for a one-day training for your company.
-    cta: More about the training (in Czech)
-    href: /ai-skoleni
-    hreflang: cs
+    cta: More about the training
+    href: /en/ai-training
 useCases:
   id: examples
   eyebrow: Where agents help
