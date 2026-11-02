@@ -51,7 +51,6 @@ const home = defineCollection({
       label: text,
       caption: text,
       app: text,
-      live: text,
       agentsLabel: text,
       preparing: text,
       states: z.object({ running: text, waiting: text, done: text }),
@@ -180,8 +179,6 @@ const landing = defineCollection({
       lead: text,
       trainerLabel: text,
       trainerNote: text,
-      // vat: "bez DPH" / "excl. VAT" next to the figure
-      price: z.object({ figure: text, vat: text, unit: text }),
       primary: text,
       secondary: text,
     }),
@@ -204,8 +201,6 @@ const landing = defineCollection({
     price: z.object({
       ...section,
       figure: text,
-      vat: text,
-      unit: text,
       includedLabel: text,
       included: z.array(text),
       cta: text,

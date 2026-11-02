@@ -2,13 +2,12 @@
 # The questions and answers are in src/content/faq/ai-training/*.md. Schema: src/content.config.ts.
 # Same content rules as the Czech page: no made-up figures, references or client quotes; about Mirek and
 # sivak.ai only the verified facts the Czech page states. Keep the two pages in step.
-# "35 000 Kč" and "excl. VAT" are written with no-break spaces (U+00A0), as on /en, so the price never wraps.
 
 metadata:
   title: AI training for companies – a one-day hands-on workshop | sivak.ai
-  description: One-day AI training for employees, managers and CEOs. ChatGPT and other tools, prompting, automation, AI agents and working safely with data. 35 000 Kč excl. VAT.
+  description: One-day AI training for employees, managers and CEOs. ChatGPT and other tools, prompting, automation, AI agents and working safely with data.
   ogTitle: One-day AI training for companies
-  ogDescription: A hands-on day with AI for your whole team – from ChatGPT and prompting to automation and AI agents. Led by Mirek Sivák. 35 000 Kč excl. VAT for a one-day workshop for your company.
+  ogDescription: A hands-on day with AI for your whole team – from ChatGPT and prompting to automation and AI agents. Led by Mirek Sivák.
 
 nav:
   label: On this page
@@ -33,10 +32,6 @@ hero:
   # Trainer card; the name and role come from the trainer section
   trainerLabel: Led by
   trainerNote: Runs sivak.ai, which builds AI agents for businesses.
-  price:
-    figure: 35 000 Kč
-    vat: excl. VAT
-    unit: for a one-day workshop for your company
   primary: Send a no-obligation enquiry
   secondary: What your team will learn
 
@@ -136,10 +131,8 @@ reference:
 price:
   id: price
   eyebrow: Price
-  title: One price for the whole day
-  figure: 35 000 Kč
-  vat: excl. VAT
-  unit: for a one-day workshop for your company
+  title: One day, tailored to your company
+  figure: Price on request
   includedLabel: Included
   included:
     - a full day of hands-on training

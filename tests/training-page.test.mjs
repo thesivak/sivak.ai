@@ -1,7 +1,7 @@
 /* global URL, Request */
 // Run with `npm test`. The training page /ai-skoleni and its English twin /en/ai-training: the twin pair
 // (hreflang, sitemap, language switch), the ?lang= and trailing-slash redirects, the run_worker_first list,
-// the English copy (price, content rules, no contact details) and the form in both languages.
+// the English copy (no price, content rules, no contact details) and the form in both languages.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
@@ -26,7 +26,6 @@ const { canonicalRedirect } = await bundle("src/lib/routing.ts");
 const { CONSENT, SUPPORTED_CONSENT_VERSIONS, formLang, validateEnquiry } = await bundle("src/lib/enquiry/fields.ts");
 const { buildMessage } = await bundle("src/lib/server/notify.ts");
 const read = (path) => readFileSync(`${root}${path}`, "utf8");
-const NBSP = " ";
 
 test("/ai-skoleni and /en/ai-training are twins, both in the sitemap", () => {
   assert.ok(TWIN_PAGES.some((pair) => pair.cs === "/ai-skoleni" && pair.en === "/en/ai-training"));
@@ -54,13 +53,13 @@ test("the Worker runs first on both training pages (for ?lang=)", () => {
   for (const pair of TWIN_PAGES) for (const path of [pair.cs, pair.en]) assert.ok(list.includes(`"${path}"`), path);
 });
 
-test("English copy: price with no-break spaces, Mirek Sivák, no contact details or banned words", () => {
+test("English copy: no price, Mirek Sivák, no contact details or banned words", () => {
   const faq = readdirSync(`${root}src/content/faq/ai-training`).map((f) => read(`src/content/faq/ai-training/${f}`));
   // The copy itself, without the YAML comments
   const copy = [read("src/content/landing/ai-training.yaml"), ...faq].join("\n").replace(/^\s*#.*$/gm, "");
   assert.equal(faq.length, readdirSync(`${root}src/content/faq/ai-skoleni`).length, "same number of FAQ entries as the Czech page");
-  assert.ok(copy.includes(`35${NBSP}000${NBSP}Kč`) && copy.includes(`excl.${NBSP}VAT`));
-  assert.doesNotMatch(copy, /35 000|excl\. VAT/);
+  assert.match(copy, /Price on request/);
+  assert.doesNotMatch(copy, /35[\s\u00a0]?000|Kč|excl\.[\s\u00a0]VAT/);
   assert.match(copy, /Mirek Sivák/);
   assert.doesNotMatch(copy, /Miroslav|dotac|subsid|\bgrants?\b|pilot(ní)? agent|@|\+420|\(CZ\)/i);
   assert.doesNotMatch(read("src/content/home/en.yaml"), /href: \/ai-skoleni|\(CZ\)/);
@@ -101,7 +100,7 @@ test("the English share image is a 1200 × 630 PNG, used by the English page", (
   const png = readFileSync(`${root}public/og/en-ai-training.png`);
   assert.equal(png.subarray(1, 4).toString(), "PNG");
   assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630]);
-  assert.match(read("src/components/landing/TrainingPage.astro"), /og: "\/og\/en-ai-training\.png"/);
+  assert.match(read("src/components/landing/TrainingPage.astro"), /og: "\/og\/en-ai-training\.png\?v=2"/);
 });
 
 test("the privacy policy names both training forms and keeps its effective date", () => {
