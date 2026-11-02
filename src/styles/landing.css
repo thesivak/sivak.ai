@@ -289,7 +289,7 @@
   background: var(--paper);
   box-shadow: 0 30px 60px -40px rgba(11, 18, 32, .35);
 }
-/* The figure and "bez DPH" carry no-break spaces; between them the line may break on narrow cards */
+/* "Cena na vyžádání" / "Price on request" instead of a figure */
 .lp-price-figure { font-size: clamp(36px, 4vw, 52px); font-weight: 500; line-height: 1; letter-spacing: -.035em; }
 .lp-price-label {
   margin-top: 32px;
