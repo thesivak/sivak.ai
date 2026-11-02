@@ -27,8 +27,9 @@ interface Props {
 }
 const { lang } = Astro.props;
 const COPY = {
-  cs: { landing: "ai-skoleni", courseName: "Jednodenní AI školení pro firmy", home: "Domů", crumb: "AI školení", og: "/og/ai-skoleni.png" },
-  en: { landing: "ai-training", courseName: "One-day AI training for companies", home: "Home", crumb: "AI training", og: "/og/en-ai-training.png" },
+  // ?v=2: the share images dropped the price; LinkedIn and Slack cache by URL
+  cs: { landing: "ai-skoleni", courseName: "Jednodenní AI školení pro firmy", home: "Domů", crumb: "AI školení", og: "/og/ai-skoleni.png?v=2" },
+  en: { landing: "ai-training", courseName: "One-day AI training for companies", home: "Home", crumb: "AI training", og: "/og/en-ai-training.png?v=2" },
 } as const;
 const copy = COPY[lang];
 const other: Locale = lang === "cs" ? "en" : "cs";
@@ -66,15 +67,6 @@ const jsonLd = [
       jobTitle: founder.role,
       worksFor: { "@type": "Organization", name: COMPANY.brand },
       ...(MIREK_LINKEDIN ? { sameAs: [MIREK_LINKEDIN] } : {}),
-    },
-    // The visible price: 35 000 Kč bez DPH / excl. VAT (src/content/landing/*.yaml)
-    offers: {
-      "@type": "Offer",
-      price: 35000,
-      priceCurrency: "CZK",
-      category: "Paid",
-      url: `${url}#${t.price.id}`,
-      priceSpecification: { "@type": "UnitPriceSpecification", price: 35000, priceCurrency: "CZK", valueAddedTaxIncluded: false },
     },
     // FAQ "Probíhá školení u nás ve firmě, nebo online?": either, as agreed with the client
     hasCourseInstance: { "@type": "CourseInstance", courseMode: ["onsite", "online"], courseWorkload: "P1D", inLanguage: COURSE_LANGUAGES },

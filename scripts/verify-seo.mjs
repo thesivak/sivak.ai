@@ -1,7 +1,7 @@
 /* global process, console, URL */
 // `npm run verify:seo`: checks the built site in dist/client (run `npm run build` first): JSON-LD,
-// sitemap lastmod, hreflang of the training pages (/ai-skoleni ↔ /en/ai-training), the visible training
-// price and the content rules.
+// sitemap lastmod, hreflang of the training pages (/ai-skoleni ↔ /en/ai-training), no training
+// price anywhere, no "agents running" badge and the content rules.
 // Exits 1 when a check fails.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -10,7 +10,6 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = `${root}dist/client`;
 const SITE = "https://www.sivak.ai";
 const NBSP = " ";
-const PRICE = `35${NBSP}000${NBSP}Kč`;
 
 let failures = 0;
 const ok = (cond, msg) => {
@@ -59,13 +58,10 @@ for (const [path, home] of Object.entries(PAGES)) {
 }
 for (const [lang, path] of Object.entries(TRAINING)) {
   const course = jsonLd(html(path)).find((b) => b["@type"] === "Course");
-  const offer = course?.offers;
-  const spec = offer?.priceSpecification;
   // The course is held in Czech or English, whichever page describes it
   const languages = JSON.stringify(["cs", "en"]);
   ok(JSON.stringify(course?.inLanguage) === languages && JSON.stringify(course?.hasCourseInstance?.inLanguage) === languages && course?.url === `${SITE}${path}`, `${path} (${lang}) Course + CourseInstance inLanguage ${JSON.stringify(course?.inLanguage)}, url ${course?.url}`);
-  ok(offer?.["@type"] === "Offer" && offer.price === 35000 && offer.priceCurrency === "CZK", `${path} Course Offer 35000 CZK`);
-  ok(spec?.["@type"] === "UnitPriceSpecification" && spec.price === 35000 && spec.priceCurrency === "CZK" && spec.valueAddedTaxIncluded === false, `${path} UnitPriceSpecification 35000 CZK, valueAddedTaxIncluded false`);
+  ok(course && !("offers" in course) && !/35000|"price"/.test(JSON.stringify(course)), `${path} Course has no Offer/price`);
   ok(jsonLd(html(path)).some((b) => b["@type"] === "FAQPage" && b.mainEntity?.length === 9), `${path} FAQPage with 9 questions`);
 }
 
@@ -111,30 +107,27 @@ console.log("== share images of the training pages");
 const meta = (h, attr, name) => h.match(new RegExp(`<meta ${attr}="${name}" content="([^"]+)"`))?.[1];
 for (const [path, h, file] of [[TRAINING.cs, sk, "ai-skoleni.png"], [TRAINING.en, en, "en-ai-training.png"]]) {
   const image = meta(h, "property", "og:image");
-  ok(image === `${SITE}/og/${file}` && meta(h, "name", "twitter:image") === image, `${path} og:image = twitter:image = ${image}`);
+  ok(image === `${SITE}/og/${file}?v=2` && meta(h, "name", "twitter:image") === image, `${path} og:image = twitter:image = ${image}`);
   const png = readFileSync(`${dist}/og/${file}`);
   const [width, height] = [png.readUInt32BE(16), png.readUInt32BE(20)];
   ok(width === 1200 && height === 630 && meta(h, "property", "og:image:width") === "1200" && meta(h, "property", "og:image:height") === "630", `${path} ${file} is ${width}×${height}, meta 1200×630`);
 }
 
-console.log("== visible price");
-const count = (text, s) => text.split(s).length - 1;
-const csPrice = `${PRICE} bez${NBSP}DPH`;
-const enPrice = `${PRICE} excl.${NBSP}VAT`;
-const skText = visible(sk);
-ok(count(skText, csPrice) >= 1, `/ai-skoleni shows "35 000 Kč bez DPH" ${count(skText, csPrice)}×`);
-ok(count(skText, PRICE) === count(skText, csPrice), "/ai-skoleni: every price is followed by bez DPH");
-for (const [path, label] of [["/", csPrice], ["/en", enPrice], [TRAINING.en, enPrice]]) {
-  const text = visible(html(path));
-  ok(count(text, label) >= 1 && count(text, PRICE) === count(text, label), `${path} shows "${label.replaceAll(NBSP, " ")}" (${count(text, label)}× of ${count(text, PRICE)} prices)`);
+console.log("== no price, no agents badge");
+const PRICE_RE = /35[\s\u00a0]?000|Kč/;
+for (const path of ["/", "/en", TRAINING.cs, TRAINING.en]) {
+  const raw = html(path);
+  ok(!PRICE_RE.test(raw), `${path} has no 35 000 Kč (HTML incl. JSON-LD and meta)`);
+  ok(!/agentů v provozu|agents running|console-live/.test(raw), `${path} has no "agents running" badge`);
 }
-ok(!/35 000/.test(skText + visible(html("/")) + visible(html("/en")) + visible(en)), "no plain-space 35 000");
+ok(/Cena na vyžádání/.test(visible(sk)), "/ai-skoleni shows Cena na vyžádání");
+ok(/Price on request/.test(visible(en)), `${TRAINING.en} shows Price on request`);
 
 console.log("== content rules");
 const all = ["/", "/en", ...Object.keys(PAGES)].map((p) => [p, visible(html(p))]);
 ok(all.every(([, t]) => !/dotac|subsid/i.test(t)), "no dotace/subsidies");
 ok(all.every(([, t]) => !/pilotní agent/i.test(t)), 'no "pilotní agent"');
-ok(/Mirek Sivák/.test(skText) && /Mirek Sivák/.test(visible(en)) && all.every(([, t]) => !/Mirek Sivak\b|Miroslav|Miroslava/.test(t)), 'name is "Mirek Sivák"');
+ok(/Mirek Sivák/.test(visible(sk)) && /Mirek Sivák/.test(visible(en)) && all.every(([, t]) => !/Mirek Sivak\b|Miroslav|Miroslava/.test(t)), 'name is "Mirek Sivák"');
 // The training pages: the form is the only contact, so no e-mail address or phone number in the whole HTML
 // (head, JSON-LD and footer included)
 for (const [path, h] of [[TRAINING.cs, sk], [TRAINING.en, en]]) {

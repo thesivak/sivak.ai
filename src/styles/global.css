@@ -282,8 +282,7 @@ code { font: inherit; }
   text-transform: uppercase;
   color: var(--on-dark-2);
 }
-.hero-eyebrow i,
-.console-live i {
+.hero-eyebrow i {
   width: 7px;
   height: 7px;
   border-radius: 50%;
@@ -415,7 +414,6 @@ code { font: inherit; }
 .console-dots { display: flex; gap: 6px; }
 .console-dots i { width: 10px; height: 10px; border-radius: 50%; background: rgba(242, 240, 235, .14); }
 .console-app { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.console-live { display: inline-flex; align-items: center; gap: 8px; color: var(--on-dark-2); white-space: nowrap; }
 
 .console-tabs {
   position: relative;

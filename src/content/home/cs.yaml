@@ -49,7 +49,6 @@ console:
   label: "Ukázka: AI agenti při práci"
   caption: Ilustrační ukázka
   app: sivak.ai / agenti
-  live: 7 agentů v provozu
   agentsLabel: Agenti
   preparing: Výstup se připravuje…
   states:
@@ -256,7 +255,7 @@ services:
   training:
     label: AI školení pro firmy
     title: Jednodenní AI školení pro váš tým
-    text: Praktický den s ChatGPT a dalšími AI nástroji, automatizacemi a AI agenty. 35 000 Kč bez DPH za jednodenní školení pro vaši firmu.
+    text: Praktický den s ChatGPT a dalšími AI nástroji, automatizacemi a AI agenty.
     cta: Více o školení
     href: /ai-skoleni
 useCases:
