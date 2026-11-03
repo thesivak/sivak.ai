@@ -15,3 +15,15 @@ for (const lang of ['cs', 'en']) test(lang + ': homepage copy follows content ru
   assert.equal(home.hero.titleAccent, lang === 'cs' ? 'a bezpečnost' : 'and security');
   assert.ok(home.hero.notes.includes(lang === 'cs' ? 'Ochrana před útoky vedenými pomocí AI' : 'Protection against AI-powered attacks'));
 });
+
+// Desktop and mobile share SiteHeader's nav.items list; the footer mirrors it.
+for (const [lang, labels, ids] of [
+  ['cs', ['Co děláme', 'Jak to probíhá', 'Kontrola', 'Z praxe', 'Kontakt', 'AI bezpečnost', 'AI školení'],
+    ['sluzby', 'postup', 'bezpecnost', 'z-praxe', 'kontakt', 'ai-security', 'ai-skoleni']],
+  ['en', ['What we do', 'How it works', 'Control', 'In practice', 'Contact', 'AI security', 'AI training'],
+    ['services', 'process', 'security', 'case-study', 'contact', 'ai-security', 'ai-training']],
+]) test(lang + ': shared desktop, mobile and footer navigation has the exact order', () => {
+  const home = parse(readFileSync(new URL('../src/content/home/' + lang + '.yaml', import.meta.url), 'utf8'));
+  assert.deepEqual(home.nav.items.map(item => item.label), labels);
+  assert.deepEqual(home.nav.items.map(item => item.id), ids);
+});

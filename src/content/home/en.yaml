@@ -11,9 +11,6 @@ nav:
   label: Main navigation
   home: sivak.ai — home
   items:
-    - id: ai-security
-      label: AI security
-      href: /en/ai-security
     - id: services
       label: What we do
     - id: process
@@ -24,6 +21,9 @@ nav:
       label: In practice
     - id: contact
       label: Contact
+    - id: ai-security
+      label: AI security
+      href: /en/ai-security
     - id: ai-training
       label: AI training
       href: /en/ai-training
