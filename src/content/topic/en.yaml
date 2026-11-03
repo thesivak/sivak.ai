@@ -269,7 +269,7 @@ pages:
         eyebrow: sivak.ai
         title: Why sivak.ai
         lead: We build AI agents for companies ourselves. In practice, we address their permissions, data access and
-          exposure to untrusted content. Led by Mirek Sivák, Founder & CEO of sivak.ai.
+          exposure to untrusted content.
       - kind: steps
         id: postup
         eyebrow: Working together

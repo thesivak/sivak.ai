@@ -24,7 +24,8 @@ for(const [lang,path,price,consent,og] of [
  assert.equal(page.path,path);
  assert.equal(page.sections[0].items.length,4);
  const copy=JSON.stringify(page);
- assert.ok(copy.includes(price)); assert.ok(copy.includes(consent)); assert.ok(copy.includes('Mirek Sivák'));
+ assert.ok(copy.includes(price)); assert.ok(copy.includes(consent));
+ assert.doesNotMatch(page.sections.find(s=>s.id==='praxe').lead, /Mirek Sivák|Founder|CEO|Led by|Spolupráci vede/iu);
  assert.doesNotMatch(copy,/Zapfloor|certif|dotac|subsid|pilotní agent|Czech companies|české firmy|@|\+420/iu);
  const home=parse(read(`src/content/home/${lang}.yaml`).toString());
  assert.ok(home.nav.items.some(i=>i.href===path));
