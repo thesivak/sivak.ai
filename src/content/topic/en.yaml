@@ -234,8 +234,8 @@ pages:
         id: nabidka
         eyebrow: AI security
         title: What we offer
-        lead: AI can help create convincing messages, imitate voices and video, and manipulate agents through planted
-          content. Internal and personal data in unapproved tools are another risk.
+        lead: Attackers use AI to easily create convincing messages, imitate voices and video, and manipulate your agents
+          with injected content. Internal and personal data in unapproved tools are another risk.
         items:
           - title: AI security audit
             text: We map AI tools and agents, including shadow AI, their data access and risks of misuse. You receive a
@@ -288,7 +288,7 @@ pages:
         eyebrow: Context
         title: European regulation
         lead: NIS2 and the AI Act are part of European regulation. We help prepare AI risk management, training and
-          transparency documentation for your context. We do not provide legal advice; a lawyer should assess
+          transparency documentation for your situation. We do not provide legal advice; a lawyer should assess
           your specific obligations.
       - kind: prose
         id: cena
@@ -302,8 +302,7 @@ pages:
         answer: "We support the people-and-AI part: training, policies and documentation on tool and supplier risks.
           We recommend having a lawyer assess your specific legal obligations."
       - question: Is a simulated attack safe?
-        answer: We agree on goals, test boundaries and evaluation in advance. Simulations take place always with
-          written consent from management. Deepfake voice calls require explicit consent; results are shared
+        answer: We agree on goals, test boundaries and evaluation in advance. Simulations always take place within an agreed scope and always with written consent from management. Deepfake voice calls require explicit consent; results are shared
           confidentially.
       - question: Do you test AI agents and chatbots?
         answer: "Yes: prompt injection, data leakage and overly broad permissions."
