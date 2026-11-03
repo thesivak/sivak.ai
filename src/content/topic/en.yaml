@@ -1,6 +1,6 @@
-# Copy of the English service pages: /en/ai-agents, /en/ai-automation, /en/pilot-project.
+# Copy of the English service pages: /en/ai-agents, /en/ai-automation, /en/pilot-project, /en/ai-security.
 # The Czech twins are in cs.yaml with the same `key`. Schema: src/content.config.ts (collection topic).
-# Rule: only rearranged copy the site already has (src/content/home/en.yaml, src/content/faq/en/*.md):
+# Rule: use approved service copy;
 # no new facts, figures, prices, clients or references.
 labels:
   output: Output
@@ -213,3 +213,107 @@ pages:
         answer: No. The agent works in the applications you already use. Where there's no integration, it operates the program through the screen, just like a person.
       - question: Is our data safe?
         answer: The agent only gets access to what its job requires, usually read-only. It never sees passwords and tries things out on a copy of your data, not in live operations.
+
+  - key: security
+    path: /en/ai-security
+    metadata:
+      title: AI security for companies | sivak.ai
+      description: We help companies use AI safely and prepare their people, policies and tools for AI phishing,
+        deepfake fraud and attacks on their own AI agents.
+    eyebrow: AI security
+    title: AI security for companies
+    intro:
+      - We help companies use AI safely and prepare their people, policies and tools for AI phishing, deepfake
+        fraud and attacks on their own AI agents.
+    service:
+      name: AI security
+      description: We help companies use AI safely and prepare their people, policies and tools for AI phishing,
+        deepfake fraud and attacks on their own AI agents.
+    sections:
+      - kind: cards
+        id: nabidka
+        eyebrow: AI security
+        title: What we offer
+        lead: Attackers use AI to easily create convincing messages, imitate voices and video, and manipulate your agents
+          with injected content. Internal and personal data in unapproved tools are another risk.
+        items:
+          - title: AI security audit
+            text: We map AI tools and agents, including shadow AI, their data access and risks of misuse. You receive a
+              written report and a presentation for management.
+            tags:
+              - Shadow AI
+              - Prompt injection
+              - Permissions and suppliers
+          - title: "Training: AI phishing and deepfakes"
+            text: For staff, management and finance. We practice verifying requests and working safely with AI.
+            tags:
+              - Phishing and vishing
+              - Call-back and payment checks
+              - Data protection
+          - title: Simulated AI attack
+            text: A test is run within an agreed scope and always with written consent from management. Results stay
+              confidential; tests are planned to avoid disrupting operations.
+            tags:
+              - AI phishing
+              - Agent and chatbot testing
+              - Deepfake calls only with explicit consent
+          - title: AI policy and governance
+            text: We prepare AI usage policies, payment verification procedures and rules for deploying agents with human
+              approval.
+            tags:
+              - Approved tools
+              - Human approval
+              - Risk management documentation
+      - kind: prose
+        id: praxe
+        eyebrow: sivak.ai
+        title: Why sivak.ai
+        lead: We build AI agents for companies ourselves. In practice, we address their permissions, data access and
+          exposure to untrusted content. Led by Mirek Sivák, Founder & CEO of sivak.ai.
+      - kind: steps
+        id: postup
+        eyebrow: Working together
+        title: How we work
+        items:
+          - title: Initial conversation
+            text: How you use AI and what you need to protect.
+          - title: Tailored scope
+            text: We agree on goals, boundaries and consent.
+          - title: Audit, training or test
+            text: Start with an audit, training and policies; simulations can follow.
+          - title: Report and recommendations
+            text: Prioritized actions and help with implementation where agreed.
+      - kind: prose
+        id: regulace
+        eyebrow: Context
+        title: European regulation
+        lead: NIS2 and the AI Act are part of European regulation. We help prepare AI risk management, training and
+          transparency documentation for your situation. We do not provide legal advice; a lawyer should assess
+          your specific obligations.
+      - kind: prose
+        id: cena
+        eyebrow: Tailored scope
+        title: Price on request
+        lead: Scope depends on company size and AI use. In Czech or English.
+    faq:
+      - question: Does this apply to small companies?
+        answer: Yes. We adapt the scope to your people and tools.
+      - question: Can you help with NIS2 and the AI Act?
+        answer: "We support the people-and-AI part: training, policies and documentation on tool and supplier risks.
+          We recommend having a lawyer assess your specific legal obligations."
+      - question: Is a simulated attack safe?
+        answer: We agree on goals, test boundaries and evaluation in advance. Simulations always take place within an agreed scope and always with written consent from management. Deepfake voice calls require explicit consent; results are shared
+          confidentially.
+      - question: Do you test AI agents and chatbots?
+        answer: "Yes: prompt injection, data leakage and overly broad permissions."
+      - question: Will you replace our IT or security provider?
+        answer: We focus on the AI layer. Network pentests and continuous monitoring belong with specialist providers.
+      - question: How much does it cost?
+        answer: Price on request, depending on scope.
+    ogImage: /og/en-ai-security.png
+    contact:
+      eyebrow: AI security
+      title: Prepare your team and AI tools
+      lead: Tell us how you use AI and what you need to protect. We will propose an audit, training or testing scope.
+      cta: Request AI security
+      mailSubject: AI security enquiry

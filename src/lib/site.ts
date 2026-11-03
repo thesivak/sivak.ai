@@ -106,7 +106,6 @@ function organization() {
       postalCode: COMPANY.seat.postalCode.replaceAll(" ", ""),
       addressCountry: "CZ",
     },
-    areaServed: { "@type": "Country", name: "CZ" },
     founder: {
       "@type": "Person",
       name: FOUNDER.name,
@@ -144,7 +143,6 @@ export function homeJsonLd(lang: Locale, services: ServiceInfo[]) {
         name: service.name,
         description: service.description,
         url: `${SITE_URL}${service.path}`,
-        areaServed: { "@type": "Country", name: "CZ" },
         provider: { "@id": ORGANIZATION_ID },
       })),
     ],

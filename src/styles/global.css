@@ -1337,7 +1337,7 @@ code { font: inherit; }
 
 /* ——— Tablet ——— */
 
-@media (max-width: 1080px) {
+@media (max-width: 1279px) {
   :root { --header-h: 64px; }
 
   .menu-toggle { display: inline-flex; }
@@ -1368,6 +1368,9 @@ code { font: inherit; }
   }
   .header-actions { justify-content: space-between; padding-top: 20px; }
 
+}
+
+@media (max-width: 1080px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr); }
   .hero-copy { max-width: 720px; }
   .hero-visual { width: 100%; max-width: 680px; }

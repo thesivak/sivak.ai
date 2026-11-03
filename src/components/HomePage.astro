@@ -23,7 +23,7 @@ const { lang } = Astro.props;
 const t = await getHome(lang);
 const faq = await getFaq(lang);
 const topics = await getTopics(lang);
-// The services for the JSON-LD: the three service pages, and the training (Czech only; no price here)
+// Localized service pages and training for the homepage JSON-LD; no prices.
 const services: ServiceInfo[] = [
   ...topics.pages.map((page) => ({ name: page.service.name, description: page.service.description, path: page.path })),
   { name: t.services.training!.label, description: t.services.training!.title, path: t.services.training!.href },

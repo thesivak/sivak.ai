@@ -2,7 +2,7 @@
 import TopicPage from "@/components/TopicPage.astro";
 import { getTopics, type Topic } from "@/lib/content";
 
-// English service pages: /en/ai-agents, /en/ai-automation, /en/pilot-project (src/content/topic/en.yaml)
+// Localized service pages, including AI security, from the topic collection.
 export async function getStaticPaths() {
   const { pages } = await getTopics("en");
   return pages.map((page) => ({ params: { topic: page.path.replace(/^\/en\//, "") }, props: { page } }));

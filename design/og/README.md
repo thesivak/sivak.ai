@@ -22,3 +22,6 @@ google-chrome --headless=new --hide-scrollbars --force-device-scale-factor=1 --w
   --virtual-time-budget=8000 --screenshot=public/og/en-ai-training.png \
   http://127.0.0.1:8765/design/og/og-en-ai-training.html
 ```
+
+AI security uses the same template: `og-ai-bezpecnost.html` and `og-en-ai-security.html` produce
+`public/og/ai-bezpecnost.png` and `public/og/en-ai-security.png` (1200 × 630).

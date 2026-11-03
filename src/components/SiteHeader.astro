@@ -41,7 +41,7 @@ const here = Astro.url.pathname.replace(/(\.html|\/)$/, "") || "/";
   const header = document.querySelector<HTMLElement>("[data-site-header]");
   const toggle = header?.querySelector<HTMLButtonElement>(".menu-toggle");
   if (header && toggle) {
-    const desktop = window.matchMedia("(min-width: 1081px)");
+    const desktop = window.matchMedia("(min-width: 1280px)");
     const setOpen = (open: boolean) => {
       header.classList.toggle("is-open", open);
       toggle.setAttribute("aria-expanded", String(open));

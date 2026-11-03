@@ -1,6 +1,6 @@
-# Texty českých stránek služeb: /ai-agenti, /ai-automatizace, /pilotni-projekt.
+# Texty českých stránek služeb: /ai-agenti, /ai-automatizace, /pilotni-projekt, /ai-bezpecnost.
 # Anglická dvojčata jsou v en.yaml se stejným `key`. Schéma: src/content.config.ts (kolekce topic).
-# Pravidlo: jen přeskládané texty, které web už říká (src/content/home/cs.yaml a src/content/faq/cs/*.md):
+# Pravidlo: používat schválené texty služeb;
 # žádná nová fakta, čísla, ceny, klienti ani reference.
 labels:
   output: Výstup
@@ -213,3 +213,106 @@ pages:
         answer: Ne. Agent pracuje v aplikacích, které už používáte. Kde chybí napojení, ovládá program přes obrazovku stejně jako člověk.
       - question: Jsou naše data v bezpečí?
         answer: Agent má přístup jen k tomu, co ke své práci potřebuje, většinou jen ke čtení. Hesla nevidí a zkouší na kopii dat, ne v ostrém provozu.
+
+  - key: security
+    path: /ai-bezpecnost
+    metadata:
+      title: AI bezpečnost pro firmy | sivak.ai
+      description: "AI bezpečnost pro firmy: audit nástrojů a agentů, školení proti phishingu a deepfakům,
+        simulované útoky a pravidla bezpečné práce s AI pro váš tým."
+    eyebrow: AI bezpečnost
+    title: AI bezpečnost pro firmy
+    intro:
+      - Pomáháme firmám bezpečně používat AI a připravit lidi, pravidla i nástroje na AI phishing, deepfake
+        podvody a útoky na vlastní AI agenty.
+    service:
+      name: AI bezpečnost
+      description: Pomáháme firmám bezpečně používat AI a připravit lidi, pravidla i nástroje na AI phishing,
+        deepfake podvody a útoky na vlastní AI agenty.
+    sections:
+      - kind: cards
+        id: nabidka
+        eyebrow: AI bezpečnost
+        title: Co nabízíme
+        lead: Útočníci s AI snadno vytvoří přesvědčivé zprávy, napodobí hlas i video a podvrženým obsahem ovlivní
+          vašeho agenta. Rizikem jsou také interní a osobní data v neschválených nástrojích.
+        items:
+          - title: AI bezpečnostní audit
+            text: Zmapujeme AI nástroje a agenty včetně shadow AI, jejich přístup k datům a rizika zneužití. Výstupem je
+              písemná zpráva a prezentace pro vedení.
+            tags:
+              - Shadow AI
+              - Prompt injection
+              - Oprávnění a dodavatelé
+          - title: "Školení: AI phishing a deepfaky"
+            text: Pro zaměstnance, vedení i finanční oddělení. Procvičíme ověřování požadavků a bezpečnou práci s AI.
+            tags:
+              - Phishing a vishing
+              - Ověřovací hovor a kontrola plateb
+              - Ochrana dat
+          - title: Simulovaný AI útok
+            text: Test probíhá vždy s písemným souhlasem vedení a v předem dohodnutém rozsahu. Výsledky jsou důvěrné; test
+              plánujeme tak, aby nenarušil provoz.
+            tags:
+              - AI phishing
+              - Test agentů a chatbotů
+              - Deepfake hovor jen s výslovným souhlasem
+          - title: Pravidla a řízení AI
+            text: Připravíme pravidla používání AI, ověřování plateb a nasazování agentů s lidským schvalováním.
+            tags:
+              - Schválené nástroje
+              - Člověk rozhoduje
+              - Podklady pro řízení rizik
+      - kind: prose
+        id: praxe
+        eyebrow: sivak.ai
+        title: Proč sivak.ai
+        lead: AI agenty pro firmy sami stavíme. V praxi řešíme, jaká oprávnění dostávají, jaká data čtou a jak je může
+          ovlivnit podvržený obsah. Spolupráci vede Mirek Sivák, Founder & CEO sivak.ai.
+      - kind: steps
+        id: postup
+        eyebrow: Spolupráce
+        title: Jak spolupráce probíhá
+        items:
+          - title: Úvodní rozhovor
+            text: Jak AI používáte a co potřebujete chránit.
+          - title: Rozsah na míru
+            text: Dohodneme cíle, hranice a souhlasy.
+          - title: Audit, školení nebo test
+            text: Začít můžete auditem, školením a pravidly; simulace může navázat.
+          - title: Zpráva a doporučení
+            text: Prioritní opatření a případná pomoc se zavedením.
+      - kind: prose
+        id: regulace
+        eyebrow: Kontext
+        title: Evropská regulace
+        lead: NIS2 a AI Act jsou součástí evropské regulace. Pomůžeme s podklady pro řízení rizik AI, školení a
+          transparentnost podle vaší situace. Neposkytujeme právní poradenství; posouzení konkrétních povinností
+          patří advokátovi.
+      - kind: prose
+        id: cena
+        eyebrow: Na míru
+        title: Cena na vyžádání
+        lead: Rozsah podle velikosti firmy a používání AI. V češtině, nebo v angličtině.
+    faq:
+      - question: Jsme malá firma, týká se nás to?
+        answer: Ano. Rozsah přizpůsobíme vašim lidem a nástrojům.
+      - question: Pomůžete s NIS2 a AI Actem?
+        answer: "Pomůžeme s částí týkající se lidí a AI: školením, pravidly a podklady pro řízení rizik nástrojů a
+          dodavatelů. Konkrétní právní povinnosti doporučujeme posoudit s advokátem."
+      - question: Je simulovaný útok bezpečný?
+        answer: Předem dohodneme cíle, hranice testu a způsob vyhodnocení. Simulace probíhá vždy s písemným souhlasem
+          vedení. Hlasový deepfake vyžaduje výslovný souhlas; výsledky sdílíme důvěrně.
+      - question: Testujete AI agenty a chatboty?
+        answer: "Ano: prompt injection, únik dat a příliš široká oprávnění."
+      - question: Nahradíte naše IT nebo bezpečnostní firmu?
+        answer: Zaměřujeme se na AI vrstvu. Síťové pentesty a nepřetržitý dohled patří specializovaným poskytovatelům.
+      - question: Kolik to stojí?
+        answer: Cena na vyžádání podle rozsahu.
+    ogImage: /og/ai-bezpecnost.png
+    contact:
+      eyebrow: AI bezpečnost
+      title: Připravte svůj tým i AI nástroje
+      lead: Probereme, jak AI používáte a co potřebujete chránit. Navrhneme rozsah auditu, školení nebo testu.
+      cta: Poptat AI bezpečnost
+      mailSubject: Poptávka AI bezpečnosti
