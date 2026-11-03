@@ -2,7 +2,7 @@
 # Schéma: src/content.config.ts. Pevné mezery za jednopísmennými předložkami doplní web sám.
 metadata:
   title: AI systémy a bezpečnost pro firmy | sivak.ai
-  description: Stavíme AI agenty na míru vašim procesům a chráníme firmy před útoky vedenými pomocí AI. Automatizace s lidskou kontrolou, bezpečnost v každodenní praxi.
+  description: Stavíme AI agenty na míru vašim procesům a chráníme vaši firmu před útoky vedenými pomocí AI. Automatizace s lidskou kontrolou, bezpečnost v každodenní praxi.
 skipLink: Přeskočit na obsah
 langSwitch:
   label: English
@@ -34,9 +34,9 @@ hero:
   eyebrow: Pro váš tým
   # The line break after the title is kept (white-space: pre-line): the accent starts a new line
   title: |
-    AI systémy a
-  titleAccent: bezpečnost
-  lead: Stavíme agenty na míru vašim procesům a chráníme firmy před útoky vedenými pomocí AI. Od faktur a zákaznické podpory po bezpečnou práci vašeho týmu.
+    AI systémy
+  titleAccent: a bezpečnost
+  lead: Stavíme agenty na míru vašim procesům a chráníme vaši firmu před útoky vedenými pomocí AI. Od faktur a zákaznické podpory po bezpečnou práci vašeho týmu.
   gain:
     figure: 80 %
     title: času pro to, na čem skutečně záleží
@@ -441,7 +441,7 @@ footer:
         href: /ai-automatizace
       - label: Pilotní projekt
         href: /pilotni-projekt
-  tagline: AI agenti a automatizace pro firmy.
+  tagline: AI systémy a bezpečnost pro firmy.
   navLabel: Web
   contactLabel: Kontakt
   operatedBy: sivak.ai provozuje

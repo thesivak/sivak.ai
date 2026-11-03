@@ -11,7 +11,7 @@ for (const lang of ['cs', 'en']) test(lang + ': homepage copy follows content ru
   assert.doesNotMatch(copy, /\b\d[\d\s.,]*\s*(?:Kč|CZK|EUR|USD)|[€$]\s*\d|\d+\s+agents?\s+(?:running|active)/iu);
   assert.ok(home.metadata.title.length <= 60);
   assert.ok(home.metadata.description.length >= 120 && home.metadata.description.length <= 160);
-  assert.equal(home.hero.title.trim(), lang === 'cs' ? 'AI systémy a' : 'AI systems and');
-  assert.equal(home.hero.titleAccent, lang === 'cs' ? 'bezpečnost' : 'security');
+  assert.equal(home.hero.title.trim(), lang === 'cs' ? 'AI systémy' : 'AI systems');
+  assert.equal(home.hero.titleAccent, lang === 'cs' ? 'a bezpečnost' : 'and security');
   assert.ok(home.hero.notes.includes(lang === 'cs' ? 'Ochrana před útoky vedenými pomocí AI' : 'Protection against AI-powered attacks'));
 });
