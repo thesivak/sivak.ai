@@ -5,7 +5,7 @@ LinkedIn, Slack and other apps show when someone shares www.sivak.ai or
 www.sivak.ai/en, `public/og/ai-skoleni.png` is the one for www.sivak.ai/ai-skoleni and
 `public/og/en-ai-training.png` the one for its English twin www.sivak.ai/en/ai-training.
 `src/components/HomePage.astro` and `src/components/landing/TrainingPage.astro` point the page metadata at them.
-When an image changes, bump the `?v=` query on its URL there (the homepage images are at `?v=2`), because
+When an image changes, bump the `?v=` query on its URL there (the homepage images are at `?v=3`), because
 LinkedIn and Slack cache share images by URL.
 
 They are screenshots of `og-cs.html`, `og-en.html`, `og-ai-skoleni.html` and `og-en-ai-training.html` in this folder. To change

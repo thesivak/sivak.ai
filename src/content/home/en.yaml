@@ -1,8 +1,8 @@
 # Copy of the English home page (/en). The FAQ questions and answers live in src/content/faq/en/*.md.
 # Schema: src/content.config.ts.
 metadata:
-  title: AI agents and automation for businesses | sivak.ai
-  description: We build AI agents and automation around your processes. They take over 80% of routine computer work; a person approves key steps. ROI calculated up front.
+  title: AI systems and security for businesses | sivak.ai
+  description: We build AI agents around your processes and protect businesses from AI-powered attacks. Automation with human oversight and practical security for your team.
 skipLink: Skip to content
 langSwitch:
   label: Česky
@@ -34,9 +34,9 @@ hero:
   eyebrow: For your team
   # The line break after the title is kept (white-space: pre-line): the accent starts a new line
   title: |
-    AI agents
-  titleAccent: and automation
-  lead: We build agents around your processes. They handle the work people do at a computer today — from invoices and customer support to software testing.
+    AI systems and
+  titleAccent: security
+  lead: We build agents around your processes and protect businesses from AI-powered attacks. From invoices and customer support to helping your team work securely.
   gain:
     figure: 80%
     title: of your time for what really matters
@@ -48,6 +48,7 @@ hero:
     - Every step is recorded
     - ROI calculated up front
     - In the cloud or offline on your server
+    - Protection against AI-powered attacks
 console:
   label: "Example: AI agents at work"
   caption: Illustrative example

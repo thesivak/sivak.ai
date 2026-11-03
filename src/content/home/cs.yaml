@@ -1,8 +1,8 @@
 # Texty české domovské stránky (/). Otázky a odpovědi sekce FAQ jsou v src/content/faq/cs/*.md.
 # Schéma: src/content.config.ts. Pevné mezery za jednopísmennými předložkami doplní web sám.
 metadata:
-  title: AI agenti a automatizace pro firmy | sivak.ai
-  description: Stavíme AI agenty a automatizace na míru vašim procesům. Převezmou 80 % rutiny u počítače, důležité kroky schvaluje člověk. Návratnost spočítáme předem.
+  title: AI systémy a bezpečnost pro firmy | sivak.ai
+  description: Stavíme AI agenty na míru vašim procesům a chráníme firmy před útoky vedenými pomocí AI. Automatizace s lidskou kontrolou, bezpečnost v každodenní praxi.
 skipLink: Přeskočit na obsah
 langSwitch:
   label: English
@@ -34,9 +34,9 @@ hero:
   eyebrow: Pro váš tým
   # The line break after the title is kept (white-space: pre-line): the accent starts a new line
   title: |
-    AI agenti
-  titleAccent: a automatizace
-  lead: Stavíme agenty na míru vašim procesům. Zvládnou práci, kterou dnes lidé dělají u počítače – od faktur přes zákaznickou podporu po testování softwaru.
+    AI systémy a
+  titleAccent: bezpečnost
+  lead: Stavíme agenty na míru vašim procesům a chráníme firmy před útoky vedenými pomocí AI. Od faktur a zákaznické podpory po bezpečnou práci vašeho týmu.
   gain:
     figure: 80 %
     title: času pro to, na čem skutečně záleží
@@ -48,6 +48,7 @@ hero:
     - Každý krok je zaznamenaný
     - Návratnost spočítáme předem
     - V cloudu i na vašem serveru bez internetu
+    - Ochrana před útoky vedenými pomocí AI
 console:
   label: "Ukázka: AI agenti při práci"
   caption: Ilustrační ukázka
