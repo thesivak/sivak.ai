@@ -28,6 +28,8 @@ const visible = (h) =>
 
 console.log("== JSON-LD");
 const PAGES = {
+  "/ai-bezpecnost": "/",
+  "/en/ai-security": "/en",
   "/ai-agenti": "/",
   "/ai-automatizace": "/",
   "/pilotni-projekt": "/",
@@ -133,6 +135,20 @@ ok(/Mirek Sivák/.test(visible(sk)) && /Mirek Sivák/.test(visible(en)) && all.e
 for (const [path, h] of [[TRAINING.cs, sk], [TRAINING.en, en]]) {
   ok(!/mailto:|tel:|@sivak\.ai|\+420/.test(h), `${path}: no e-mail address or phone number`);
   ok(!/dotac|subsid|\bgrants?\b/i.test(h), `${path}: no dotace/subsidies/grants, keywords included`);
+}
+
+for (const [path, twin, file, price] of [
+  ["/ai-bezpecnost", "/en/ai-security", "ai-bezpecnost", "Cena na vyžádání"],
+  ["/en/ai-security", "/ai-bezpecnost", "en-ai-security", "Price on request"],
+]) {
+  const h = html(path);
+  const alternates = { cs: `${SITE}/ai-bezpecnost`, en: `${SITE}/en/ai-security`, "x-default": `${SITE}/ai-bezpecnost` };
+  ok(canonical(h) === `${SITE}${path}`, `${path} canonical`);
+  ok(JSON.stringify(headAlternates(h)) === JSON.stringify(alternates), `${path} hreflang`);
+  ok(switches(h).length >= 2 && switches(h).every(href => href === twin), `${path} language switch`);
+  ok(jsonLd(h).some(b => b["@type"] === "Service") && jsonLd(h).some(b => b["@type"] === "FAQPage" && b.mainEntity.length === 6), `${path} Service and FAQ data`);
+  ok(meta(h, "property", "og:image") === `${SITE}/og/${file}.png` && meta(h, "name", "twitter:image") === `${SITE}/og/${file}.png`, `${path} share image`);
+  ok(visible(h).includes(price) && !/mailto:|tel:|@sivak\.ai|\+420/.test(h), `${path} price on request and no contact details`);
 }
 
 console.log(failures ? `\n${failures} FAILED` : "\nALL CHECKS PASSED");

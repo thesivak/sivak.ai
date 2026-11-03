@@ -3,6 +3,7 @@ import type { Locale } from "./config";
 // Pages that exist in both languages, by their canonical path (no trailing slash, no .html).
 // The language switch, the ?lang= compatibility redirect, hreflang and the sitemap all use this list.
 export const TWIN_PAGES: Record<Locale, string>[] = [
+  { cs: "/ai-bezpecnost", en: "/en/ai-security" },
   { cs: "/", en: "/en" },
   { cs: "/ai-agenti", en: "/en/ai-agents" },
   { cs: "/ai-automatizace", en: "/en/ai-automation" },

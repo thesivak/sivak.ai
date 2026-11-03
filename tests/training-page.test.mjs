@@ -36,6 +36,9 @@ test("/ai-skoleni and /en/ai-training are twins, both in the sitemap", () => {
 });
 
 for (const [path, expected] of [
+  ["/ai-bezpecnost?lang=en", "/en/ai-security"],
+  ["/en/ai-security?lang=cs", "/ai-bezpecnost"],
+  ["/en/ai-security/", "/en/ai-security"],
   ["/en/ai-training/", "/en/ai-training"],
   ["/en/ai-training.html", "/en/ai-training"],
   ["/ai-skoleni?lang=en", "/en/ai-training"],

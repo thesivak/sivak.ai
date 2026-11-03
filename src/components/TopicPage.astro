@@ -47,7 +47,6 @@ const jsonLd = [
     name: page.service.name,
     description: page.service.description,
     url,
-    areaServed: { "@type": "Country", name: "CZ" },
     provider: { "@id": ORGANIZATION_ID, "@type": "Organization", name: "sivak.ai", url: `${SITE_URL}/` },
   },
   // Home is the canonical homepage URL (https://www.sivak.ai, https://www.sivak.ai/en)
@@ -77,7 +76,7 @@ const faqItems = page.faq.map((item) => ({ question: item.question, answerHtml: 
     { hreflang: "en", href: absolute(pair.en) },
     { hreflang: "x-default", href: absolute(pair.cs) },
   ]}
-  ogImage={{ path: `/og/${lang}.png?v=2`, alt: page.metadata.title }}
+  ogImage={{ path: page.key === "security" ? `/og/${lang === "cs" ? "ai-bezpecnost" : "en-ai-security"}.png` : `/og/${lang}.png?v=2`, alt: page.metadata.title }}
   jsonLd={jsonLd}
   languageTwin={pair[other]}
 >
@@ -151,7 +150,7 @@ const faqItems = page.faq.map((item) => ({ question: item.question, answerHtml: 
       </div>
     </section>
   </main>
-  <SiteFooter lang={lang} t={home} sectionBase={homeHref} homeHref={homeHref} switchHref={pair[other]} switchLang={other} />
+  <SiteFooter contact={page.key === "security" ? { href: contactHref, label: home.contact.cta } : undefined} lang={lang} t={home} sectionBase={homeHref} homeHref={homeHref} switchHref={pair[other]} switchLang={other} />
 </Base>
 
 <style>

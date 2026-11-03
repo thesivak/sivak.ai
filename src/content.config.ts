@@ -221,7 +221,7 @@ const topic = defineCollection({
     labels: z.object({ output: text, home: text }),
     pages: z.array(
       z.object({
-        key: z.enum(["agents", "automation", "pilot"]),
+        key: z.enum(["agents", "automation", "pilot", "security"]),
         path: z.string().regex(/^\/[a-z0-9/-]+$/),
         metadata: z.object({ title: text, description: text.min(140).max(155) }),
         eyebrow: text,
@@ -235,7 +235,7 @@ const topic = defineCollection({
             z.object({ kind: z.literal("tags"), id: text, eyebrow: text, title: text, lead: text.optional(), tags: z.array(text).min(1) }),
           ]),
         ),
-        faq: z.array(z.object({ question: text, answer: text })).min(3).max(4),
+        faq: z.array(z.object({ question: text, answer: text })).min(3).max(7),
       }),
     ),
   }),

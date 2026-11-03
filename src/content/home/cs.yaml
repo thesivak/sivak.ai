@@ -11,6 +11,9 @@ nav:
   label: Hlavní navigace
   home: sivak.ai – úvod
   items:
+    - id: ai-security
+      label: AI bezpečnost
+      href: /ai-bezpecnost
     - id: sluzby
       label: Co děláme
     - id: postup
@@ -28,7 +31,7 @@ nav:
   open: Otevřít menu
   close: Zavřít menu
 hero:
-  eyebrow: Pro české firmy
+  eyebrow: Pro váš tým
   # The line break after the title is kept (white-space: pre-line): the accent starts a new line
   title: |
     AI agenti
@@ -219,9 +222,26 @@ ratio:
 services:
   id: sluzby
   eyebrow: Co děláme
-  title: Agenty postavíme, nasadíme i provozujeme
-  lead: Neprodáváme obecného chatbota. Stavíme řešení na konkrétní práci ve vaší firmě a staráme se o něj i po spuštění.
+  title: AI agenti, školení a bezpečnost
+  lead: Stavíme AI agenty, učíme týmy pracovat s AI a pomáháme chránit lidi, data i nástroje. Rozsah přizpůsobíme vaší firmě.
   items:
+    - title: AI školení
+      text: Praktické školení bezpečné práce s AI pro váš tým.
+      tags:
+        - Workshop
+      more:
+        label: AI školení
+        href: /ai-skoleni
+    - title: AI bezpečnost
+      text: Pomáháme firmám bezpečně používat AI a připravit lidi, pravidla i nástroje na AI phishing, deepfake
+        podvody a útoky na vlastní AI agenty.
+      tags:
+        - AI phishing
+        - Deepfakes
+        - Prompt injection
+      more:
+        label: AI bezpečnost
+        href: /ai-bezpecnost
     - title: AI agenti v týmu
       text: Digitální kolegové na konkrétní práci. Vyřizují požadavky, kontrolují dokumenty a testují software. Agent připraví, člověk rozhodne.
       tags:
@@ -411,13 +431,15 @@ footer:
   services:
     label: Služby
     items:
+      - label: AI bezpečnost
+        href: /ai-bezpecnost
       - label: AI agenti
         href: /ai-agenti
       - label: Automatizace procesů
         href: /ai-automatizace
       - label: Pilotní projekt
         href: /pilotni-projekt
-  tagline: AI agenti a automatizace pro české firmy.
+  tagline: AI agenti a automatizace pro firmy.
   navLabel: Web
   contactLabel: Kontakt
   operatedBy: sivak.ai provozuje

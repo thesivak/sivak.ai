@@ -11,6 +11,9 @@ nav:
   label: Main navigation
   home: sivak.ai — home
   items:
+    - id: ai-security
+      label: AI security
+      href: /en/ai-security
     - id: services
       label: What we do
     - id: process
@@ -28,7 +31,7 @@ nav:
   open: Open menu
   close: Close menu
 hero:
-  eyebrow: For Czech businesses
+  eyebrow: For your team
   # The line break after the title is kept (white-space: pre-line): the accent starts a new line
   title: |
     AI agents
@@ -219,9 +222,26 @@ ratio:
 services:
   id: services
   eyebrow: What we do
-  title: We build, deploy and run your agents
-  lead: We don't sell a generic chatbot. We build solutions for specific work in your company and keep looking after them after launch.
+  title: AI agents, training and security
+  lead: We build AI agents, train teams to use AI and help protect people, data and tools. We adapt the scope to your company.
   items:
+    - title: AI training
+      text: Practical training in working safely with AI for your team.
+      tags:
+        - Workshop
+      more:
+        label: AI training
+        href: /en/ai-training
+    - title: AI security
+      text: We help companies use AI safely and prepare their people, policies and tools for AI phishing, deepfake
+        fraud and attacks on their own AI agents.
+      tags:
+        - AI phishing
+        - Deepfakes
+        - Prompt injection
+      more:
+        label: AI security
+        href: /en/ai-security
     - title: AI agents on your team
       text: Digital colleagues for specific jobs. They handle requests, check documents and test software. The agent prepares, a person decides.
       tags:
@@ -411,6 +431,8 @@ footer:
   services:
     label: Services
     items:
+      - label: AI security
+        href: /en/ai-security
       - label: AI agents
         href: /en/ai-agents
       - label: Process automation
