@@ -11,9 +11,6 @@ nav:
   label: Hlavní navigace
   home: sivak.ai – úvod
   items:
-    - id: ai-security
-      label: AI bezpečnost
-      href: /ai-bezpecnost
     - id: sluzby
       label: Co děláme
     - id: postup
@@ -24,6 +21,9 @@ nav:
       label: Z praxe
     - id: kontakt
       label: Kontakt
+    - id: ai-security
+      label: AI bezpečnost
+      href: /ai-bezpecnost
     - id: ai-skoleni
       label: AI školení
       href: /ai-skoleni
