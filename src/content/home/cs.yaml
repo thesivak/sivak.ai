@@ -19,7 +19,7 @@ nav:
     - id: postup
       label: Jak to probíhá
     - id: bezpecnost
-      label: Bezpečnost
+      label: Kontrola
     - id: z-praxe
       label: Z praxe
     - id: kontakt
@@ -223,27 +223,23 @@ services:
   id: sluzby
   eyebrow: Co děláme
   title: AI agenti, školení a bezpečnost
-  lead: Stavíme AI agenty, učíme týmy pracovat s AI a pomáháme chránit lidi, data i nástroje. Rozsah přizpůsobíme vaší firmě.
+  lead: Stavíme AI agenty, učíme týmy pracovat s AI a pomáháme chránit lidi, data i nástroje. Rozsah
+    přizpůsobíme vaší firmě.
   items:
-    - title: AI školení
-      text: Praktické školení bezpečné práce s AI pro váš tým.
-      tags:
-        - Workshop
-      more:
-        label: AI školení
-        href: /ai-skoleni
     - title: AI bezpečnost
       text: Pomáháme firmám bezpečně používat AI a připravit lidi, pravidla i nástroje na AI phishing, deepfake
         podvody a útoky na vlastní AI agenty.
       tags:
-        - AI phishing
-        - Deepfakes
-        - Prompt injection
+        - phishing
+        - deepfaky
+        - prompt injection
       more:
         label: AI bezpečnost
         href: /ai-bezpecnost
+      icon: shield
     - title: AI agenti v týmu
-      text: Digitální kolegové na konkrétní práci. Vyřizují požadavky, kontrolují dokumenty a testují software. Agent připraví, člověk rozhodne.
+      text: Digitální kolegové na konkrétní práci. Vyřizují požadavky, kontrolují dokumenty a testují software.
+        Agent připraví, člověk rozhodne.
       tags:
         - zákaznická podpora
         - kontrola dokumentů
@@ -251,14 +247,17 @@ services:
       more:
         label: Více o AI agentech
         href: /ai-agenti
+      icon: agent
     - title: AI nad vašimi daty
       text: Napojíme AI na ERP, CRM i tabulky. Zeptáte se běžnou větou a dostanete odpověď s čísly.
       tags:
         - přehledy pro vedení
         - hledání ve smlouvách
         - upozornění na odchylky
+      icon: data
     - title: Automatizace procesů
-      text: Propojíme systémy, které spolu nemluví. Data se přenesou sama, bez přepisování z jednoho okna do druhého.
+      text: Propojíme systémy, které spolu nemluví. Data se přenesou sama, bez přepisování z jednoho okna do
+        druhého.
       tags:
         - e-mail → ERP
         - e-shop → účetnictví
@@ -266,12 +265,14 @@ services:
       more:
         label: Více o automatizaci
         href: /ai-automatizace
+      icon: flow
     - title: Roboti pro starý software
       text: Obsluhují programy bez API – Helios, DOSové aplikace i interní systémy, které nikdo nechce přepisovat.
       tags:
         - práce přes obrazovku
         - bez zásahu do systému
         - ve dne i v noci
+      icon: terminal
   training:
     label: AI školení pro firmy
     title: Jednodenní AI školení pro váš tým

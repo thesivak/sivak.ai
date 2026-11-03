@@ -1,6 +1,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { PATHS } from "./components/icons";
 
 // Copy lives in src/content:
 //   home/{cs,en}.yaml        – the home page, one YAML file per language
@@ -9,7 +10,7 @@ import { z } from "astro/zod";
 //   faq/ai-training/*.md     – FAQ of its English twin /en/ai-training
 //   landing/ai-skoleni.yaml  – the /ai-skoleni landing page
 //   landing/ai-training.yaml – the English training page /en/ai-training, same structure
-//   topic/{cs,en}.yaml       – the service pages (/ai-agenti, /ai-automatizace, /pilotni-projekt and
+//   topic/{cs,en}.yaml       – the service pages (/ai-agenti, /ai-automatizace, /pilotni-projekt, /ai-bezpecnost and
 //                              their English twins), the twins side by side under the same `key`
 // The home page is mostly short labels in fixed structures (agents with steps, spec tables,
 // a permission manifest), so it stays structured data validated by the schemas below;
@@ -81,7 +82,7 @@ const home = defineCollection({
       ...section,
       lead: text,
       // more: link to the service's own page
-      items: z.array(z.object({ title: text, text: text, tags: z.array(text), more: pageLink.optional() })),
+      items: z.array(z.object({ icon: z.enum(Object.keys(PATHS) as [keyof typeof PATHS, ...Array<keyof typeof PATHS>]), title: text, text: text, tags: z.array(text), more: pageLink.optional() })),
       // Teaser for the training page (/ai-skoleni, /en/ai-training) under the service cards
       training: z.object({ label: text, title: text, text: text, cta: text, href: z.string(), hreflang: z.string().optional() }).optional(),
     }),
@@ -213,7 +214,7 @@ const landing = defineCollection({
   }),
 });
 
-// The service pages. Content rule: only copy the site already has, rearranged (see the YAML headers).
+// Localized service pages, including AI security. Copy must follow the site content rules.
 const topicItem = z.object({ title: text, text: text, output: text.optional(), tags: z.array(text).optional() });
 const topic = defineCollection({
   loader: glob({ pattern: "*.yaml", base: "./src/content/topic" }),
@@ -224,12 +225,15 @@ const topic = defineCollection({
         key: z.enum(["agents", "automation", "pilot", "security"]),
         path: z.string().regex(/^\/[a-z0-9/-]+$/),
         metadata: z.object({ title: text, description: text.min(140).max(155) }),
+        ogImage: z.string().startsWith("/og/").optional(),
+        contact: z.object({ eyebrow: text, title: text, lead: text, cta: text, mailSubject: text }).optional(),
         eyebrow: text,
         title: text,
         intro: z.array(text).min(1),
         service: z.object({ name: text, description: text }),
         sections: z.array(
           z.discriminatedUnion("kind", [
+            z.object({ kind: z.literal("prose"), ...section, lead: text }),
             z.object({ kind: z.literal("cards"), id: text, eyebrow: text, title: text, lead: text.optional(), items: z.array(topicItem).min(1) }),
             z.object({ kind: z.literal("steps"), id: text, eyebrow: text, title: text, lead: text.optional(), items: z.array(topicItem).min(1) }),
             z.object({ kind: z.literal("tags"), id: text, eyebrow: text, title: text, lead: text.optional(), tags: z.array(text).min(1) }),

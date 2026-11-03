@@ -19,7 +19,7 @@ nav:
     - id: process
       label: How it works
     - id: security
-      label: Security
+      label: Control
     - id: case-study
       label: In practice
     - id: contact
@@ -223,27 +223,23 @@ services:
   id: services
   eyebrow: What we do
   title: AI agents, training and security
-  lead: We build AI agents, train teams to use AI and help protect people, data and tools. We adapt the scope to your company.
+  lead: We build AI agents, train teams to use AI and help protect people, data and tools. We adapt the scope to
+    your company.
   items:
-    - title: AI training
-      text: Practical training in working safely with AI for your team.
-      tags:
-        - Workshop
-      more:
-        label: AI training
-        href: /en/ai-training
     - title: AI security
       text: We help companies use AI safely and prepare their people, policies and tools for AI phishing, deepfake
         fraud and attacks on their own AI agents.
       tags:
-        - AI phishing
-        - Deepfakes
-        - Prompt injection
+        - phishing
+        - deepfakes
+        - prompt injection
       more:
         label: AI security
         href: /en/ai-security
+      icon: shield
     - title: AI agents on your team
-      text: Digital colleagues for specific jobs. They handle requests, check documents and test software. The agent prepares, a person decides.
+      text: Digital colleagues for specific jobs. They handle requests, check documents and test software. The agent
+        prepares, a person decides.
       tags:
         - customer support
         - document checks
@@ -251,14 +247,18 @@ services:
       more:
         label: More about AI agents
         href: /en/ai-agents
+      icon: agent
     - title: AI on top of your data
-      text: We connect AI to your ERP, CRM and spreadsheets. Ask in plain language and get answers backed by numbers.
+      text: We connect AI to your ERP, CRM and spreadsheets. Ask in plain language and get answers backed by
+        numbers.
       tags:
         - management reports
         - contract search
         - deviation alerts
+      icon: data
     - title: Process automation
-      text: We connect systems that don't talk to each other. Data moves on its own, with no retyping from one window to another.
+      text: We connect systems that don't talk to each other. Data moves on its own, with no retyping from one
+        window to another.
       tags:
         - email → ERP
         - e-shop → accounting
@@ -266,16 +266,20 @@ services:
       more:
         label: More about automation
         href: /en/ai-automation
+      icon: flow
     - title: Robots for legacy software
-      text: They operate programs with no API — Helios, DOS applications and in-house systems no one wants to rewrite.
+      text: They operate programs with no API — Helios, DOS applications and in-house systems no one wants to
+        rewrite.
       tags:
         - works through the screen
         - no changes to the system
         - day and night
+      icon: terminal
   training:
     label: AI training for companies
     title: One-day AI training for your team
-    text: A practical day with ChatGPT and other AI tools, automation and AI agents, for everyone from assistants and HR to management. The training is held in Czech or English.
+    text: A practical day with ChatGPT and other AI tools, automation and AI agents, for everyone from assistants
+      and HR to management. The training is held in Czech or English.
     cta: More about the training
     href: /en/ai-training
 useCases:

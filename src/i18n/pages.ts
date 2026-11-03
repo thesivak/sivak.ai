@@ -3,13 +3,13 @@ import type { Locale } from "./config";
 // Pages that exist in both languages, by their canonical path (no trailing slash, no .html).
 // The language switch, the ?lang= compatibility redirect, hreflang and the sitemap all use this list.
 export const TWIN_PAGES: Record<Locale, string>[] = [
-  { cs: "/ai-bezpecnost", en: "/en/ai-security" },
   { cs: "/", en: "/en" },
   { cs: "/ai-agenti", en: "/en/ai-agents" },
   { cs: "/ai-automatizace", en: "/en/ai-automation" },
   { cs: "/pilotni-projekt", en: "/en/pilot-project" },
   // The one-day AI training (the Czech page is the Google Ads landing page)
   { cs: "/ai-skoleni", en: "/en/ai-training" },
+  { cs: "/ai-bezpecnost", en: "/en/ai-security" },
 ];
 
 // Pages in Czech only: no hreflang alternates and no English URL in the sitemap. None at the moment;

@@ -8,6 +8,7 @@ const read = p => readFileSync(new URL('../' + p, import.meta.url));
 const bundle = await build({entryPoints:['src/i18n/pages.ts'], bundle:true, write:false, format:'esm'});
 const {pageIn, SITEMAP_PAGES} = await import(`data:text/javascript,${encodeURIComponent(bundle.outputFiles[0].text)}`);
 test('security twins are paired and indexed', () => {
+ assert.equal(SITEMAP_PAGES[0], '/');
  assert.equal(pageIn('/ai-bezpecnost','en'),'/en/ai-security');
  assert.equal(pageIn('/en/ai-security','cs'),'/ai-bezpecnost');
  for(const p of ['/ai-bezpecnost','/en/ai-security']) {
@@ -28,6 +29,14 @@ for(const [lang,path,price,consent,og] of [
  const home=parse(read(`src/content/home/${lang}.yaml`).toString());
  assert.ok(home.nav.items.some(i=>i.href===path));
  assert.ok(home.services.items.some(i=>i.more?.href===path));
+ assert.deepEqual(home.services.items.map(i=>i.icon), ['shield','agent','data','flow','terminal']);
+ assert.ok(!home.services.items.some(i=>i.more?.href === home.services.training.href));
+ assert.ok(!home.nav.items.some(i=>['Bezpečnost','Security'].includes(i.label)));
+ assert.equal(page.ogImage, `/og/${og}.png`);
+ assert.ok(page.contact.mailSubject.includes(lang === 'cs' ? 'bezpečnosti' : 'security'));
+ assert.equal(page.sections.find(s=>s.id==='cena').kind, 'prose');
+ assert.notEqual(page.faq[1].answer,page.sections.find(s=>s.id==='regulace').lead);
+ assert.notEqual(page.faq[2].answer,page.sections[0].items[2].text);
  const png=read(`public/og/${og}.png`);
  assert.equal(png.subarray(1,4).toString(),'PNG');
  assert.deepEqual([png.readUInt32BE(16),png.readUInt32BE(20)],[1200,630]);

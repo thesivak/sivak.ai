@@ -148,7 +148,7 @@ for (const [path, twin, file, price] of [
   ok(switches(h).length >= 2 && switches(h).every(href => href === twin), `${path} language switch`);
   ok(jsonLd(h).some(b => b["@type"] === "Service") && jsonLd(h).some(b => b["@type"] === "FAQPage" && b.mainEntity.length === 6), `${path} Service and FAQ data`);
   ok(meta(h, "property", "og:image") === `${SITE}/og/${file}.png` && meta(h, "name", "twitter:image") === `${SITE}/og/${file}.png`, `${path} share image`);
-  ok(visible(h).includes(price) && !/mailto:|tel:|@sivak\.ai|\+420/.test(h), `${path} price on request and no contact details`);
+  ok(visible(h).includes(price) && h.includes("mailto:"), `${path} price on request and standard footer contact`);
 }
 
 console.log(failures ? `\n${failures} FAILED` : "\nALL CHECKS PASSED");

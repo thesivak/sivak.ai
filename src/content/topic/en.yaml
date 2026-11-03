@@ -1,6 +1,6 @@
-# Copy of the English service pages: /en/ai-agents, /en/ai-automation, /en/pilot-project.
+# Copy of the English service pages: /en/ai-agents, /en/ai-automation, /en/pilot-project, /en/ai-security.
 # The Czech twins are in cs.yaml with the same `key`. Schema: src/content.config.ts (collection topic).
-# Rule: only rearranged copy the site already has (src/content/home/en.yaml, src/content/faq/en/*.md):
+# Rule: use approved service copy;
 # no new facts, figures, prices, clients or references.
 labels:
   output: Output
@@ -245,13 +245,13 @@ pages:
               - Prompt injection
               - Permissions and suppliers
           - title: "Training: AI phishing and deepfakes"
-            text: For staff, management and finance. Practise verifying requests and working safely with AI.
+            text: For staff, management and finance. We practice verifying requests and working safely with AI.
             tags:
               - Phishing and vishing
               - Call-back and payment checks
               - Data protection
           - title: Simulated AI attack
-            text: Tests take place always with written consent from management and within an agreed scope. Results stay
+            text: A test is run within an agreed scope and always with written consent from management. Results stay
               confidential; tests are planned to avoid disrupting operations.
             tags:
               - AI phishing
@@ -264,14 +264,12 @@ pages:
               - Approved tools
               - Human approval
               - Risk management documentation
-      - kind: cards
+      - kind: prose
         id: praxe
         eyebrow: sivak.ai
         title: Why sivak.ai
-        items:
-          - title: Mirek Sivák
-            text: We build AI agents for companies ourselves. We work with permissions, data access and untrusted content.
-              Led by Mirek Sivák, Founder & CEO of sivak.ai.
+        lead: We build AI agents for companies ourselves. In practice, we address their permissions, data access and
+          exposure to untrusted content. Led by Mirek Sivák, Founder & CEO of sivak.ai.
       - kind: steps
         id: postup
         eyebrow: Working together
@@ -280,34 +278,43 @@ pages:
           - title: Initial conversation
             text: How you use AI and what you need to protect.
           - title: Tailored scope
-            text: Agree goals, boundaries and consent.
+            text: We agree on goals, boundaries and consent.
           - title: Audit, training or test
             text: Start with an audit, training and policies; simulations can follow.
           - title: Report and recommendations
-            text: Prioritised actions and help with implementation where agreed.
-      - kind: cards
+            text: Prioritized actions and help with implementation where agreed.
+      - kind: prose
+        id: regulace
+        eyebrow: Context
+        title: European regulation
+        lead: NIS2 and the AI Act are part of European regulation. We help prepare AI risk management, training and
+          transparency documentation for your context. We do not provide legal advice; a lawyer should assess
+          your specific obligations.
+      - kind: prose
         id: cena
         eyebrow: Tailored scope
         title: Price on request
         lead: Scope depends on company size and AI use. In Czech or English.
-        items:
-          - title: European regulation
-            text: NIS2 and the AI Act are part of European regulation. We help prepare AI risk management, training and
-              transparency documentation for your context. We do not provide legal advice; a lawyer should
-              assess your specific obligations.
     faq:
       - question: Does this apply to small companies?
         answer: Yes. We adapt the scope to your people and tools.
       - question: Can you help with NIS2 and the AI Act?
-        answer: NIS2 and the AI Act are part of European regulation. We help prepare AI risk management, training and
-          transparency documentation for your context. We do not provide legal advice; a lawyer should assess
-          your specific obligations.
+        answer: "We support the people-and-AI part: training, policies and documentation on tool and supplier risks.
+          We recommend having a lawyer assess your specific legal obligations."
       - question: Is a simulated attack safe?
-        answer: Tests take place always with written consent from management and within an agreed scope. Results stay
-          confidential; tests are planned to avoid disrupting operations.
+        answer: We agree on goals, test boundaries and evaluation in advance. Simulations take place always with
+          written consent from management. Deepfake voice calls require explicit consent; results are shared
+          confidentially.
       - question: Do you test AI agents and chatbots?
         answer: "Yes: prompt injection, data leakage and overly broad permissions."
-      - question: Do you replace our IT or security provider?
+      - question: Will you replace our IT or security provider?
         answer: We focus on the AI layer. Network pentests and continuous monitoring belong with specialist providers.
       - question: How much does it cost?
         answer: Price on request, depending on scope.
+    ogImage: /og/en-ai-security.png
+    contact:
+      eyebrow: AI security
+      title: Prepare your team and AI tools
+      lead: Tell us how you use AI and what you need to protect. We will propose an audit, training or testing scope.
+      cta: Request AI security
+      mailSubject: AI security enquiry
