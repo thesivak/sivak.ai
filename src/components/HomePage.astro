@@ -1,4 +1,5 @@
 ---
+import { SECTION_IDS } from "@/i18n/sections";
 import Base from "@/layouts/Base.astro";
 import SiteHeader from "./SiteHeader.astro";
 import SiteFooter from "./SiteFooter.astro";
@@ -66,5 +67,21 @@ const url = (locale: Locale) => (locale === "cs" ? SITE_URL : `${SITE_URL}/en`);
     <Faq t={t.faq} items={faq} index="08" />
     <Contact t={t.contact} />
   </main>
+  <script is:inline define:vars={{ sectionIds: SECTION_IDS, lang }}>
+    (() => {
+      const normalizeHash = () => {
+        let id;
+        try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+        if (!id || document.getElementById(id)) return;
+        const pair = sectionIds.find((pair) => pair.cs === id || pair.en === id);
+        const target = pair && document.getElementById(pair[lang]);
+        if (!target) return;
+        history.replaceState(history.state, "", location.pathname + location.search + "#" + pair[lang]);
+        target.scrollIntoView();
+      };
+      normalizeHash();
+      window.addEventListener("hashchange", normalizeHash);
+    })();
+  </script>
   <SiteFooter lang={lang} t={t} sectionBase={homeHref} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
 </Base>

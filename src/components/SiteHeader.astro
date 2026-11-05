@@ -36,6 +36,17 @@ const here = Astro.url.pathname.replace(/(\.html|\/)$/, "") || "/";
 
 <script>
   import { PATHS } from "./icons";
+  import { sectionHashIn } from "../i18n/sections";
+
+  // Include the footer switch; retain each twin page's original path across updates.
+  document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((link) => {
+    const base = link.getAttribute("href")!.split("#")[0];
+    const lang = link.dataset.langSwitch === "en" ? "en" : "cs";
+    const update = () => { link.href = base + sectionHashIn(window.location.hash, lang); };
+    update();
+    window.addEventListener("hashchange", update);
+    link.addEventListener("click", update);
+  });
 
   // The mobile menu closes on Escape, on a link click and when the window grows back to the desktop layout
   const header = document.querySelector<HTMLElement>("[data-site-header]");
