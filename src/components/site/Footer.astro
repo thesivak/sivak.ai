@@ -1,0 +1,58 @@
+---
+import BrandLogo from "../BrandLogo.astro";
+import type { Locale } from "@/i18n/config";
+import { CONSENT_TEXT } from "@/lib/consent";
+import { COMPANY, PEOPLE, PRIVACY_POLICY_URL, seatAddress } from "@/lib/site";
+import { getSite } from "@/site";
+
+interface Props {
+  lang: Locale;
+  homeHref: string;
+  switchHref: string;
+  switchLang: Locale;
+}
+const { lang, homeHref, switchHref, switchLang } = Astro.props;
+const t = getSite(lang);
+const f = t.footer;
+---
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a class="foot-logo" href={homeHref} aria-label={t.nav.home}><BrandLogo /></a>
+        <p>{f.tagline}</p>
+      </div>
+      <nav aria-label={f.servicesLabel}>
+        <p class="foot-title">{f.servicesLabel}</p>
+        <ul>
+          {t.services.map((service) => <li><a href={service.path}>{service.name}</a></li>)}
+        </ul>
+      </nav>
+      <nav aria-label={f.companyLabel}>
+        <p class="foot-title">{f.companyLabel}</p>
+        <ul>
+          <li><a href={`${homeHref}#${t.home.work.id}`}>{t.nav.work}</a></li>
+          <li><a href={`${homeHref}#${t.home.process.id}`}>{t.nav.process}</a></li>
+          <li><a href={PRIVACY_POLICY_URL} hreflang="cs">{f.privacy}</a></li>
+          <li><a href={switchHref} hreflang={switchLang} lang={switchLang} data-lang-switch={switchLang}>{t.langSwitch.label}</a></li>
+        </ul>
+      </nav>
+      <div>
+        <p class="foot-title">{f.contactLabel}</p>
+        <ul>
+          {PEOPLE.map((person) => <li><a href={`mailto:${person.email}`}>{person.email}</a></li>)}
+          {PEOPLE.filter((person) => person.phone).map((person) => <li><a href={`tel:${person.phone!.replaceAll(" ", "")}`}>{person.phone}</a></li>)}
+        </ul>
+      </div>
+    </div>
+    {/* § 435 of the Czech Civil Code: name, seat, company ID and register entry */}
+    <div class="foot-legal">
+      <p>{f.operatedBy} {COMPANY.legalName}, {f.seatLabel} {seatAddress(lang)}, {f.idLabel}{" "}{COMPANY.ico}. {f.registry}</p>
+      <p>
+        © {new Date().getFullYear()} {COMPANY.legalName}
+        {/* Reopens the cookie banner to change or withdraw consent; cookie-consent.ts unhides it */}
+        <button type="button" class="foot-cookies" data-cookie-settings hidden>{CONSENT_TEXT[lang].footerLink}</button>
+      </p>
+    </div>
+  </div>
+</footer>

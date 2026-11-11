@@ -1,0 +1,27 @@
+---
+import type { Site } from "@/site";
+
+// The home page figure: a typical system we build, drawn as five stages from people to models. The parts
+// our security team attacks first are redrawn in the redline colour, each with a note under its stage.
+// The red arrives once, after the drawing (site.css); with reduced motion it is simply there.
+interface Props {
+  t: Site["home"]["system"];
+}
+const { t } = Astro.props;
+---
+<figure class="sys">
+  <ol class="sys-stages">
+    {
+      t.stages.map((stage, i) => (
+        <li class="sys-stage" style={`--n:${i}`}>
+          <p class="sys-name">{stage.name}</p>
+          <ul class="sys-nodes">
+            {stage.nodes.map((node) => <li class:list={["sys-node", { "is-marked": node.marked }]}>{node.label}</li>)}
+          </ul>
+          {stage.note && <p class="sys-note">{stage.note}</p>}
+        </li>
+      ))
+    }
+  </ol>
+  <figcaption>{t.caption}</figcaption>
+</figure>

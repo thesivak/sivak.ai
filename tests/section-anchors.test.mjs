@@ -27,7 +27,7 @@ for (const lang of ['cs', 'en']) {
 
 // Exercise the actual inline homepage script without a browser or network.
 const { runInNewContext } = await import('node:vm');
-const homepage = readFileSync(new URL('../src/components/HomePage.astro', import.meta.url), 'utf8');
+const homepage = readFileSync(new URL('../src/components/site/Home.astro', import.meta.url), 'utf8');
 const inline = homepage.match(/<script is:inline[^>]*>([\s\S]*?)<\/script>/)[1];
 for (const lang of ['cs', 'en']) test(`${lang}: homepage normalizes on load and hashchange without adding history`, () => {
   const source = lang === 'cs' ? 'en' : 'cs';

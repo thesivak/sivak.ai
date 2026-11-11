@@ -1,5 +1,5 @@
 import { defaultLocale, isLocale } from "@/i18n/config";
-import { pageIn } from "@/i18n/pages";
+import { MOVED_PAGES, pageIn } from "@/i18n/pages";
 import { safePath } from "@/lib/safe-path";
 
 // Canonical URLs, answered by the Worker before the static assets (wrangler.jsonc → run_worker_first).
@@ -7,6 +7,7 @@ import { safePath } from "@/lib/safe-path";
 // search engines treat as temporary; here they get a permanent 308 to the one URL each page has:
 //   /ai-skoleni/  /ai-skoleni.html  /ai-skoleni/index.html  → /ai-skoleni   (the query string is kept)
 //   /index.html → /     /en/ → /en     /cs, /cs/… → /, /…  (the old Czech prefix)
+//   /ai-agenti, /ai-bezpecnost… → the service page that replaced them (MOVED_PAGES)
 //   ?lang=en|cs → that language's version of the page when it has one, else the same page; the
 //                 parameter is dropped. Old language-switch links of the Next.js site used it.
 // There is no language detection: "/" is always the Czech page (200) for browsers and crawlers alike.
@@ -35,6 +36,9 @@ export function canonicalRedirect(request: Request): Response | null {
   pathname = stripSlash(pathname);
   // /x.html → /x, /x/index.html → /x, /index.html → /, /en/index.html/ → /en (one hop)
   if (pathname.endsWith(".html")) pathname = stripSlash(pathname.slice(0, -".html".length).replace(/\/index$/, "/"));
+
+  // A service page of the earlier site → the page that replaced it
+  pathname = MOVED_PAGES[pathname] ?? pathname;
 
   const headers: Record<string, string> = {};
   const chosen = url.searchParams.get("lang");

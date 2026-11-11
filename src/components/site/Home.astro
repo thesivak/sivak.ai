@@ -1,0 +1,102 @@
+---
+import Shell from "./Shell.astro";
+import SystemDiagram from "./SystemDiagram.astro";
+import Questions from "./Questions.astro";
+import Steps from "./Steps.astro";
+import ContactBlock from "./ContactBlock.astro";
+import { localePath, type Locale } from "@/i18n/config";
+import { SECTION_IDS } from "@/i18n/sections";
+import { homeJsonLd } from "@/lib/site";
+import { getSite } from "@/site";
+
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const t = getSite(lang);
+const h = t.home;
+const other: Locale = lang === "cs" ? "en" : "cs";
+const services = t.services.map((service) => ({ name: service.name, description: service.summary, path: service.path }));
+---
+<Shell lang={lang} title={h.metadata.title} description={h.metadata.description} path={localePath(lang)} twinPath={localePath(other)} jsonLd={[homeJsonLd(lang, services)]}>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <h1 class="display" id="hero-title">{h.hero.title.map((line) => <span>{line} </span>)}</h1>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <p class="lead">{h.hero.lead}</p>
+          <div class="actions">
+            <a class="btn" href={`#${h.contact.id}`}>{h.hero.primary}</a>
+            <a class="link" href={`#${h.services.id}`}>{h.hero.secondary}</a>
+          </div>
+        </div>
+        <SystemDiagram t={h.system} />
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-sheet" id={h.services.id} aria-labelledby={`${h.services.id}-title`}>
+    <div class="wrap">
+      <h2 class="h2" id={`${h.services.id}-title`}>{h.services.title}</h2>
+      <ul class="index">
+        {
+          t.services.map((service) => (
+            <li class="index-row">
+              <h3 class="index-name"><a href={service.path}>{service.name}</a></h3>
+              <p class="index-text">{service.summary}</p>
+              <ul class="index-items">{service.offers.items.map((item) => <li>{item.title}</li>)}</ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="why-title">
+    <div class="wrap">
+      <h2 class="h2" id="why-title">{h.why.title}</h2>
+      <ul class="points points-3">
+        {h.why.items.map((item) => <li><h3 class="h3">{item.title}</h3><p>{item.text}</p></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="band band-ink" id={h.work.id} aria-labelledby={`${h.work.id}-title`}>
+    <div class="wrap">
+      <div class="head">
+        <h2 class="h2" id={`${h.work.id}-title`}>{h.work.title}</h2>
+        <p class="lead">{h.work.lead}</p>
+      </div>
+      <table class="work">
+        <thead>
+          <tr>{h.work.columns.map((column) => <th scope="col">{column}</th>)}</tr>
+        </thead>
+        <tbody>
+          {h.work.agents.map((agent) => <tr><th scope="row">{agent.name}</th><td>{agent.text}</td><td>{agent.meta}</td></tr>)}
+        </tbody>
+      </table>
+      <ul class="work-facts">{h.work.facts.map((fact) => <li>{fact}</li>)}</ul>
+    </div>
+  </section>
+
+  <Questions id={h.questions.id} title={h.questions.title} items={h.questions.items} />
+  <Steps id={h.process.id} title={h.process.title} lead={h.process.lead} steps={h.process.steps} />
+  <ContactBlock lang={lang} id={h.contact.id} title={h.contact.title} lead={h.contact.lead} mailSubject={h.contact.mailSubject} />
+  {/* A section link in the other language's words ("/en#sluzby") lands on this page's section */}
+  <script is:inline define:vars={{ sectionIds: SECTION_IDS, lang }}>
+    (() => {
+      const normalizeHash = () => {
+        let id;
+        try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+        if (!id || document.getElementById(id)) return;
+        const pair = sectionIds.find((pair) => pair.cs === id || pair.en === id);
+        const target = pair && document.getElementById(pair[lang]);
+        if (!target) return;
+        history.replaceState(history.state, "", location.pathname + location.search + "#" + pair[lang]);
+        target.scrollIntoView();
+      };
+      normalizeHash();
+      window.addEventListener("hashchange", normalizeHash);
+    })();
+  </script>
+</Shell>

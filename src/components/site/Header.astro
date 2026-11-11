@@ -1,0 +1,75 @@
+---
+import BrandLogo from "../BrandLogo.astro";
+import Icon from "../Icon.astro";
+import type { Locale } from "@/i18n/config";
+import { getSite } from "@/site";
+
+interface Props {
+  lang: Locale;
+  homeHref: string;
+  switchHref: string;
+  switchLang: Locale;
+}
+const { lang, homeHref, switchHref, switchLang } = Astro.props;
+const t = getSite(lang);
+const here = Astro.url.pathname.replace(/(\.html|\/)$/, "") || "/";
+const links = [
+  ...t.services.map((service) => ({ href: service.path, label: service.name })),
+  { href: `${homeHref}#${t.home.process.id}`, label: t.nav.process },
+  { href: `${homeHref}#${t.home.contact.id}`, label: t.nav.contact },
+];
+---
+<header class="top" data-site-header>
+  <div class="wrap top-inner">
+    <a class="top-logo" href={homeHref} aria-label={t.nav.home}><BrandLogo /></a>
+    <nav class="top-nav" id="site-nav" aria-label={t.nav.label}>
+      <ul class="top-links">
+        {links.map((link) => <li><a href={link.href} aria-current={link.href === here ? "page" : undefined} data-close-menu>{link.label}</a></li>)}
+      </ul>
+      <div class="top-actions">
+        <a class="top-lang" href={switchHref} hreflang={switchLang} lang={switchLang} title={t.langSwitch.title} data-lang-switch={switchLang}>{t.langSwitch.label}</a>
+        <a class="btn btn-small" href={`${homeHref}#${t.home.contact.id}`} data-close-menu>{t.nav.cta}</a>
+      </div>
+    </nav>
+    <button class="top-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label={t.nav.open} data-label-open={t.nav.open} data-label-close={t.nav.close}>
+      <Icon name="menu" />
+    </button>
+  </div>
+</header>
+
+<script>
+  import { PATHS } from "../icons";
+  import { sectionHashIn } from "../../i18n/sections";
+
+  // The language switch (header and footer) keeps the section the reader is at
+  document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((link) => {
+    const base = link.getAttribute("href")!.split("#")[0];
+    const lang = link.dataset.langSwitch === "en" ? "en" : "cs";
+    const update = () => { link.href = base + sectionHashIn(window.location.hash, lang); };
+    update();
+    window.addEventListener("hashchange", update);
+    link.addEventListener("click", update);
+  });
+
+  // The mobile menu closes on Escape, on a link click and when the window grows back to the desktop layout
+  const header = document.querySelector<HTMLElement>("[data-site-header]");
+  const toggle = header?.querySelector<HTMLButtonElement>(".top-toggle");
+  if (header && toggle) {
+    const desktop = window.matchMedia("(min-width: 1080px)");
+    const setOpen = (open: boolean) => {
+      header.classList.toggle("is-open", open);
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", (open ? toggle.dataset.labelClose : toggle.dataset.labelOpen) ?? "");
+      toggle.querySelector("path")?.setAttribute("d", open ? PATHS.close : PATHS.menu);
+    };
+    const isOpen = () => header.classList.contains("is-open");
+    toggle.addEventListener("click", () => setOpen(!isOpen()));
+    header.querySelectorAll("[data-close-menu]").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isOpen()) setOpen(false);
+    });
+    desktop.addEventListener("change", () => {
+      if (desktop.matches) setOpen(false);
+    });
+  }
+</script>

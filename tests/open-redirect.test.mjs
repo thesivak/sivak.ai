@@ -33,7 +33,7 @@ for (const [path, expected] of [
   ["/index.html", "/"],
   ["/ai-skoleni.html", "/ai-skoleni"],
   ["/cs/ai-skoleni", "/ai-skoleni"],
-  ["/ai-agenti?lang=en", "/en/ai-agents"],
+  ["/ai-reseni?lang=en", "/en/ai-solutions"],
   ["//x/?lang=en", "/x"],
 ]) {
   test(`${path} → ${expected}`, () => {

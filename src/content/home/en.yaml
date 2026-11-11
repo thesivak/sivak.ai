@@ -23,7 +23,7 @@ nav:
       label: Contact
     - id: ai-security
       label: AI security
-      href: /en/ai-security
+      href: /en/security
     - id: ai-training
       label: AI training
       href: /en/ai-training
@@ -236,7 +236,7 @@ services:
         - prompt injection
       more:
         label: AI security
-        href: /en/ai-security
+        href: /en/security
       icon: shield
     - title: AI agents on your team
       text: Digital colleagues for specific jobs. They handle requests, check documents and test software. The agent
@@ -247,7 +247,7 @@ services:
         - app testing
       more:
         label: More about AI agents
-        href: /en/ai-agents
+        href: /en/ai-solutions
       icon: agent
     - title: AI on top of your data
       text: We connect AI to your ERP, CRM and spreadsheets. Ask in plain language and get answers backed by
@@ -266,7 +266,7 @@ services:
         - CRM → invoicing
       more:
         label: More about automation
-        href: /en/ai-automation
+        href: /en/ai-solutions
       icon: flow
     - title: Robots for legacy software
       text: They operate programs with no API — Helios, DOS applications and in-house systems no one wants to
@@ -337,7 +337,7 @@ process:
       output: report of work done
   more:
     label: How the pilot project works
-    href: /en/pilot-project
+    href: /en/ai-solutions
 deployment:
   id: deployment
   eyebrow: Where agents run
@@ -436,14 +436,12 @@ footer:
   services:
     label: Services
     items:
-      - label: AI security
-        href: /en/ai-security
-      - label: AI agents
-        href: /en/ai-agents
-      - label: Process automation
-        href: /en/ai-automation
-      - label: Pilot project
-        href: /en/pilot-project
+      - label: AI solutions
+        href: /en/ai-solutions
+      - label: Software development
+        href: /en/software-development
+      - label: Security
+        href: /en/security
   tagline: AI systems and security for businesses.
   navLabel: Site
   contactLabel: Contact

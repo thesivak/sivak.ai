@@ -1,5 +1,7 @@
 ---
-import Base from "@/layouts/Base.astro";
+import "@/styles/site-fonts.css";
+import "@/styles/site.css";
+import Document from "@/layouts/Document.astro";
 import BrandLogo from "@/components/BrandLogo.astro";
 import { czechSpacingHtml } from "@/lib/czech";
 import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_MONTHS, TRACKING_STORAGE_KEY } from "@/lib/consent";
@@ -184,38 +186,40 @@ smluvní doložky schválené Evropskou komisí.</p>
 <p>Tyto zásady jsou účinné od 1. 11. 2026.</p>
 `;
 ---
-<Base
+<Document
   lang="cs"
   title="Zásady zpracování osobních údajů – sivak.ai"
   description="Jak sivak.ai zpracovává osobní údaje návštěvníků webu a z poptávkového formuláře."
-  ogImage={{ path: "/og/cs.png", alt: "sivak.ai" }}
+  ogImage={{ path: "/og/cs.png?v=4", alt: "sivak.ai" }}
   robots="noindex"
+  preloadFonts={["archivo-latin-wdth-normal", "archivo-latin-ext-wdth-normal"]}
+  themeColor="#F4F5F2"
 >
-  <main id="main" class="section light privacy">
-    <div class="container">
+  <main id="main" class="band privacy">
+    <div class="wrap">
       <a class="privacy-logo" href="/" aria-label="sivak.ai – úvod"><BrandLogo /></a>
-      <h1 class="section-title">Zásady zpracování osobních údajů</h1>
+      <h1 class="h2">Zásady zpracování osobních údajů</h1>
       <div class="privacy-body" set:html={czechSpacingHtml(html)} />
     </div>
   </main>
-</Base>
+</Document>
 
 <style>
   .privacy { min-height: 100svh; }
   .privacy-logo { display: inline-flex; margin-bottom: 48px; color: var(--ink); }
   .privacy-logo :global(svg) { height: 28px; width: auto; }
   .privacy-body { max-width: 760px; margin-top: 32px; font-size: 17px; line-height: 1.65; color: var(--ink-2); }
-  .privacy-body :global(h2) { margin: 48px 0 12px; font-size: 24px; font-weight: 500; line-height: 1.25; color: var(--ink); }
-  .privacy-body :global(h3) { margin: 28px 0 8px; font-size: 18px; font-weight: 500; color: var(--ink); }
+  .privacy-body :global(h2) { margin: 48px 0 12px; font-size: 25px; font-weight: 620; font-stretch: 86%; line-height: 1.2; color: var(--ink); }
+  .privacy-body :global(h3) { margin: 28px 0 8px; font-size: 19px; font-weight: 620; font-stretch: 88%; color: var(--ink); }
   .privacy-body :global(p), .privacy-body :global(ul) { margin: 0 0 14px; }
   .privacy-body :global(ul) { padding-left: 22px; list-style: disc; }
   .privacy-body :global(li) { margin: 6px 0; }
   .privacy-body :global(a) { color: var(--ink); text-underline-offset: 3px; }
-  .privacy-body :global(strong) { font-weight: 500; color: var(--ink); }
+  .privacy-body :global(strong) { font-weight: 600; color: var(--ink); }
   .privacy-body :global(.privacy-table) { overflow-x: auto; margin: 0 0 14px; }
   .privacy-body :global(table) { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.45; }
-  .privacy-body :global(th), .privacy-body :global(td) { padding: 8px 10px; border-bottom: 1px solid var(--line-strong); text-align: left; vertical-align: top; }
-  .privacy-body :global(th) { font-weight: 500; color: var(--ink); }
+  .privacy-body :global(th), .privacy-body :global(td) { padding: 8px 10px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  .privacy-body :global(th) { font-weight: 600; color: var(--ink); }
   .privacy-body :global(.privacy-cookies) { padding: 0; border: 0; background: none; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
   .privacy-body :global(.privacy-cookies-here[hidden]) { display: none; }
 </style>

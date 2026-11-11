@@ -1,0 +1,21 @@
+---
+import type { Sheet } from "@/site";
+
+// A sample deliverable, set as the document it is: a title line and labelled rows.
+interface Props {
+  sheet: Sheet;
+  /** "Illustrative example" */
+  note: string;
+}
+const { sheet, note } = Astro.props;
+---
+<figure class="sheet">
+  <figcaption>{sheet.caption}<span>{note}</span></figcaption>
+  <div class="sheet-body">
+    <p class="sheet-title">{sheet.title}</p>
+    {sheet.severity && <p class="sheet-severity">{sheet.severity}</p>}
+    <dl>
+      {sheet.rows.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}
+    </dl>
+  </div>
+</figure>

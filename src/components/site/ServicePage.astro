@@ -1,0 +1,136 @@
+---
+import Shell from "./Shell.astro";
+import Sheet from "./Sheet.astro";
+import Questions from "./Questions.astro";
+import Steps from "./Steps.astro";
+import ContactBlock from "./ContactBlock.astro";
+import { localePath, type Locale } from "@/i18n/config";
+import { ORGANIZATION_ID, SITE_URL, breadcrumbJsonLd } from "@/lib/site";
+import { getService, getSite, type ServiceKey } from "@/site";
+
+// One of the three service pages: AI solutions, software development, security.
+interface Props {
+  lang: Locale;
+  service: ServiceKey;
+}
+const { lang } = Astro.props;
+const t = getSite(lang);
+const other: Locale = lang === "cs" ? "en" : "cs";
+const page = getService(lang, Astro.props.service);
+const twin = getService(other, page.key);
+const url = `${SITE_URL}${page.path}`;
+const homeUrl = lang === "cs" ? SITE_URL : `${SITE_URL}/en`;
+const others = t.services.filter((service) => service.key !== page.key);
+
+const jsonLd = [
+  { "@context": "https://schema.org", "@type": "WebPage", "@id": `${url}#webpage`, url, name: page.metadata.title, inLanguage: lang, mainEntity: { "@id": `${url}#service` } },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${url}#service`,
+    name: page.name,
+    description: page.summary,
+    url,
+    provider: { "@id": ORGANIZATION_ID, "@type": "Organization", name: "sivak.ai", url: `${SITE_URL}/` },
+  },
+  breadcrumbJsonLd([
+    { name: lang === "cs" ? "Domů" : "Home", url: homeUrl },
+    { name: page.name, url },
+  ]),
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: page.questions.map((item) => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })),
+  },
+];
+---
+<Shell lang={lang} title={page.metadata.title} description={page.metadata.description} path={page.path} twinPath={twin.path} jsonLd={jsonLd}>
+  <section class:list={["hero", "hero-service", `is-${page.key}`]} aria-labelledby="hero-title">
+    <div class="wrap service-grid">
+      <div class="service-copy">
+        <p class="crumb"><a href={localePath(lang)}>sivak.ai</a><span aria-hidden="true">/</span>{page.name}</p>
+        <h1 class="display display-2" id="hero-title">{page.title}</h1>
+        <p class="lead">{page.lead}</p>
+        <div class="actions">
+          <a class="btn" href="#contact">{t.nav.cta}</a>
+        </div>
+      </div>
+      <Sheet sheet={page.sheet} note={t.shared.sample} />
+    </div>
+  </section>
+
+  <section class="band band-sheet" aria-labelledby="offers-title">
+    <div class="wrap">
+      <h2 class="h2" id="offers-title">{page.offers.title}</h2>
+      <ul class="index index-offers">
+        {
+          page.offers.items.map((item) => (
+            <li class="index-row">
+              <h3 class="index-name">{item.title}</h3>
+              <p class="index-text">{item.text}</p>
+              <ul class="index-items">{item.points.map((point) => <li>{point}</li>)}</ul>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {
+    page.blocks.map((block, i) => (
+      <section class="band" aria-labelledby={`block-${i}-title`}>
+        <div class="wrap">
+          {block.kind === "prose" ? (
+            <div class="prose">
+              <h2 class="h2" id={`block-${i}-title`}>{block.title}</h2>
+              <div>{block.text.map((paragraph) => <p>{paragraph}</p>)}</div>
+            </div>
+          ) : (
+            <div class="head">
+              <h2 class="h2" id={`block-${i}-title`}>{block.title}</h2>
+              {block.lead && <p class="lead">{block.lead}</p>}
+            </div>
+          )}
+          {block.kind === "compare" && (
+            <div class="compare">
+              {block.columns.map((column) => (
+                <div>
+                  <h3 class="h3">{column.title}</h3>
+                  <p>{column.text}</p>
+                  <dl>{column.rows.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+                  <p class="compare-fit">{column.fit}</p>
+                </div>
+              ))}
+            </div>
+          )}
+          {block.kind === "points" && (
+            <ul class:list={["points", block.items.length % 3 === 0 ? "points-3" : "points-4"]}>
+              {block.items.map((item) => <li><h3 class="h3">{item.title}</h3><p>{item.text}</p></li>)}
+            </ul>
+          )}
+        </div>
+      </section>
+    ))
+  }
+
+  <Steps id="steps" title={page.steps.title} lead={page.steps.lead} steps={page.steps.items} />
+  <Questions id="questions" title={t.shared.questionsTitle} items={page.questions} />
+
+  <section class="band band-ink others" aria-labelledby="others-title">
+    <div class="wrap">
+      <h2 class="h2" id="others-title">{t.shared.otherServices}</h2>
+      <ul class="index index-others">
+        {
+          others.map((service) => (
+            <li class="index-row">
+              <h3 class="index-name"><a href={service.path}>{service.name}</a></h3>
+              <p class="index-text">{service.summary}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <ContactBlock lang={lang} id="contact" title={page.contact.title} lead={page.contact.lead} mailSubject={page.contact.mailSubject} />
+</Shell>
