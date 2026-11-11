@@ -23,7 +23,7 @@ nav:
       label: Kontakt
     - id: ai-security
       label: AI bezpečnost
-      href: /ai-bezpecnost
+      href: /bezpecnost
     - id: ai-skoleni
       label: AI školení
       href: /ai-skoleni
@@ -236,7 +236,7 @@ services:
         - prompt injection
       more:
         label: AI bezpečnost
-        href: /ai-bezpecnost
+        href: /bezpecnost
       icon: shield
     - title: AI agenti v týmu
       text: Digitální kolegové na konkrétní práci. Vyřizují požadavky, kontrolují dokumenty a testují software.
@@ -247,7 +247,7 @@ services:
         - testování aplikací
       more:
         label: Více o AI agentech
-        href: /ai-agenti
+        href: /ai-reseni
       icon: agent
     - title: AI nad vašimi daty
       text: Napojíme AI na ERP, CRM i tabulky. Zeptáte se běžnou větou a dostanete odpověď s čísly.
@@ -265,7 +265,7 @@ services:
         - CRM → fakturace
       more:
         label: Více o automatizaci
-        href: /ai-automatizace
+        href: /ai-reseni
       icon: flow
     - title: Roboti pro starý software
       text: Obsluhují programy bez API – Helios, DOSové aplikace i interní systémy, které nikdo nechce přepisovat.
@@ -334,7 +334,7 @@ process:
       output: přehled odvedené práce
   more:
     label: Jak probíhá pilotní projekt
-    href: /pilotni-projekt
+    href: /ai-reseni
 deployment:
   id: nasazeni
   eyebrow: Kde agenti běží
@@ -433,14 +433,12 @@ footer:
   services:
     label: Služby
     items:
-      - label: AI bezpečnost
-        href: /ai-bezpecnost
-      - label: AI agenti
-        href: /ai-agenti
-      - label: Automatizace procesů
-        href: /ai-automatizace
-      - label: Pilotní projekt
-        href: /pilotni-projekt
+      - label: AI řešení
+        href: /ai-reseni
+      - label: Vývoj softwaru
+        href: /vyvoj-softwaru
+      - label: Bezpečnost
+        href: /bezpecnost
   tagline: AI systémy a bezpečnost pro firmy.
   navLabel: Web
   contactLabel: Kontakt

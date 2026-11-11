@@ -1,0 +1,19 @@
+---
+import type { Question } from "@/site";
+
+// Questions and answers, all open: a reader scans them, nothing to click.
+interface Props {
+  id: string;
+  title: string;
+  items: Question[];
+}
+const { id, title, items } = Astro.props;
+---
+<section class="band" id={id} aria-labelledby={`${id}-title`}>
+  <div class="wrap">
+    <h2 class="h2" id={`${id}-title`}>{title}</h2>
+    <dl class="qa">
+      {items.map((item) => <div><dt>{item.q}</dt><dd>{item.a}</dd></div>)}
+    </dl>
+  </div>
+</section>

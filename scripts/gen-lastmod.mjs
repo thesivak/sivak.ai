@@ -16,7 +16,7 @@ const MANIFEST = "src/data/lastmod.json";
 const check = process.argv.includes("--check");
 const git = (...args) =>
   execFileSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 64 << 20, stdio: ["ignore", "pipe", "ignore"] }).trim();
-// Paths as written: "[topic].astro" is a file name, not a glob
+// Paths as written, never as a glob
 const literal = (path) => `:(literal)${path}`;
 
 // What a page is made of: its route, its own components and its copy. Shared chrome (the Base layout,
@@ -32,28 +32,29 @@ function training(page, copy) {
     `src/content/faq/${copy}`,
   ];
 }
-const HOME = ["src/components/HomePage.astro", "src/components/sections", "src/components/AgentConsole.astro", "src/components/agent-console.ts"];
+// The home page and the three service pages (the 2026 redesign): the route, the page's own components and
+// the copy. The copy of one language is one module (src/site/cs.ts, en.ts), so a change to one page's
+// copy re-dates that language's four pages.
+const PARTS = ["src/components/site/Questions.astro", "src/components/site/Steps.astro", "src/components/site/ContactBlock.astro"];
+const home = (route, lang) => [route, "src/components/site/Home.astro", "src/components/site/SystemDiagram.astro", ...PARTS, `src/site/${lang}.ts`];
+const service = (route, lang) => [route, "src/components/site/ServicePage.astro", "src/components/site/Sheet.astro", ...PARTS, `src/site/${lang}.ts`];
 const SOURCES = {
-  "/": ["src/pages/index.astro", ...HOME, "src/content/home/cs.yaml", "src/content/faq/cs"],
-  "/en": ["src/pages/en.astro", ...HOME, "src/content/home/en.yaml", "src/content/faq/en"],
+  "/": home("src/pages/index.astro", "cs"),
+  "/en": home("src/pages/en.astro", "en"),
+  "/ai-reseni": service("src/pages/ai-reseni.astro", "cs"),
+  "/en/ai-solutions": service("src/pages/en/ai-solutions.astro", "en"),
+  "/vyvoj-softwaru": service("src/pages/vyvoj-softwaru.astro", "cs"),
+  "/en/software-development": service("src/pages/en/software-development.astro", "en"),
+  "/bezpecnost": service("src/pages/bezpecnost.astro", "cs"),
+  "/en/security": service("src/pages/en/security.astro", "en"),
   // The training page and its English twin share the template (src/components/landing) but not the copy
   "/ai-skoleni": training("src/pages/ai-skoleni.astro", "ai-skoleni"),
   "/en/ai-training": training("src/pages/en/ai-training.astro", "ai-training"),
 };
-// Service pages: the template, and only their own entry of src/content/topic/{cs,en}.yaml (plus the
-// shared `labels` above `pages:`), so editing one service page does not touch its siblings' dates
-const topic = (lang, path) => [
-  lang === "cs" ? "src/pages/[topic].astro" : "src/pages/en/[topic].astro",
-  "src/components/TopicPage.astro",
-  "src/components/sections/Faq.astro",
-  { file: `src/content/topic/${lang}.yaml`, path },
-];
 
-const { SITEMAP_PAGES, TWIN_PAGES } = await loadPages();
+const { SITEMAP_PAGES } = await loadPages();
 const sourcesOf = (path) => {
   if (SOURCES[path]) return SOURCES[path];
-  const pair = TWIN_PAGES.find((p) => p.cs === path || p.en === path);
-  if (pair) return topic(pair.cs === path ? "cs" : "en", path);
   throw new Error(`${path} is in the sitemap but scripts/gen-lastmod.mjs does not know its source files: add it to SOURCES`);
 };
 
@@ -90,37 +91,11 @@ if (problems.length) {
 }
 console.log(`${MANIFEST} is up to date (${SITEMAP_PAGES.length} pages)`);
 
-/** Last change of one source: a file or folder, or one page's entry in a topic YAML. */
+/** Last change of one source, a file or folder. */
 function dateOf(source) {
-  if (typeof source === "string") {
-    if (git("status", "--porcelain", "--", literal(source))) return now();
-    // An untracked path with no history yet is new: now
-    return git("log", "-1", "--format=%cI", "--", literal(source)) || now();
-  }
-  const { file, path } = source;
-  const entry = (text) => (text == null ? null : topicEntry(text, path));
-  const show = (rev) => {
-    try {
-      return git("show", `${rev}:${file}`);
-    } catch {
-      return null;
-    }
-  };
-  const head = show("HEAD");
-  if (!existsSync(`${root}${file}`) || entry(readFileSync(`${root}${file}`, "utf8").trim()) !== entry(head)) return now();
-  // Newest first: the first commit whose version of the entry differs from its parent's
-  for (const line of git("log", "--format=%H %cI", "--", literal(file)).split("\n").filter(Boolean)) {
-    const [sha, date] = line.split(" ");
-    if (entry(show(sha)) !== entry(show(`${sha}^`))) return date;
-  }
-  return now();
-}
-
-/** The YAML text before `pages:` plus the `  - key:` block whose `path:` is `path`. */
-function topicEntry(text, path) {
-  const [header] = text.split(/^pages:/m);
-  const block = text.split(/^(?= {2}- key: )/m).find((part) => part.includes(`\n    path: ${path}\n`));
-  return `${header}\n${block ?? ""}`;
+  if (git("status", "--porcelain", "--", literal(source))) return now();
+  // An untracked path with no history yet is new: now
+  return git("log", "-1", "--format=%cI", "--", literal(source)) || now();
 }
 
 function latest(dates) {

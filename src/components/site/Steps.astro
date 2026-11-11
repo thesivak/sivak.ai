@@ -1,0 +1,29 @@
+---
+import type { Step } from "@/site";
+
+// A numbered sequence: the steps of a project, in order.
+interface Props {
+  id: string;
+  title: string;
+  lead?: string;
+  steps: Step[];
+}
+const { id, title, lead, steps } = Astro.props;
+---
+<section class="band band-sheet" id={id} aria-labelledby={`${id}-title`}>
+  <div class="wrap">
+    <div class="head">
+      <h2 class="h2" id={`${id}-title`}>{title}</h2>
+      {lead && <p class="lead">{lead}</p>}
+    </div>
+    <ol class="steps">
+      {steps.map((step, i) => (
+        <li>
+          <span class="steps-num" aria-hidden="true">{i + 1}</span>
+          <h3 class="h3">{step.title}</h3>
+          <p>{step.text}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

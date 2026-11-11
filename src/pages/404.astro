@@ -1,37 +1,38 @@
 ---
-import Base from "@/layouts/Base.astro";
+import "@/styles/site-fonts.css";
+import "@/styles/site.css";
+import Document from "@/layouts/Document.astro";
 import BrandLogo from "@/components/BrandLogo.astro";
-import Icon from "@/components/Icon.astro";
 
 // Served by Cloudflare for every unknown URL (assets.not_found_handling = "404-page"), in both languages
 ---
-<Base
+<Document
   lang="cs"
   title="Stránka nenalezena – sivak.ai"
   description="Tato stránka neexistuje. Pokračujte na úvodní stránku sivak.ai."
-  ogImage={{ path: "/og/cs.png", alt: "sivak.ai" }}
+  ogImage={{ path: "/og/cs.png?v=4", alt: "sivak.ai" }}
   robots="noindex"
+  preloadFonts={["archivo-latin-wdth-normal", "archivo-latin-ext-wdth-normal"]}
+  themeColor="#F4F5F2"
 >
-  <main id="main" class="hero not-found">
-    <div class="hero-bg" aria-hidden="true"></div>
-    <div class="container">
-      <a class="header-logo" href="/" aria-label="sivak.ai – úvod"><BrandLogo /></a>
-      <p class="hero-eyebrow"><i aria-hidden="true"></i>404</p>
-      <h1 class="hero-title">Tuhle stránku <span class="hero-accent">nemáme</span></h1>
-      <p class="hero-lead">Odkaz je možná starý nebo v něm je překlep.</p>
-      <p class="hero-lead" lang="en">This page doesn't exist.</p>
-      <div class="hero-actions">
-        <a class="btn btn-light" href="/">Na úvodní stránku<Icon name="arrow" /></a>
-        <a class="btn btn-ghost" href="/ai-skoleni">AI školení pro firmy</a>
-        <a class="btn btn-ghost" href="/en" hreflang="en" lang="en" data-lang-switch="en">English</a>
+  <main id="main" class="band not-found">
+    <div class="wrap">
+      <a class="not-found-logo" href="/" aria-label="sivak.ai – úvod"><BrandLogo /></a>
+      <h1 class="display display-2">Tuhle stránku nemáme</h1>
+      <p class="lead">Odkaz je možná starý nebo v něm je překlep.</p>
+      <p class="lead" lang="en">This page does not exist. The link may be old or mistyped.</p>
+      <div class="actions">
+        <a class="btn" href="/">Na úvodní stránku</a>
+        <a class="link" href="/en" hreflang="en" lang="en" data-lang-switch="en">Go to the English home page</a>
       </div>
     </div>
   </main>
-</Base>
+</Document>
 
 <style>
   .not-found { min-height: 100svh; }
-  .not-found .header-logo { margin-bottom: 64px; }
-  .not-found .header-logo :global(svg) { height: 28px; width: auto; }
-  .not-found .hero-lead + .hero-lead { margin-top: 8px; }
+  .not-found-logo { display: inline-flex; margin-bottom: 64px; color: var(--ink); }
+  .not-found-logo :global(svg) { height: 28px; width: auto; }
+  .not-found .lead { margin-top: 20px; }
+  .not-found .lead + .lead { margin-top: 8px; }
 </style>

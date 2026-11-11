@@ -10,8 +10,8 @@ import { PATHS } from "./components/icons";
 //   faq/ai-training/*.md     – FAQ of its English twin /en/ai-training
 //   landing/ai-skoleni.yaml  – the /ai-skoleni landing page
 //   landing/ai-training.yaml – the English training page /en/ai-training, same structure
-//   topic/{cs,en}.yaml       – the service pages (/ai-agenti, /ai-automatizace, /pilotni-projekt, /ai-bezpecnost and
-//                              their English twins), the twins side by side under the same `key`
+// The home page and the three service pages of the 2026 redesign are not here: their copy is in
+// src/site/{cs,en}.ts. home/{cs,en}.yaml still feeds the header, footer and FAQ title of the training page.
 // The home page is mostly short labels in fixed structures (agents with steps, spec tables,
 // a permission manifest), so it stays structured data validated by the schemas below;
 // the free-text answers are Markdown.
@@ -214,35 +214,4 @@ const landing = defineCollection({
   }),
 });
 
-// Localized service pages, including AI security. Copy must follow the site content rules.
-const topicItem = z.object({ title: text, text: text, output: text.optional(), tags: z.array(text).optional() });
-const topic = defineCollection({
-  loader: glob({ pattern: "*.yaml", base: "./src/content/topic" }),
-  schema: z.object({
-    labels: z.object({ output: text, home: text }),
-    pages: z.array(
-      z.object({
-        key: z.enum(["agents", "automation", "pilot", "security"]),
-        path: z.string().regex(/^\/[a-z0-9/-]+$/),
-        metadata: z.object({ title: text, description: text.min(140).max(155) }),
-        ogImage: z.string().startsWith("/og/").optional(),
-        contact: z.object({ eyebrow: text, title: text, lead: text, cta: text, mailSubject: text }).optional(),
-        eyebrow: text,
-        title: text,
-        intro: z.array(text).min(1),
-        service: z.object({ name: text, description: text }),
-        sections: z.array(
-          z.discriminatedUnion("kind", [
-            z.object({ kind: z.literal("prose"), ...section, lead: text }),
-            z.object({ kind: z.literal("cards"), id: text, eyebrow: text, title: text, lead: text.optional(), items: z.array(topicItem).min(1) }),
-            z.object({ kind: z.literal("steps"), id: text, eyebrow: text, title: text, lead: text.optional(), items: z.array(topicItem).min(1) }),
-            z.object({ kind: z.literal("tags"), id: text, eyebrow: text, title: text, lead: text.optional(), tags: z.array(text).min(1) }),
-          ]),
-        ),
-        faq: z.array(z.object({ question: text, answer: text })).min(3).max(7),
-      }),
-    ),
-  }),
-});
-
-export const collections = { home, faq, landing, topic };
+export const collections = { home, faq, landing };

@@ -1,0 +1,48 @@
+---
+import "@/styles/site-fonts.css";
+import "@/styles/site.css";
+import Document from "@/layouts/Document.astro";
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import { localePath, type Locale } from "@/i18n/config";
+import { getSite } from "@/site";
+import { SITE_URL } from "@/lib/site";
+
+// The page shell of the 2026 redesign: document head, header, main and footer.
+interface Props {
+  lang: Locale;
+  title: string;
+  description: string;
+  /** Canonical path of this page and of its twin in the other language */
+  path: string;
+  twinPath: string;
+  jsonLd?: object[];
+}
+const { lang, title, description, path, twinPath, jsonLd = [] } = Astro.props;
+const t = getSite(lang);
+const other: Locale = lang === "cs" ? "en" : "cs";
+const absolute = (p: string) => (p === "/" ? SITE_URL : `${SITE_URL}${p}`);
+const paths: Record<Locale, string> = lang === "cs" ? { cs: path, en: twinPath } : { cs: twinPath, en: path };
+const homeHref = localePath(lang);
+---
+<Document
+  lang={lang}
+  title={title}
+  description={description}
+  canonical={absolute(path)}
+  alternates={[
+    { hreflang: "cs", href: absolute(paths.cs) },
+    { hreflang: "en", href: absolute(paths.en) },
+    { hreflang: "x-default", href: absolute(paths.cs) },
+  ]}
+  // ?v=4: the share image changed with the redesign; LinkedIn and Slack cache by URL
+  ogImage={{ path: `/og/${lang}.png?v=4`, alt: title }}
+  jsonLd={jsonLd}
+  preloadFonts={["archivo-latin-wdth-normal", "archivo-latin-ext-wdth-normal"]}
+  themeColor="#F4F5F2"
+>
+  <a class="skip-link" href="#main">{t.skipLink}</a>
+  <Header lang={lang} homeHref={homeHref} switchHref={twinPath} switchLang={other} />
+  <main id="main"><slot /></main>
+  <Footer lang={lang} homeHref={homeHref} switchHref={twinPath} switchLang={other} />
+</Document>

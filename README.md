@@ -1,8 +1,9 @@
 # sivak.ai
 
-Company website of sivak.ai (TheSivak s.r.o.): Czech at `/`, English at `/en`, and the one-day AI
-training page with an enquiry form: `/ai-skoleni` (Czech, the Google Ads landing page) and its English
-twin `/en/ai-training`.
+Company website of sivak.ai (TheSivak s.r.o.): Czech at `/`, English at `/en`, with three service
+pages (AI solutions, software development, security). The one-day AI training page with an enquiry
+form, `/ai-skoleni` (Czech, the Google Ads landing page) and its English twin `/en/ai-training`, is
+still served but no longer linked from the home and service pages.
 
 Built with [Astro](https://astro.build) and deployed to **Cloudflare Workers with static assets**.
 
@@ -34,15 +35,18 @@ Content pages are prerendered at build time (`output: "static"`); only `src/page
 ### URLs and languages
 
 Czech lives at `/`, English at `/en`. Pages that exist in both languages are listed in
-`src/i18n/pages.ts`: `/` ↔ `/en`, `/ai-agenti` ↔ `/en/ai-agents`, `/ai-automatizace` ↔
-`/en/ai-automation`, `/pilotni-projekt` ↔ `/en/pilot-project`. That list drives the language switch,
-hreflang, the sitemap and the `?lang=` compatibility redirect.
+`src/i18n/pages.ts`: `/` ↔ `/en`, `/ai-reseni` ↔ `/en/ai-solutions`, `/vyvoj-softwaru` ↔
+`/en/software-development`, `/bezpecnost` ↔ `/en/security`, `/ai-skoleni` ↔ `/en/ai-training`. That list
+drives the sitemap and the `?lang=` compatibility redirect. The service pages of the earlier site
+(`/ai-agenti`, `/ai-automatizace`, `/pilotni-projekt`, `/ai-bezpecnost` and their English twins) answer
+with a 308 to the page that replaced them (`MOVED_PAGES` in the same file).
 
 | Request | Response |
 | --- | --- |
 | `/`, whatever `Accept-Language` or cookie | 200 Czech. There is no language redirect: crawlers and browsers get the same page, no `Vary` needed. |
 | `/x/`, `/x.html`, `/x/index.html`, `/index.html`, `/en/` | 308 to `/x`, `/` or `/en`, query string kept |
 | `/cs`, `/cs/*` | 308 → `/`, `/*` (the old Czech prefix) |
+| `/ai-agenti`, `/ai-bezpecnost`, … (`MOVED_PAGES`) | 308 to the new service page, e.g. `/ai-reseni`, `/bezpecnost` |
 | `/?lang=en`, `/en?lang=cs` (old switch links) | 308 to that language's version of the page, without the parameter; sets the `lang` cookie |
 
 The asset server would redirect these variants with 307 (`html_handling: auto-trailing-slash`), so
@@ -70,15 +74,21 @@ checkbox wording (`CONSENT.en` in `src/lib/enquiry/fields.ts`, its own version),
 the thank-you page `/en/ai-training/thank-you`. Its enquiries are stored with `source` `ai-training`
 and the notification e-mail names the English page. The privacy policy it links to is Czech only.
 
-### Service pages
+### Home and service pages (the 2026 redesign)
 
-`/ai-agenti`, `/ai-automatizace`, `/pilotni-projekt` and their English twins come from
-`src/content/topic/{cs,en}.yaml` (twins under the same `key`), rendered by
-`src/components/TopicPage.astro` through `src/pages/[topic].astro` and `src/pages/en/[topic].astro`.
-Their copy only rearranges what the homepage and its FAQ already say; the schema requires a
-140–155-character description and 3–4 FAQ entries. Each has Service and FAQPage JSON-LD pointing at
-the homepage's organisation (`ORGANIZATION_ID` in `src/lib/site.ts`), and a BreadcrumbList
-(Domů/Home → the page) with the canonical URLs.
+`/`, `/en` and the three service pages (`/ai-reseni`, `/vyvoj-softwaru`, `/bezpecnost` and their English
+twins) are built from `src/components/site/` (`Home.astro`, `ServicePage.astro`, the shared `Shell.astro`
+with header and footer) with the stylesheet `src/styles/site.css` and the typeface Archivo
+(`src/styles/site-fonts.css`, files in `public/fonts`). Their copy is typed data in `src/site/cs.ts` and
+`src/site/en.ts` (shape in `src/site/types.ts`); `tests/site.test.mjs` holds the content rules. Each
+service page has Service, FAQPage and BreadcrumbList JSON-LD pointing at the homepage's organisation
+(`ORGANIZATION_ID` in `src/lib/site.ts`). The language suggestion is not shown on these pages; the
+header's language link is the switch.
+
+The training page, the privacy policy's form references and `src/content/home/{cs,en}.yaml` (header,
+footer and FAQ title of the training page) still use the earlier design: `src/layouts/Base.astro`,
+`src/styles/global.css`, `src/components/SiteHeader.astro`, `SiteFooter.astro`. Both designs share
+`src/layouts/Document.astro` (head, consent, analytics, structured data).
 
 ### Sitemap `<lastmod>`
 
@@ -90,8 +100,8 @@ is the time of the last commit that changed **that page's own sources**, read fr
 Why a committed file: Workers Builds may clone the repository shallow, where `git log` only sees the
 last commit, so the dates cannot be computed during the deploy build. `scripts/gen-lastmod.mjs`
 computes them locally with the full history (`git log -1 --format=%cI -- <sources>`) and refuses to
-run in a shallow clone. A page's sources are its route, its own components and its copy; for a
-service page only its own entry in `src/content/topic/{cs,en}.yaml`. Shared chrome (layout, header,
+run in a shallow clone. A page's sources are its route, its own components and its copy (for the home and
+service pages the language's module `src/site/{cs,en}.ts`). Shared chrome (layout, header,
 footer, global CSS, `src/lib/site.ts`) is left out on purpose. The list is `SOURCES` in the script.
 
 **When to regenerate:** whenever you change a page's content or template, run `npm run lastmod` and
@@ -117,8 +127,8 @@ the build warns and that URL gets no `<lastmod>`: never the build date.
 | `src/lib/enquiry/fields.ts` | Form fields, limits, the checkbox text and its version, validation (browser and server) |
 | `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** with `[DOPLNIT: …]` placeholders for the legal check |
 | `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification |
-| `src/lib/routing.ts`, `src/i18n/pages.ts` | Canonical-URL redirects; the pages that exist in both languages |
-| `src/content/topic/{cs,en}.yaml` | The service pages (see "Service pages") |
+| `src/lib/routing.ts`, `src/i18n/pages.ts` | Canonical-URL redirects; the pages that exist in both languages; the moved service pages |
+| `src/site/{cs,en}.ts`, `src/components/site/`, `src/styles/site.css` | The home page and the service pages: copy, components, stylesheet (see "Home and service pages") |
 | `src/data/lastmod.json`, `scripts/gen-lastmod.mjs` | The sitemap's `<lastmod>` per page (see "Sitemap `<lastmod>`") |
 | `migrations/` | D1 schema (`wrangler d1 migrations apply`) |
 | `wrangler.jsonc` | Worker config: assets, D1 binding (`sivak-ai`), vars, hourly cron, commented-out `send_email` |

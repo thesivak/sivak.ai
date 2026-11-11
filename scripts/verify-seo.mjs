@@ -1,7 +1,7 @@
 /* global process, console, URL */
 // `npm run verify:seo`: checks the built site in dist/client (run `npm run build` first): JSON-LD,
-// sitemap lastmod, hreflang of the training pages (/ai-skoleni ↔ /en/ai-training), no training
-// price anywhere, no "agents running" badge and the content rules.
+// sitemap lastmod, hreflang of the service and training pages, no training price anywhere,
+// no "agents running" badge and the content rules.
 // Exits 1 when a check fails.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -28,15 +28,13 @@ const visible = (h) =>
 
 console.log("== JSON-LD");
 const PAGES = {
-  "/ai-bezpecnost": "/",
-  "/en/ai-security": "/en",
-  "/ai-agenti": "/",
-  "/ai-automatizace": "/",
-  "/pilotni-projekt": "/",
+  "/ai-reseni": "/",
+  "/vyvoj-softwaru": "/",
+  "/bezpecnost": "/",
   "/ai-skoleni": "/",
-  "/en/ai-agents": "/en",
-  "/en/ai-automation": "/en",
-  "/en/pilot-project": "/en",
+  "/en/ai-solutions": "/en",
+  "/en/software-development": "/en",
+  "/en/security": "/en",
   "/en/ai-training": "/en",
 };
 // The training page and its English twin
@@ -99,10 +97,9 @@ const switches = (h) => [...h.matchAll(/<a [^>]*data-lang-switch="[^"]+"[^>]*>/g
 ok(switches(sk).length >= 2 && switches(sk).every((href) => href === TRAINING.en), `/ai-skoleni language switch → ${[...new Set(switches(sk))]}`);
 ok(switches(en).length >= 2 && switches(en).every((href) => href === TRAINING.cs), `/en/ai-training language switch → ${[...new Set(switches(en))]}`);
 ok(!sk.includes("/en/ai-skoleni") && !sitemap.includes("/en/ai-skoleni"), "no /en/ai-skoleni in the page or the sitemap");
-// English pages link to the English training page, never to the Czech one, and say no "(CZ)"
-const englishPages = ["/en", "/en/ai-agents", "/en/ai-automation", "/en/pilot-project", TRAINING.en];
-ok(englishPages.every((p) => !/href="\/ai-skoleni[#"]/.test(html(p).replace(/<a [^>]*data-lang-switch[^>]*>/g, ""))), "EN pages: no link to /ai-skoleni (except the language switch)");
-ok(englishPages.every((p) => html(p).includes('href="/en/ai-training"') && !visible(html(p)).includes("(CZ)")), 'EN pages link to /en/ai-training, no "(CZ)"');
+// The pages of the redesign do not offer the training: no link to either training page
+const redesigned = ["/", "/en", ...Object.keys(PAGES).filter((p) => !Object.values(TRAINING).includes(p))];
+ok(redesigned.every((p) => !/href="\/(en\/ai-training|ai-skoleni)[#"]/.test(html(p))), "home and service pages: no link to the training pages");
 
 console.log("== share images of the training pages");
 // og:image and twitter:image: absolute, the page's own 1200 × 630 PNG in public/og
@@ -137,18 +134,19 @@ for (const [path, h] of [[TRAINING.cs, sk], [TRAINING.en, en]]) {
   ok(!/dotac|subsid|\bgrants?\b/i.test(h), `${path}: no dotace/subsidies/grants, keywords included`);
 }
 
-for (const [path, twin, file, price] of [
-  ["/ai-bezpecnost", "/en/ai-security", "ai-bezpecnost", "Cena na vyžádání"],
-  ["/en/ai-security", "/ai-bezpecnost", "en-ai-security", "Price on request"],
-]) {
-  const h = html(path);
-  const alternates = { cs: `${SITE}/ai-bezpecnost`, en: `${SITE}/en/ai-security`, "x-default": `${SITE}/ai-bezpecnost` };
-  ok(canonical(h) === `${SITE}${path}`, `${path} canonical`);
-  ok(JSON.stringify(headAlternates(h)) === JSON.stringify(alternates), `${path} hreflang`);
-  ok(switches(h).length >= 2 && switches(h).every(href => href === twin), `${path} language switch`);
-  ok(jsonLd(h).some(b => b["@type"] === "Service") && jsonLd(h).some(b => b["@type"] === "FAQPage" && b.mainEntity.length === 6), `${path} Service and FAQ data`);
-  ok(meta(h, "property", "og:image") === `${SITE}/og/${file}.png` && meta(h, "name", "twitter:image") === `${SITE}/og/${file}.png`, `${path} share image`);
-  ok(visible(h).includes(price) && h.includes("mailto:"), `${path} price on request and standard footer contact`);
+console.log("== service pages");
+const TWINS = [["/ai-reseni", "/en/ai-solutions"], ["/vyvoj-softwaru", "/en/software-development"], ["/bezpecnost", "/en/security"]];
+for (const [cz, eng] of TWINS) {
+  const alternates = { cs: `${SITE}${cz}`, en: `${SITE}${eng}`, "x-default": `${SITE}${cz}` };
+  for (const [path, twin, lang] of [[cz, eng, "cs"], [eng, cz, "en"]]) {
+    const h = html(path);
+    ok(canonical(h) === `${SITE}${path}`, `${path} canonical`);
+    ok(JSON.stringify(headAlternates(h)) === JSON.stringify(alternates), `${path} hreflang`);
+    ok(switches(h).length >= 2 && switches(h).every((href) => href === twin), `${path} language switch`);
+    ok(jsonLd(h).some((b) => b["@type"] === "Service") && jsonLd(h).some((b) => b["@type"] === "FAQPage" && b.mainEntity.length >= 3), `${path} Service and FAQ data`);
+    ok(meta(h, "property", "og:image") === `${SITE}/og/${lang}.png?v=4` && meta(h, "name", "twitter:image") === `${SITE}/og/${lang}.png?v=4`, `${path} share image`);
+    ok(h.includes("mailto:"), `${path} has the contact`);
+  }
 }
 
 console.log(failures ? `\n${failures} FAILED` : "\nALL CHECKS PASSED");
