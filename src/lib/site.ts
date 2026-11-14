@@ -53,14 +53,13 @@ export type Person = {
   vcard: string;
 };
 
-// Mirek is listed with email only; the phone number belongs to the key account manager.
+// Contact details shared by both language versions.
 export const PEOPLE: Person[] = [
   { name: "Mirek Sivák", role: "Founder & CEO", email: "mirek@sivak.ai", linkedin: MIREK_LINKEDIN ?? undefined, vcard: "/mirek-sivak.vcf" },
   {
     name: "Matouš Čep",
     role: "Key account manager",
     email: "matous@sivak.ai",
-    phone: "+420 731 504 378",
     vcard: "/matous-cep.vcf",
   },
 ];
@@ -87,7 +86,7 @@ export function initials(name: string): string {
 }
 
 // The organisation (plain Organization: schema.org deprecates ProfessionalService), with only what the site shows: the contact section lists both
-// e-mail addresses and the account manager's phone, the footer the legal name, seat and company ID.
+// e-mail addresses, the footer the legal name, seat and company ID.
 function organization() {
   return {
     "@type": "Organization",
@@ -118,7 +117,6 @@ function organization() {
       contactType: "sales",
       name: ACCOUNT_MANAGER.name,
       email: ACCOUNT_MANAGER.email,
-      telephone: ACCOUNT_MANAGER.phone?.replaceAll(" ", ""),
       availableLanguage: ["cs", "en"],
     },
   };
