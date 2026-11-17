@@ -15,8 +15,6 @@ nav:
       label: Co děláme
     - id: postup
       label: Jak to probíhá
-    - id: bezpecnost
-      label: Kontrola
     - id: z-praxe
       label: Z praxe
     - id: kontakt

@@ -10,8 +10,10 @@ interface Props {
   homeHref: string;
   switchHref: string;
   switchLang: Locale;
+  /** The page has no version in the other language: the link leads to that language's home page, without this page's #section */
+  switchToHome?: boolean;
 }
-const { lang, homeHref, switchHref, switchLang } = Astro.props;
+const { lang, homeHref, switchHref, switchLang, switchToHome = false } = Astro.props;
 const t = getSite(lang);
 const f = t.footer;
 ---
@@ -40,7 +42,7 @@ const f = t.footer;
             ).map((link) => <li><a href={link.href}>{link.label}</a></li>)
           }
           <li><a href={PRIVACY_POLICY_URL} hreflang="cs">{f.privacy}</a></li>
-          <li><a href={switchHref} hreflang={switchLang} lang={switchLang} data-lang-switch={switchLang}>{t.langSwitch.label}</a></li>
+          <li><a href={switchHref} hreflang={switchLang} lang={switchLang} data-lang-switch={switchLang} data-lang-home={switchToHome ? "" : undefined}>{t.langSwitch.label}</a></li>
         </ul>
       </nav>
       <div>

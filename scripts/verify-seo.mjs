@@ -163,12 +163,17 @@ for (const path of CZECH_ONLY) {
   ok(canonical(h) === `${SITE}${path}`, `${path} canonical`);
   ok(Object.keys(headAlternates(h)).length === 0, `${path} has no hreflang (Czech only)`);
   ok(switches(h).length >= 2 && switches(h).every((href) => href === "/en"), `${path} language switch → /en`);
+  ok([...h.matchAll(/<a [^>]*data-lang-switch="[^"]+"[^>]*>/g)].every((m) => m[0].includes("data-lang-home")), `${path} language switch drops the #section`);
   const loc = urls.find((u) => u.loc === `${SITE}${path}`);
   ok(loc && loc.alternates.length === 0, `sitemap has ${path}, no alternates`);
   ok(/<html lang="cs"/.test(h) && meta(h, "property", "og:image") === `${SITE}/og/cs.png?v=4`, `${path} lang cs, share image`);
   ok(h.includes("mailto:"), `${path} has the contact`);
   ok(new RegExp(`href="${path}"[^>]*aria-current="page"`).test(h), `${path} is marked in the main menu`);
 }
+ok(["/", "/bezpecnost", "/en"].every((p) => !html(p).includes("data-lang-home")), "twin pages: the language switch keeps the #section");
+const enHome = html("/en");
+ok(!/software|develop/i.test(visible(enHome.slice(enHome.indexOf('class="hero"'), enHome.indexOf("</section>", enHome.indexOf('class="hero"'))))), 'English home hero: no "software" or "development"');
+for (const [p, re] of [["/ai-skoleni", /href="\/#bezpecnost"/], ["/en/ai-training", /href="\/en#security"/]]) ok(!re.test(html(p)), `${p}: no link to the missing home section`);
 const home = html("/");
 ok(!/software|vývoj/i.test(visible(home.slice(home.indexOf('class="hero"'), home.indexOf("</section>", home.indexOf('class="hero"'))))), 'home hero: no "software" or "vývoj"');
 ok(CZECH_ONLY.every((p) => home.includes(`href="${p}"`)), "home links to every Czech-only page");

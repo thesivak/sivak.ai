@@ -17,13 +17,13 @@ export const en: Site = {
   langSwitch: { label: "Česky", title: "Přepnout do češtiny" },
   home: {
     metadata: {
-      title: "AI systems, software and security for companies | sivak.ai",
+      title: "AI agents for manufacturing companies | sivak.ai",
       description:
-        "We build AI agents and custom software for companies, and we test their security: penetration tests, red teaming and continuous monitoring.",
+        "For mid-sized manufacturing companies: we find the process with the fastest payback, build an AI agent for it and stand behind its operation and security.",
     },
     hero: {
-      title: ["We build AI systems and software.", "Then we try to break them."],
-      lead: "sivak.ai is one team for AI solutions, software development and security. We build systems that do real work and resist a real attack.",
+      title: ["AI solutions that make money.", "And that no one can misuse."],
+      lead: "For mid-sized manufacturing companies. We find the one process with the fastest payback, build an agent for it and stand behind its operation and security.",
       primary: "Book a meeting",
       secondary: "See what we do",
     },

@@ -48,7 +48,7 @@ const switchHref = twinPath ?? localePath(other);
   themeColor="#F4F5F2"
 >
   <a class="skip-link" href="#main">{t.skipLink}</a>
-  <Header lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
+  <Header lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} switchToHome={!twinPath} />
   <main id="main"><slot /></main>
-  <Footer lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
+  <Footer lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} switchToHome={!twinPath} />
 </Document>
