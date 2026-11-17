@@ -8,7 +8,8 @@ const bundle = async (entry) => {
   const out = await build({ entryPoints: [entry], bundle: true, write: false, format: 'esm', platform: 'neutral' });
   return import(`data:text/javascript,${encodeURIComponent(out.outputFiles[0].text)}`);
 };
-const { SECTION_IDS, UNPAIRED_SECTION_IDS, sectionHashIn } = await bundle('src/i18n/sections.ts');
+const { SECTION_IDS, PAGE_SECTION_IDS, SHARED_SECTION_IDS, UNPAIRED_SECTION_IDS, sectionHashIn } = await bundle('src/i18n/sections.ts');
+const contentPages = { cs: (await bundle('src/site/pages.ts')).pages, en: (await bundle('src/site/pages-en.ts')).pagesEn };
 const sites = { cs: (await bundle('src/site/cs.ts')).cs, en: (await bundle('src/site/en.ts')).en };
 // The sections the home page really has (src/components/site/Home.astro renders exactly these ids)
 const homeSections = (lang) => {
@@ -32,7 +33,9 @@ for (const lang of ['cs', 'en']) {
       assert.equal(sectionHashIn(`#${pair[source]}`, lang), `#${pair[lang]}`);
       assert.equal(sectionHashIn('#' + [...pair[source]].map(c => '%' + c.charCodeAt(0).toString(16)).join(''), lang), `#${pair[lang]}`);
     }
-    for (const hash of ['', '#main', '#unknown', '#%invalid']) assert.equal(sectionHashIn(hash, lang), hash);
+    // An id both languages share stays; an unknown or malformed fragment is dropped, not carried to a page without it
+    for (const id of SHARED_SECTION_IDS) assert.equal(sectionHashIn(`#${id}`, lang), `#${id}`);
+    for (const hash of ['', '#', '#unknown', '#%invalid', '#section-3']) assert.equal(sectionHashIn(hash, lang), '');
   });
   // Regression: "Pro koho" then "English" led to /en#pro-koho, a section the English page does not have
   test(`${lang}: the language switch drops a section the ${lang} page does not have`, () => {
@@ -56,6 +59,38 @@ test('"Pro koho" then "English" leads to the English section, not to /en#pro-koh
   assert.equal(new URL(sites.en.menu.main[0].href, 'https://www.sivak.ai').hash, `#${sites.en.home.audience.id}`);
   // The header builds the link exactly this way
   assert.match(readFileSync(new URL('../src/components/site/Header.astro', import.meta.url), 'utf8'), /link\.href = base \+ sectionHashIn\(window\.location\.hash, lang\)/);
+});
+
+// Regression: /jak-pracujeme#faze then "English" led to /en/how-we-work#faze, an anchor that page does not have
+test('content pages in both languages: every section maps to its twin, both ways', () => {
+  const keys = Object.keys(contentPages.en);
+  assert.ok(keys.length > 0);
+  for (const key of keys) {
+    const ids = { cs: contentPages.cs[key].sections.map(section => section.id), en: contentPages.en[key].sections.map(section => section.id) };
+    assert.equal(ids.cs.length, ids.en.length, key);
+    assert.ok([...ids.cs, ...ids.en].every(Boolean), `${key}: every section has an id`);
+    ids.cs.forEach((id, i) => {
+      assert.equal(sectionHashIn(`#${id}`, 'en'), `#${ids.en[i]}`, `${key}: #${id} → en`);
+      assert.equal(sectionHashIn(`#${ids.en[i]}`, 'cs'), `#${id}`, `${key}: #${ids.en[i]} → cs`);
+      assert.equal(sectionHashIn(`#${id}`, 'cs'), `#${id}`);
+      assert.equal(sectionHashIn(`#${ids.en[i]}`, 'en'), `#${ids.en[i]}`);
+    });
+    // The contact section at the end of the page (ContentPage.astro gives it the home page's contact id)
+    assert.equal(sectionHashIn(`#${sites.cs.home.contact.id}`, 'en'), `#${sites.en.home.contact.id}`);
+    assert.equal(sectionHashIn(`#${sites.en.home.contact.id}`, 'cs'), `#${sites.cs.home.contact.id}`);
+  }
+  assert.equal(sectionHashIn('#faze', 'en'), '#phases');
+  assert.equal(sectionHashIn('#phases', 'cs'), '#faze');
+  assert.equal(sectionHashIn('#zasady', 'en'), '#principles');
+  assert.equal(sectionHashIn('#principles', 'cs'), '#zasady');
+  assert.equal(sectionHashIn('#bezpecnostni-proverka', 'en'), '#security-review');
+  assert.equal(sectionHashIn('#security-review', 'cs'), '#bezpecnostni-proverka');
+  // No id is paired twice, and no shared id is also one side of a pair
+  const all = [...SECTION_IDS, ...PAGE_SECTION_IDS].flatMap(pair => [pair.cs, pair.en]);
+  assert.equal(new Set(all).size, all.length);
+  assert.ok(SHARED_SECTION_IDS.every(id => !all.includes(id)));
+  // The sections of a Czech-only page have no twin: the fragment is dropped
+  for (const id of ['co-slychame', 'startovni-nabidky', 'kde-mizi-penize', 'softwarova-firma']) assert.equal(sectionHashIn(`#${id}`, 'en'), '');
 });
 
 // Exercise the actual inline homepage script without a browser or network.

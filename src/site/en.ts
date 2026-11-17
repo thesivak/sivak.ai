@@ -338,7 +338,7 @@ export const en: Site = {
         items: [
           {
             title: "Security review",
-            text: "The second way in to working with us. Within an agreed scope, we find out how far an attacker would get in your company and what that would mean for operations, data and customers.",
+            text: "Another way to start working with us. Within an agreed scope, we find out how far an attacker would get in your company and what that would mean for operations, data and customers.",
             points: ["A report management can read", "Findings by impact on operations", "Proposed fixes"],
           },
           {

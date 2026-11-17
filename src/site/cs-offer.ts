@@ -40,7 +40,7 @@ export const NOT_DOING = {
   items: [
     { title: "Nestavíme bez návratnosti", text: "Když odhad nevyjde, řekneme vám to a projekt nezačneme. Je lepší to vědět z jedné stránky než po měsících práce." },
     { title: "Nenecháme vás s prototypem", text: "Ukázka, která funguje jen na prezentaci, žádnou práci neušetří. Agenta dovedeme do provozu a staráme se o něj dál." },
-    { title: "Nepřeskakujeme bezpečnost", text: "Agent se k vašim datům nedostane, dokud se ho náš bezpečnostní tým nepokusil zneužít. Ani když spěcháte." },
+    { title: "Nepřeskakujeme bezpečnost", text: "Agent se k vašim datům nedostane, dokud se ho náš bezpečnostní tým nepokusí zneužít. Ani když spěcháte." },
     { title: "Neprodáváme nástroje místo výsledku", text: "Nedostanete licenci ani platformu, kterou si máte zavést sami. Dostanete odvedenou práci, která se dá změřit." },
   ],
 } satisfies Block;
