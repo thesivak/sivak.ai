@@ -6,8 +6,6 @@ import {
   CTA_ESTIMATE,
   CTA_SECURITY,
   DEPLOYMENT,
-  GUARANTEE,
-  GUARANTEE_ID,
   HOME_STARTERS,
   HOW_WE_WORK_PATH,
   INDUSTRIES,
@@ -16,10 +14,7 @@ import {
   METHOD,
   NOT_DOING,
   NOT_DOING_ID,
-  PROMISE,
   Q,
-  RESULT,
-  RESULT_ID,
 } from "./en-offer";
 import type { Site } from "./types";
 
@@ -70,8 +65,6 @@ export const en: Site = {
     hero: {
       title: ["AI solutions that make money.", "And that no one can misuse."],
       lead: "For mid-sized companies where routine eats people's time. We find the one process with the fastest payback, build an agent for it and stand behind its operation and security.",
-      // UKÁZKA – potvrdí Mirek: unconfirmed deadline, shown with the preview tag
-      promise: { text: PROMISE, preview: true },
       primary: CTA_DIAGNOSTICS.label,
       secondary: CTA_ESTIMATE.label,
       cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
@@ -120,8 +113,6 @@ export const en: Site = {
         },
       ],
     },
-    // UKÁZKA – potvrdí Mirek: a stand-in result with no figure, shown with the preview tag
-    result: { id: RESULT_ID, ...RESULT, preview: true },
     notDoing: { id: NOT_DOING_ID, title: NOT_DOING.title, lead: NOT_DOING.lead, items: NOT_DOING.items },
     work: {
       id: "case-study",
@@ -155,14 +146,6 @@ export const en: Site = {
       steps: LADDER,
       from: 0,
       link: { href: HOW_WE_WORK_PATH, label: "What you get in each phase" },
-    },
-    // UKÁZKA – potvrdí Mirek: unconfirmed guarantee, shown with the preview tag; the full wording is on /en/how-we-work
-    guarantee: {
-      id: GUARANTEE_ID,
-      title: GUARANTEE.title,
-      text: [GUARANTEE.short],
-      link: { href: `${HOW_WE_WORK_PATH}#${GUARANTEE_ID}`, label: "The conditions of the guarantee" },
-      preview: true,
     },
     contact: {
       id: "contact",

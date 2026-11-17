@@ -1,11 +1,9 @@
-import { CTA_DIAGNOSTICS, CTA_ESTIMATE, GUARANTEE, GUARANTEE_ID, HOW_WE_WORK_PATH, METHOD, NOT_DOING, NOT_DOING_ID, Q } from "./en-offer";
+import { CTA_DIAGNOSTICS, CTA_ESTIMATE, HOW_WE_WORK_PATH, METHOD, NOT_DOING, NOT_DOING_ID, Q } from "./en-offer";
 import type { Page } from "./types";
 
 // The content pages that also exist in English, by the same key as their Czech twin in pages.ts
 // (src/i18n/pages.ts → TWIN_PAGES). So far only "how we work"; the industry pages, results and the
 // founder's manifesto are in Czech only. Content rules as in en.ts.
-// PREVIEW (branch web-v3-preview): sections with `preview: true` state something Mirek has not confirmed;
-// the site shows them with the tag "UKÁZKA – potvrdí Mirek" (src/site/preview.ts).
 export const pagesEn = {
   process: {
     path: HOW_WE_WORK_PATH,
@@ -59,8 +57,6 @@ export const pagesEn = {
           },
         ],
       },
-      // UKÁZKA – potvrdí Mirek: unconfirmed guarantee, shown with the preview tag
-      { kind: "prose", id: GUARANTEE_ID, preview: true, title: GUARANTEE.title, text: GUARANTEE.text },
       {
         kind: "points",
         id: "principles",

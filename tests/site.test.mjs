@@ -15,7 +15,6 @@ const bundle = async (entry) => {
 const { TWIN_PAGES, SITEMAP_PAGES, MOVED_PAGES, CZECH_ONLY_PAGES, pageIn } = await bundle("src/i18n/pages.ts");
 const { pages } = await bundle("src/site/pages.ts");
 const { pagesEn } = await bundle("src/site/pages-en.ts");
-const { PREVIEW_LABEL, PREVIEW_FIGURE } = await bundle("src/site/preview.ts");
 const { canonicalRedirect } = await bundle("src/lib/routing.ts");
 const { cs } = await bundle("src/site/cs.ts");
 const { en } = await bundle("src/site/en.ts");
@@ -144,48 +143,31 @@ test("the English content pages: route, twin, metadata, links and content rules"
   assert.doesNotMatch(JSON.stringify(pagesEn), /\btrainings?\b/iu);
 });
 
-// Nothing unfinished goes public: no "[doplnit …]", TODO or other stand-in text in the copy of either language.
-// PREVIEW (branch web-v3-preview): the one exception is the stand-in figure "[X]" (PREVIEW_FIGURE), and only
-// where the copy is marked `preview: true`, which the site shows with the tag "UKÁZKA – potvrdí Mirek".
-// Both must be gone before a deploy: `npm run verify:release` fails while any is left.
-test("no placeholders in the copy, except the marked preview values", () => {
-  const all = [cs, en, pages, pagesEn];
-  assert.equal(PREVIEW_LABEL, "UKÁZKA – potvrdí Mirek");
-  assert.equal(PREVIEW_FIGURE, "[X]");
-  assert.doesNotMatch(JSON.stringify(all).replaceAll(PREVIEW_FIGURE, ""), /doplnit|TODO|placeholder|lorem|\[[^\]"]*\]/iu);
-  // The stand-in figure stands only in a result that is marked as a preview
-  const holders = [];
-  const walk = (node) => {
-    if (!node || typeof node !== "object") return;
-    if (Object.values(node).some((value) => typeof value === "string" && value.includes(PREVIEW_FIGURE))) holders.push(node);
-    Object.values(node).forEach(walk);
-  };
-  walk(all);
-  assert.ok(holders.length > 0);
-  for (const holder of holders) assert.equal(holder.preview, true, JSON.stringify(holder).slice(0, 80));
-  // The unconfirmed promise and guarantee are marked too, in both languages
-  for (const site of [cs, en]) {
-    assert.equal(site.home.hero.promise.preview, true);
-    assert.equal(site.home.guarantee.preview, true);
-    assert.equal(site.home.result.preview, true);
+// Nothing unfinished goes public: no "[doplnit …]", TODO, "[X]" or other stand-in text, no unconfirmed promise,
+// guarantee or result, and no preview tag, in the copy of either language
+test("no placeholders and no unconfirmed values in the copy", () => {
+  const copy = JSON.stringify([cs, en, pages, pagesEn]);
+  assert.doesNotMatch(copy, /doplnit|TODO|placeholder|lorem|\[[^\]"]*\]/iu);
+  // "Ukázka oprávnění agenta" is a real caption; the preview tag was in capitals
+  assert.doesNotMatch(copy, /UKÁZKA|"preview"/u);
+  assert.doesNotMatch(copy, /záruk|\bguarantee\b|do 6 týdnů|within 6 weeks/iu);
+  for (const site of [cs, en]) for (const key of ["promise", "result", "guarantee"]) assert.ok(!(key in site.home) && !(key in site.home.hero), key);
+  assert.deepEqual(pages.results.sections.map((section) => section.id), ["softwarova-firma", "co-merime", "obory"]);
+  for (const file of ["src/styles/site.css", "src/components/site/Home.astro", "src/components/site/ContentPage.astro", "src/pages/ochrana-osobnich-udaju.astro"]) {
+    assert.doesNotMatch(read(file), /preview-tag|UKÁZKA|DOPLNIT/u, file);
   }
-  for (const page of [pages.process, pagesEn.process]) assert.equal(page.sections.find((section) => /záruka|guarantee/iu.test(section.title)).preview, true);
-  assert.deepEqual(pages.results.sections.map((section) => section.id), ["vysledek", "softwarova-firma", "co-merime", "obory"]);
 });
 
-test("the seven improvements of the preview are in the copy", () => {
-  // 3: what we do not do, on the home page and on how we work, in both languages
+test("what we do not do, the named method and the typical situations are in the copy", () => {
+  // What we do not do, on the home page and on how we work, in both languages
   for (const [site, page] of [[cs, pages.process], [en, pagesEn.process]]) {
     assert.equal(site.home.notDoing.items.length, 4);
     assert.ok(page.sections.some((section) => section.id === site.home.notDoing.id && section.items.length === 4));
-    // 2: the home page's guarantee links to its conditions
-    assert.equal(site.home.guarantee.link.href, `${page.path}#${site.home.guarantee.id}`);
-    assert.ok(page.sections.some((section) => section.id === site.home.guarantee.id));
-    // 6: the ladder has four phases, numbered from zero
+    // The ladder has four phases, numbered from zero
     assert.equal(site.home.process.steps.length, 4);
     assert.equal(site.home.process.from, 0);
   }
-  // 5: typical situations in a client's words on the three industry pages, in quotes and with no names
+  // Typical situations in a client's words on the three industry pages, in quotes and with no names
   for (const page of [pages.manufacturing, pages.software, pages.commerce]) {
     const voices = page.sections.find((section) => section.kind === "voices");
     assert.ok(voices.items.length >= 3 && voices.items.length <= 4, page.path);

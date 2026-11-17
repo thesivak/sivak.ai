@@ -6,13 +6,12 @@ import BrandLogo from "@/components/BrandLogo.astro";
 import { czechSpacingHtml } from "@/lib/czech";
 import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_MONTHS } from "@/lib/consent";
 import { COMPANY, GA_MEASUREMENT_ID, PRIVACY_CONTACT_EMAIL, seatAddress } from "@/lib/site";
-import { PREVIEW_LABEL } from "@/site/preview";
 import { LIMIT, WINDOW_MS } from "@/lib/server/rate-limit";
 import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 
-// DRAFT for Mirek's legal check: not final until every [DOPLNIT: …] is filled in and a lawyer has read it.
-// One placeholder remains: the Google Analytics data retention (Mirek's setting in GA). On the preview
-// branch it stands with the preview tag "UKÁZKA – potvrdí Mirek" so nobody takes it for final text.
+// DRAFT for Mirek's legal check: not final until a lawyer has read it.
+// The Google Analytics retention is stated without a number ("podle nastavení služby"): the repository
+// holds no record of the property's actual retention setting. State the period once it is documented.
 // Kept out of search engines (noindex) until then. Linked from the footer and the cookie banner.
 // The enquiry form was removed from the site together with its page; the API (/api/poptavka), the database
 // and the retention cron stay, so the policy still covers the enquiries sent while the form existed.
@@ -115,8 +114,8 @@ Automatizované rozhodování ani profilování neprovádíme.</p>
   <li><strong>Záznamy pro omezení počtu odeslání</strong> (otisk IP adresy a čas pokusu) mažeme nejpozději
     po 24 hodinách. Formulář přijme z jedné IP adresy nejvýše ${LIMIT} odeslání za ${windowMinutes} minut.</li>
   <li><strong>Cookies a úložiště v prohlížeči</strong>: podle tabulky níže.</li>
-  <li><strong>Údaje o návštěvách v Google Analytics</strong>: <span class="preview-tag">${PREVIEW_LABEL}</span>
-    [DOPLNIT: doba uchování nastavená ve službě Google Analytics – náhledová poznámka, doplní Mirek].</li>
+  <li><strong>Údaje o návštěvách v Google Analytics</strong>: po dobu nezbytnou pro analýzu návštěvnosti,
+    podle nastavení služby Google Analytics.</li>
 </ul>
 
 <h2>Cookies a úložiště v prohlížeči</h2>

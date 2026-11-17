@@ -3,9 +3,8 @@
 // sitemap lastmod, hreflang of the service pages, the removed pages (no file, no link, no mention),
 // no "agents running" badge and the content rules.
 // Exits 1 when a check fails.
-// `npm run verify:release` (--release): the same, and no preview value may be left on any page. Without the
-// flag the tag "UKÁZKA – potvrdí Mirek" and the stand-in figure "[X]" are let through and only listed;
-// they mark values Mirek has not confirmed and must be gone before a deploy.
+// `npm run verify:release` (--release): the same, plus every built page, the privacy policy included, is
+// searched for stand-in text (the content checks above cover the sitemap pages only).
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
@@ -13,10 +12,7 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = `${root}dist/client`;
 const SITE = "https://www.sivak.ai";
 const NBSP = " ";
-// The preview tag and stand-in figure (src/site/preview.ts); the tag as typed and as the site spaces it
 const RELEASE = process.argv.includes("--release");
-const PREVIEW_TAG = /UKÁZKA[\s\u00a0]–[\s\u00a0]potvrdí[\s\u00a0]Mirek/g;
-const PREVIEW_FIGURE = "[X]";
 
 let failures = 0;
 const ok = (cond, msg) => {
@@ -173,16 +169,10 @@ ok(!/vyvoj-softwaru/.test(topNav) && /href="\/vyvoj-softwaru"/.test(home), "soft
 ok(/subject=Objedn%C3%A1vka%3A%20AI%20diagnostika/.test(home) && /subject=Odhad%20n%C3%A1vratnosti%20zdarma/.test(home), "home: both enquiry types (AI diagnostics, free estimate)");
 // No prices and no amounts of money on the site
 ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/\d[\d\s\u00a0.,]*(?:Kč|CZK|EUR)/.test(visible(html(p)))), "no price on any page");
-// PREVIEW exception, for this exact tag and figure only; --release takes it away
-const withoutPreview = (text) => (RELEASE ? text : text.replace(PREVIEW_TAG, "").replaceAll(PREVIEW_FIGURE, ""));
-ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/doplnit|TODO|\[[^\]]*\]/i.test(withoutPreview(visible(html(p))))), "no placeholder text on any page");
-const previews = builtHtml
-  .map((file) => [file, (visible(readFileSync(`${dist}/${file}`, "utf8")).match(PREVIEW_TAG) ?? []).length])
-  .filter(([, count]) => count > 0);
-if (RELEASE) ok(previews.length === 0, `no preview value left on any page (${previews.map(([file, count]) => `${file}: ${count}`).join(", ") || "none"})`);
-else if (previews.length) {
-  console.log(`WARN  ${previews.length} pages carry the preview tag "UKÁZKA – potvrdí Mirek"; confirm or remove before a deploy (npm run verify:release):`);
-  for (const [file, count] of previews) console.log(`      ${file}: ${count}×`);
+ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/doplnit|TODO|\[[^\]]*\]/i.test(visible(html(p)))), "no placeholder text on any page");
+if (RELEASE) {
+  const unfinished = builtHtml.filter((file) => ((text) => /doplnit|TODO|\[[^\]]*\]/i.test(text) || /UKÁZKA/.test(text))(visible(readFileSync(`${dist}/${file}`, "utf8"))));
+  ok(unfinished.length === 0, `no stand-in text or preview tag on any built page (${unfinished.join(", ") || "none"})`);
 }
 const everyPage = [...new Set(["/", "/en", ...Object.keys(PAGES)])].map((p) => html(p));
 ok(everyPage.every((h) => !/dotac|subsid|Miroslav|Zapfloor|\+420/i.test(h)), "no dotace, Miroslav, client name or phone number in any page's HTML");

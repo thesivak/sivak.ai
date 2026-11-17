@@ -6,8 +6,6 @@ import {
   CTA_ESTIMATE,
   CTA_SECURITY,
   DEPLOYMENT,
-  GUARANTEE,
-  GUARANTEE_ID,
   INDUSTRIES,
   LADDER,
   METHOD,
@@ -15,8 +13,6 @@ import {
   NOT_DOING_ID,
   OFFERS,
   Q,
-  RESULT,
-  RESULT_ID,
   STARTERS,
 } from "./cs-offer";
 import type { Page, Section } from "./types";
@@ -26,8 +22,6 @@ import type { Page, Section } from "./types";
 // Jen česky (src/i18n/pages.ts → CZECH_ONLY_PAGES), kromě /jak-pracujeme, které má anglickou verzi
 // v pages-en.ts. Pravidla obsahu jako v cs.ts: žádná jména klientů, žádná vymyšlená čísla ani certifikace
 // a žádný zástupný text: co nemáme doložené, na stránce není (tests/site.test.mjs).
-// NÁHLED (větev web-v3-preview): jediná výjimka jsou sekce s `preview: true`, které web ukazuje se štítkem
-// „UKÁZKA – potvrdí Mirek“ (src/site/preview.ts). Před nasazením se musí potvrdit, nebo odstranit.
 // Pevné mezery za jednopísmennými předložkami doplní web sám (src/lib/czech.ts).
 const BOTH = [CTA_DIAGNOSTICS, CTA_ESTIMATE];
 
@@ -393,8 +387,6 @@ export const pages = {
           },
         ],
       },
-      // UKÁZKA – potvrdí Mirek: nepotvrzená záruka, na webu se štítkem (preview)
-      { kind: "prose", id: GUARANTEE_ID, preview: true, title: GUARANTEE.title, text: GUARANTEE.text },
       {
         kind: "points",
         id: "zasady",
@@ -462,8 +454,6 @@ export const pages = {
     lead: "Co naši agenti v provozu dělají, jak běží a jak jejich práci měříme. Případové studie zveřejňujeme anonymně.",
     cta: [CTA_ESTIMATE, CTA_DIAGNOSTICS],
     sections: [
-      // UKÁZKA – potvrdí Mirek: zástupný výsledek bez čísla, na webu se štítkem (preview)
-      { kind: "result", id: RESULT_ID, preview: true, ...RESULT },
       {
         kind: "work",
         id: "softwarova-firma",

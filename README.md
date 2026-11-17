@@ -107,10 +107,8 @@ section of that name (`home.audience`), which links to the three industry pages.
 the same positioning (`src/site/en-offer.ts`, `en.ts`); its "Who we work for" rows have no links, because
 the industry pages exist in Czech only.
 
-Values Mirek has not confirmed yet are shown with the tag "UKÁZKA – potvrdí Mirek"
-(`src/site/preview.ts`, `PreviewTag.astro`; `preview: true` in the copy). `npm test` and
-`npm run verify:seo` let exactly that tag and the stand-in figure `[X]` through;
-`npm run verify:release` does not, and must pass before a deploy. Calls to action open an e-mail with the enquiry type as its subject (`meetingHref`).
+`npm run verify:release` is `verify:seo` plus a search of every built page (the privacy policy included)
+for stand-in text; run it before a deploy. Calls to action open an e-mail with the enquiry type as its subject (`meetingHref`).
 The copy holds no placeholder text: what is not documented is left out (`tests/site.test.mjs`).
 
 The privacy policy and the 404 page are standalone pages with the same stylesheet. Every page uses
@@ -144,7 +142,7 @@ the build warns and that URL gets no `<lastmod>`: never the build date.
 | `src/lib/site.ts` | Company facts, people, `MIREK_LINKEDIN_URL` (TODO, hidden while a placeholder), `PRIVACY_POLICY_URL`, GA ID |
 | `src/components/` | Shared pieces: logo, icons, cookie banner, language suggestion |
 | `src/lib/enquiry/fields.ts` | Fields of the enquiry API, limits, the checkbox text and its version, validation |
-| `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** with `[DOPLNIT: …]` placeholders for the legal check |
+| `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** until the legal check |
 | `src/lib/server/*` | Enquiry API handler, D1, rate limit, Turnstile, notification |
 | `src/lib/routing.ts`, `src/i18n/pages.ts` | Canonical-URL redirects; the pages that exist in both languages; the moved and the removed pages |
 | `src/site/{cs,en}.ts`, `src/components/site/`, `src/styles/site.css` | The home page and the service pages: copy, components, stylesheet (see "Home and service pages") |
@@ -415,8 +413,9 @@ curl -s  https://sivak-ai.onfire4yhwh.workers.dev/robots.txt                    
 Rollback before step 2: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
 `CNAME www cname.vercel-dns.com` (DNS-only).
 
-The privacy policy (`src/pages/ochrana-osobnich-udaju.astro`) has one `[DOPLNIT]` left, the Google
-Analytics retention setting; once it is filled in and checked, drop the page's `noindex`.
+The privacy policy (`src/pages/ochrana-osobnich-udaju.astro`) states the Google Analytics retention
+without a number ("podle nastavení služby"); once the actual setting is documented and the policy is
+checked, state the period and drop the page's `noindex`.
 
 ### Database changes
 

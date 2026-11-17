@@ -4,12 +4,10 @@ import type { Locale } from "./config";
 export const SECTION_IDS: readonly Record<Locale, string>[] = [
   { cs: "pro-koho", en: "who-we-work-for" },
   { cs: "sluzby", en: "services" },
-  { cs: "vysledek", en: "result" },
   { cs: "co-nedelame", en: "what-we-dont-do" },
   { cs: "z-praxe", en: "case-study" },
   { cs: "otazky", en: "faq" },
   { cs: "postup", en: "process" },
-  { cs: "zaruka", en: "guarantee" },
   { cs: "kontakt", en: "contact" },
 ];
 

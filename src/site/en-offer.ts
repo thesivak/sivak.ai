@@ -1,5 +1,4 @@
-import { PREVIEW_FIGURE } from "./preview";
-import type { Block, Cta, IndexItem, Question, Result, Step } from "./types";
+import type { Block, Cta, IndexItem, Question, Step } from "./types";
 
 // The English offer, the twin of cs-offer.ts: what repeats on more than one English page (en.ts,
 // pages-en.ts) is here once. No prices anywhere: the client gets them in the proposal.
@@ -13,7 +12,7 @@ export const CTA_SECURITY: Cta = { label: "Arrange a security review", subject: 
 
 export const HOW_WE_WORK_PATH = "/en/how-we-work";
 
-/** The name of the method for phases 0–3. PREVIEW: a proposal, as in cs-offer.ts (METHOD). */
+/** The name of the method for phases 0–3, as in cs-offer.ts (METHOD). */
 export const METHOD = "Payback First";
 
 /** Four phases, numbered from zero. The client decides at the end of each. */
@@ -36,31 +35,6 @@ export const LADDER: Step[] = [
   },
 ];
 export const LADDER_LEAD = "Four phases. At the end of each one, you decide whether to continue. No payback, no build.";
-
-// UKÁZKA – potvrdí Mirek: the deadline "within 6 weeks" is not confirmed. Shown with the preview tag.
-export const PROMISE = "First agent in operation within 6 weeks, payback calculated up front.";
-
-// UKÁZKA – potvrdí Mirek: the guarantee and its three conditions are an unconfirmed proposal. No amounts.
-export const GUARANTEE_ID = "guarantee";
-export const GUARANTEE = {
-  title: "The pilot guarantee",
-  short: "If the pilot misses the goal we agreed on before the start, and you met the agreed conditions, we finish it at no further cost.",
-  text: [
-    "If the pilot misses the goal we agreed on before the start, we finish it at no further cost to you.",
-    "The guarantee applies when three conditions are met: the pilot's goal is defined in advance, clearly and measurably; we have access to the data and systems the agent is to work with; and your people have the agreed time for the pilot.",
-    "We write the goal and the conditions into the proposal at the end of the AI diagnostics, so you know them before you commit to a pilot.",
-  ],
-};
-
-// UKÁZKA – potvrdí Mirek: we have no verified figure yet. "[X]" is a stand-in, not a fact about a client.
-export const RESULT_ID = "result";
-export const RESULT: Result = {
-  title: "One result, one number",
-  lead: "We always state a result against the baseline we measured with the client before the start.",
-  figure: PREVIEW_FIGURE,
-  unit: "hours saved per month",
-  note: "Preview: one verified result with a number goes here. Which process, how soon and against which baseline.",
-};
 
 /** What we don't do: four things you cannot buy from us. */
 export const NOT_DOING_ID = "what-we-dont-do";

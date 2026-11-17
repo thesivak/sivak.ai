@@ -4,8 +4,6 @@ import Sheet from "./Sheet.astro";
 import Questions from "./Questions.astro";
 import Steps from "./Steps.astro";
 import ContactBlock from "./ContactBlock.astro";
-import PreviewTag from "./PreviewTag.astro";
-import Result from "./Result.astro";
 import { localePath, type Locale } from "@/i18n/config";
 import { pageIn } from "@/i18n/pages";
 import { ORGANIZATION_ID, SITE_URL, breadcrumbJsonLd, meetingHref } from "@/lib/site";
@@ -61,7 +59,6 @@ const jsonLd = [
       const id = section.id ?? `section-${i}`;
       if (section.kind === "steps") return <Steps id={id} title={section.title} lead={section.lead} steps={section.items} from={section.from} />;
       if (section.kind === "questions") return <Questions id={id} title={section.title} items={section.items} />;
-      if (section.kind === "result") return <Result id={id} title={section.title} lead={section.lead} figure={section.figure} unit={section.unit} note={section.note} preview={section.preview} />;
       return (
         <section class:list={["band", { "band-sheet": section.kind === "index", "band-ink": section.kind === "work" }]} id={id} aria-labelledby={`${id}-title`}>
           <div class="wrap">
@@ -69,14 +66,12 @@ const jsonLd = [
               <div class="prose">
                 <h2 class="h2" id={`${id}-title`}>{section.title}</h2>
                 <div>
-                  {section.preview && <p class="preview-line"><PreviewTag /></p>}
                   {section.text.map((paragraph) => <p>{paragraph}</p>)}
                   {section.link && <p><a class="link" href={section.link.href}>{section.link.label}</a></p>}
                 </div>
               </div>
             ) : (
               <div class="head">
-                {section.preview && <p class="preview-line"><PreviewTag /></p>}
                 <h2 class="h2" id={`${id}-title`}>{section.title}</h2>
                 {section.lead && <p class="lead">{section.lead}</p>}
               </div>

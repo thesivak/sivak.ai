@@ -6,7 +6,7 @@ import { pages } from "./pages";
 import { pagesEn } from "./pages-en";
 import type { Page, Service, ServiceKey, Site } from "./types";
 
-export type { Block, Cta, IndexItem, Link, Page, Question, Result, Section, Service, ServiceKey, Sheet, Site, Step } from "./types";
+export type { Block, Cta, IndexItem, Link, Page, Question, Section, Service, ServiceKey, Sheet, Site, Step } from "./types";
 
 // Czech copy gets its no-break spaces here
 const SITES: Record<Locale, Site> = { cs: czechSpacing(cs), en };
