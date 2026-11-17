@@ -20,7 +20,7 @@ export const cs: Site = {
     close: "Zavřít menu",
   },
   langSwitch: { label: "English", title: "Switch to English" },
-  // Hlavní menu bez vývoje softwaru; ten a AI školení jsou dostupné z patičky. „Pro koho“ vede na sekci
+  // Hlavní menu bez vývoje softwaru; ten je dostupný z patičky. „Pro koho“ vede na sekci
   // úvodní stránky se třemi obory a je zvýrazněné i na jejich stránkách (covers).
   menu: {
     main: [
@@ -34,7 +34,6 @@ export const cs: Site = {
       ...Object.values(INDUSTRIES).map((item) => ({ href: item.href, label: item.title })),
       { href: "/jak-pracujeme", label: "AI diagnostika a pilot" },
       { href: "/bezpecnost", label: "Bezpečnostní prověrka" },
-      { href: "/ai-skoleni", label: "Workshopy a AI školení" },
       { href: "/ai-reseni", label: "AI řešení" },
       { href: "/vyvoj-softwaru", label: "Vývoj softwaru" },
     ],

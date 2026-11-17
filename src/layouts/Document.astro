@@ -1,6 +1,6 @@
 ---
 // The document shell shared by every layout: head, consent, structured data, analytics. It imports no
-// stylesheet; Base.astro (the earlier design) and the site/ components (the 2026 redesign) bring their own.
+// stylesheet; the site/ components and the standalone pages (privacy policy, 404) bring their own.
 import CookieConsent from "@/components/CookieConsent.astro";
 import LanguageHint from "@/components/LanguageHint.astro";
 import type { Locale } from "@/i18n/config";
@@ -35,7 +35,7 @@ const image = new URL(ogImage.path, SITE_URL).href;
 // Google Consent Mode v2: `gtag` and the consent defaults (all denied, or the stored choice) come first
 // in <head> (src/lib/consent.ts), so gtag.js and the config calls below never run without them.
 // With analytics_storage / ad_storage denied the Google tags set no cookies.
-// `gtag` stays global so pages can send events (see the /ai-skoleni form).
+// `gtag` stays global so pages can send events.
 // gtag.js itself loads after the page (load + idle), off the critical path. The calls above queue in
 // dataLayer until then, after the consent defaults, so Consent Mode stays "advanced" (cookieless pings
 // while denied) and nothing is sent before the defaults apply.

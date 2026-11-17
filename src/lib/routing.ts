@@ -1,13 +1,15 @@
 import { defaultLocale, isLocale } from "@/i18n/config";
-import { MOVED_PAGES, pageIn } from "@/i18n/pages";
+import { MOVED_PAGES, pageIn, removedPageTarget } from "@/i18n/pages";
 import { safePath } from "@/lib/safe-path";
 
 // Canonical URLs, answered by the Worker before the static assets (wrangler.jsonc → run_worker_first).
 // The asset server would redirect these variants with 307 (html_handling "auto-trailing-slash"), which
 // search engines treat as temporary; here they get a permanent 308 to the one URL each page has:
-//   /ai-skoleni/  /ai-skoleni.html  /ai-skoleni/index.html  → /ai-skoleni   (the query string is kept)
+//   /o-nas/  /o-nas.html  /o-nas/index.html  → /o-nas   (the query string is kept)
 //   /index.html → /     /en/ → /en     /cs, /cs/… → /, /…  (the old Czech prefix)
 //   /ai-agenti, /ai-bezpecnost… → the service page that replaced them (MOVED_PAGES)
+//   /ai-skoleni, /en/ai-training and everything under them → / and /en, with 301: pages that were
+//                 removed without a replacement (REMOVED_PAGES), in any of the variants above
 //   ?lang=en|cs → that language's version of the page when it has one, else the same page; the
 //                 parameter is dropped. Old language-switch links of the Next.js site used it.
 // There is no language detection: "/" is always the Czech page (200) for browsers and crawlers alike.
@@ -15,9 +17,9 @@ import { safePath } from "@/lib/safe-path";
 export const LANG_COOKIE = "lang";
 const YEAR = 60 * 60 * 24 * 365;
 
-function redirect(url: URL, headers: HeadersInit = {}): Response {
+function redirect(url: URL, headers: HeadersInit = {}, status: 301 | 308 = 308): Response {
   // A relative Location, as the Next.js site sent; never "//host" or "/\host" (open redirect)
-  return new Response(null, { status: 308, headers: { Location: safePath(url.pathname) + url.search, ...headers } });
+  return new Response(null, { status, headers: { Location: safePath(url.pathname) + url.search, ...headers } });
 }
 
 /** Returns the redirect to the canonical URL, or null when the request already is canonical. */
@@ -39,6 +41,9 @@ export function canonicalRedirect(request: Request): Response | null {
 
   // A service page of the earlier site → the page that replaced it
   pathname = MOVED_PAGES[pathname] ?? pathname;
+  // A page removed without a replacement (and anything under it) → the home page of its language, 301
+  const removed = removedPageTarget(pathname);
+  pathname = removed ?? pathname;
 
   const headers: Record<string, string> = {};
   const chosen = url.searchParams.get("lang");
@@ -52,5 +57,5 @@ export function canonicalRedirect(request: Request): Response | null {
   }
 
   url.pathname = pathname;
-  return url.pathname + url.search === original ? null : redirect(url, headers);
+  return url.pathname + url.search === original ? null : redirect(url, headers, removed ? 301 : 308);
 }

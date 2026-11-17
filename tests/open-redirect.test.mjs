@@ -31,8 +31,10 @@ for (const [path, expected] of [
   ["/en/", "/en"],
   ["/en/index.html/", "/en"],
   ["/index.html", "/"],
-  ["/ai-skoleni.html", "/ai-skoleni"],
-  ["/cs/ai-skoleni", "/ai-skoleni"],
+  ["/o-nas.html", "/o-nas"],
+  ["/cs/o-nas", "/o-nas"],
+  ["/ai-skoleni//evil.example", "/"],
+  ["/en/ai-training/\\evil.example/", "/en"],
   ["/ai-reseni?lang=en", "/en/ai-solutions"],
   ["//x/?lang=en", "/x"],
 ]) {

@@ -25,10 +25,12 @@
     //    the old "/cs" prefix, and the pages with an English twin (src/i18n/pages.ts → TWIN_PAGES),
     //    where ?lang= switches to the other language and is dropped; keep this list in sync with TWIN_PAGES;
     //  - the service pages of the earlier site, redirected to their replacements (MOVED_PAGES);
-    //  - the enquiry API /api/poptavka (on-demand);
+    //  - the removed pages and everything under them, redirected with 301 to the home page of their
+    //    language (REMOVED_PAGES); no static file exists for them any more, so only the Worker can answer;
+    //  - the enquiry API /api/poptavka (on-demand; no page posts to it any more);
     //  - /robots.txt, which the Worker answers with "Disallow: /" on *.workers.dev only.
     // "*" matches across "/", so "/*/" is every path ending in a slash.
-    "run_worker_first": ["/", "/en", "/ai-reseni", "/en/ai-solutions", "/vyvoj-softwaru", "/en/software-development", "/bezpecnost", "/en/security", "/ai-agenti", "/en/ai-agents", "/ai-automatizace", "/en/ai-automation", "/pilotni-projekt", "/en/pilot-project", "/ai-skoleni", "/en/ai-training", "/ai-bezpecnost", "/en/ai-security", "/cs", "/cs/*", "/*/", "/*.html", "/api/*", "/robots.txt"]
+    "run_worker_first": ["/", "/en", "/ai-reseni", "/en/ai-solutions", "/vyvoj-softwaru", "/en/software-development", "/bezpecnost", "/en/security", "/ai-agenti", "/en/ai-agents", "/ai-automatizace", "/en/ai-automation", "/pilotni-projekt", "/en/pilot-project", "/ai-bezpecnost", "/en/ai-security", "/ai-skoleni", "/ai-skoleni/*", "/en/ai-training", "/en/ai-training/*", "/cs", "/cs/*", "/*/", "/*.html", "/api/*", "/robots.txt"]
   },
 
   "d1_databases": [

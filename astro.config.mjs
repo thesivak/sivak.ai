@@ -10,7 +10,7 @@ import { satteri } from "@astrojs/markdown-satteri";
 export default defineConfig({
   site: "https://www.sivak.ai",
   output: "static",
-  // "/en" and "/ai-skoleni", never "/en/": pages are written as en.html, ai-skoleni.html…
+  // "/en" and "/o-nas", never "/en/": pages are written as en.html, o-nas.html…
   trailingSlash: "never",
   // CSS inline in every page: no render-blocking stylesheet request (about 10 kB gzipped per page)
   build: { format: "file", inlineStylesheets: "always" },

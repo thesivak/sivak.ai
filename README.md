@@ -1,9 +1,9 @@
 # sivak.ai
 
 Company website of sivak.ai (TheSivak s.r.o.): Czech at `/`, English at `/en`, with three service
-pages (AI solutions, software development, security). The one-day AI training page with an enquiry
-form, `/ai-skoleni` (Czech, the Google Ads landing page) and its English twin `/en/ai-training`, is
-still served but no longer linked from the home and service pages.
+pages (AI solutions, software development, security) and, in Czech, the industry pages, how we work,
+results and about us. AI training is not offered: its pages `/ai-skoleni` and `/en/ai-training` were
+removed in November 2026 and redirect to the home page (see "Removed pages").
 
 Built with [Astro](https://astro.build) and deployed to **Cloudflare Workers with static assets**.
 
@@ -12,11 +12,12 @@ Built with [Astro](https://astro.build) and deployed to **Cloudflare Workers wit
 ```
 Request ─▶ Cloudflare
            ├─ static asset (HTML, CSS, fonts, images, vCards) ─▶ served directly, no Worker run
-           └─ "/", "/en", "/cs*", "/*/", "/*.html", "/api/*", "/robots.txt"   (assets.run_worker_first)
+           └─ "/", "/en", "/cs*", "/*/", "/*.html", "/ai-skoleni*", "/en/ai-training*", "/api/*",
+              "/robots.txt"   (assets.run_worker_first)
                  ─▶ src/worker.ts
-                      ├─ 308 to the canonical URL (src/lib/routing.ts)
+                      ├─ 308 to the canonical URL, 301 from a removed page (src/lib/routing.ts)
                       └─ Astro handler ─▶ prerendered page from the asset store
-                                        └─ on-demand route: POST /api/poptavka
+                                        └─ on-demand route: POST /api/poptavka (no page posts to it now)
                                              ├─ D1 binding DB (enquiries, rate limit)
                                              ├─ Turnstile siteverify
                                              └─ e-mail: EMAIL send_email binding (Cloudflare Email Service)
@@ -36,10 +37,11 @@ Content pages are prerendered at build time (`output: "static"`); only `src/page
 
 Czech lives at `/`, English at `/en`. Pages that exist in both languages are listed in
 `src/i18n/pages.ts`: `/` ↔ `/en`, `/ai-reseni` ↔ `/en/ai-solutions`, `/vyvoj-softwaru` ↔
-`/en/software-development`, `/bezpecnost` ↔ `/en/security`, `/ai-skoleni` ↔ `/en/ai-training`. That list
+`/en/software-development`, `/bezpecnost` ↔ `/en/security`. That list
 drives the sitemap and the `?lang=` compatibility redirect. The service pages of the earlier site
 (`/ai-agenti`, `/ai-automatizace`, `/pilotni-projekt`, `/ai-bezpecnost` and their English twins) answer
-with a 308 to the page that replaced them (`MOVED_PAGES` in the same file).
+with a 308 to the page that replaced them (`MOVED_PAGES` in the same file); pages removed without a
+replacement answer with a 301 to the home page (`REMOVED_PAGES`).
 
 | Request | Response |
 | --- | --- |
@@ -47,32 +49,39 @@ with a 308 to the page that replaced them (`MOVED_PAGES` in the same file).
 | `/x/`, `/x.html`, `/x/index.html`, `/index.html`, `/en/` | 308 to `/x`, `/` or `/en`, query string kept |
 | `/cs`, `/cs/*` | 308 → `/`, `/*` (the old Czech prefix) |
 | `/ai-agenti`, `/ai-bezpecnost`, … (`MOVED_PAGES`) | 308 to the new service page, e.g. `/ai-reseni`, `/bezpecnost` |
+| `/ai-skoleni`, `/en/ai-training` and everything under them (`REMOVED_PAGES`) | 301 → `/`, `/en`, query string kept |
 | `/?lang=en`, `/en?lang=cs` (old switch links) | 308 to that language's version of the page, without the parameter; sets the `lang` cookie |
 
 The asset server would redirect these variants with 307 (`html_handling: auto-trailing-slash`), so
 the Worker takes them first: `run_worker_first` lists `"/*/"` and `"/*.html"` (`*` matches across
-`/`), plus `/`, `/en` and `/cs*` for the old prefix and parameter. Pages, fonts and images otherwise
+`/`), plus `/`, `/en` and `/cs*` for the old prefix and parameter, and the removed pages with `/*`
+under them. Pages, fonts and images otherwise
 never run the Worker. `src/lib/routing.ts` does the redirects.
 
 The language switch (header, footer) links straight to the counterpart (`/` ↔ `/en`, each service
-page to its twin, `/ai-skoleni` ↔ `/en/ai-training`) and stores the choice in the `lang` cookie from
+page to its twin) and stores the choice in the `lang` cookie from
 JavaScript. Instead of a redirect, pages with a twin show a small suggestion after they have rendered
 (`src/components/LanguageHint.astro`, `language-hint.ts`): "Switch to English" on Czech pages when the
 browser lists neither cs nor sk, "Přepnout do češtiny" on English pages when it does. A stored choice
 wins over the browser; using or closing the suggestion stores one. It is fixed under the header (no
 layout shift) and appears after load (never the LCP element).
 
-### Training page
+### Removed pages
 
-`/ai-skoleni` and its English twin `/en/ai-training` (`/en/ai-skoleni` stays a 404) are one template,
-`src/components/landing/TrainingPage.astro`, with the copy in `src/content/landing/{ai-skoleni,ai-training}.yaml`
-and `src/content/faq/{ai-skoleni,ai-training}/*.md`: keep the two in step. Both have hreflang cs/en
-(x-default = cs), Course (with the price as an Offer, VAT excluded, `inLanguage` per page),
-BreadcrumbList and FAQPage. The enquiry form is the same on both and posts to `/api/poptavka` with a
-hidden `lang` field: the English page gets English labels, validation and server messages, its own
-checkbox wording (`CONSENT.en` in `src/lib/enquiry/fields.ts`, its own version), and without JavaScript
-the thank-you page `/en/ai-training/thank-you`. Its enquiries are stored with `source` `ai-training`
-and the notification e-mail names the English page. The privacy policy it links to is Czech only.
+AI training is not offered any more. `/ai-skoleni`, its English twin `/en/ai-training`, their thank-you
+pages, copy, components, share images and the enquiry form were removed in November 2026, together with
+the earlier design they were the last users of (`src/layouts/Base.astro`, `src/styles/global.css`, the
+content collections in `src/content`). No page links to them and the sitemap does not list them.
+
+`REMOVED_PAGES` in `src/i18n/pages.ts` maps each to the home page of its language: `/ai-skoleni` → `/`,
+`/en/ai-training` → `/en`. `src/lib/routing.ts` answers the page and everything under it (the former
+thank-you pages, a trailing slash, `.html`, the old `/cs` prefix) with one **301**, query string kept.
+There is no static file for these URLs, so `wrangler.jsonc` → `run_worker_first` must list `"<path>"`
+and `"<path>/*"`, or the visitor gets the 404 page instead (`tests/removed-pages.test.mjs`).
+`/en/ai-skoleni` never existed and stays a 404.
+
+What stayed on purpose: the enquiry API `POST /api/poptavka`, the D1 database with its migrations and the
+hourly retention cron (see "The enquiry API"). Nothing on the site posts to the API now.
 
 ### Home and service pages (the 2026 redesign)
 
@@ -97,9 +106,7 @@ section of that name (`home.audience`), which links to the three industry pages;
 services. Calls to action open an e-mail with the enquiry type as its subject (`meetingHref`).
 The copy holds no placeholder text: what is not documented is left out (`tests/site.test.mjs`).
 
-The training page, the privacy policy's form references and `src/content/home/{cs,en}.yaml` (header,
-footer and FAQ title of the training page) still use the earlier design: `src/layouts/Base.astro`,
-`src/styles/global.css`, `src/components/SiteHeader.astro`, `SiteFooter.astro`. Both designs share
+The privacy policy and the 404 page are standalone pages with the same stylesheet. Every page uses
 `src/layouts/Document.astro` (head, consent, analytics, structured data).
 
 ### Sitemap `<lastmod>`
@@ -127,19 +134,12 @@ the build warns and that URL gets no `<lastmod>`: never the build date.
 
 | Path | What |
 | --- | --- |
-| `src/content/home/{cs,en}.yaml` | Home page copy (structured: agents, steps, spec tables, manifest) |
-| `src/content/faq/{cs,en,ai-skoleni,ai-training}/*.md` | FAQ entries, one Markdown file per question |
-| `src/content/landing/{ai-skoleni,ai-training}.yaml` | Training page copy, Czech and English |
-| `src/content.config.ts` | Schemas for all of the above (the build fails on missing or misspelt fields) |
 | `src/lib/site.ts` | Company facts, people, `MIREK_LINKEDIN_URL` (TODO, hidden while a placeholder), `PRIVACY_POLICY_URL`, GA ID |
-| `src/components/`, `src/components/sections/` | Home page components (ported 1:1 from React) |
-| `src/components/landing/` | Landing page sections, the enquiry form and its script |
-| `src/styles/global.css` | The original stylesheet, unchanged; `fonts.css` self-hosts the same font files |
-| `src/styles/landing.css` | Landing page additions, same tokens |
-| `src/lib/enquiry/fields.ts` | Form fields, limits, the checkbox text and its version, validation (browser and server) |
+| `src/components/` | Shared pieces: logo, icons, cookie banner, language suggestion |
+| `src/lib/enquiry/fields.ts` | Fields of the enquiry API, limits, the checkbox text and its version, validation |
 | `src/pages/ochrana-osobnich-udaju.astro` | Privacy policy, **draft** with `[DOPLNIT: …]` placeholders for the legal check |
-| `src/lib/server/*` | Enquiry handler, D1, rate limit, Turnstile, notification |
-| `src/lib/routing.ts`, `src/i18n/pages.ts` | Canonical-URL redirects; the pages that exist in both languages; the moved service pages |
+| `src/lib/server/*` | Enquiry API handler, D1, rate limit, Turnstile, notification |
+| `src/lib/routing.ts`, `src/i18n/pages.ts` | Canonical-URL redirects; the pages that exist in both languages; the moved and the removed pages |
 | `src/site/{cs,en}.ts`, `src/components/site/`, `src/styles/site.css` | The home page and the service pages: copy, components, stylesheet (see "Home and service pages") |
 | `src/data/lastmod.json`, `scripts/gen-lastmod.mjs` | The sitemap's `<lastmod>` per page (see "Sitemap `<lastmod>`") |
 | `migrations/` | D1 schema (`wrangler d1 migrations apply`) |
@@ -175,7 +175,9 @@ Useful local checks:
 
 ```sh
 curl -I -H 'Accept-Language: en' http://localhost:8787/          # 200 Czech: no language redirect
-curl -I http://localhost:8787/ai-skoleni/                         # 308 → /ai-skoleni
+curl -I http://localhost:8787/o-nas/                              # 308 → /o-nas
+curl -I http://localhost:8787/ai-skoleni/odeslano                 # 301 → /  (a removed page)
+curl -I http://localhost:8787/en/ai-training                      # 301 → /en
 curl -I http://localhost:8787/index.html                          # 308 → /
 npx wrangler d1 execute sivak-ai --local --command "SELECT * FROM enquiries"
 # the hourly retention cron, by hand:
@@ -183,10 +185,8 @@ curl -X POST -H 'Content-Type: application/json' -d '{"cron":"0 * * * *"}' \
   'http://localhost:8787/cdn-cgi/local/explorer/api/local/scheduled?worker=sivak-ai'
 ```
 
-A **build** without `PUBLIC_TURNSTILE_SITE_KEY` shows "Formulář je dočasně nedostupný" instead of the
-form (and logs a warning); only `npm run dev` keeps the form without the widget. For `npm run preview`
-and to try Turnstile, use Cloudflare's test keys: `PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA`
-in `.env` and `TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA` in `.dev.vars`.
+To try the enquiry API with Turnstile locally, use Cloudflare's test secret
+`TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA` in `.dev.vars`.
 
 ## Environment variables and secrets
 
@@ -195,9 +195,10 @@ in Workers Builds):
 
 | Name | Purpose |
 | --- | --- |
-| `PUBLIC_TURNSTILE_SITE_KEY` | Turnstile widget on the form. Empty in a build = "dočasně nedostupný" notice instead of the form (build warning). |
-| `PUBLIC_GOOGLE_ADS_ID` | Google Ads tag ID, `AW-…`. Empty = no Ads tag and no conversion. |
-| `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Label of the conversion action (`send_to` = `AW-…/label`). |
+| `PUBLIC_GOOGLE_ADS_ID` | Leave empty. No page loads a Google Ads tag since the enquiry form was removed; set, it would only make the privacy policy describe Google Ads. |
+
+`PUBLIC_TURNSTILE_SITE_KEY` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` belonged to the removed form and are
+read by nothing.
 
 Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets are set with
 `wrangler secret put NAME` (locally in `.dev.vars`):
@@ -210,13 +211,12 @@ Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets 
 | `NOTIFY_DISABLED` | var | `1` = kill switch: never send, log only |
 | `TURNSTILE_SECRET_KEY` | secret | Turnstile server-side verification; required in production (no test keys). The preview has the public test secret in `env.preview.vars`. |
 | `IP_HASH_SALT` | secret | HMAC-SHA256 key for the IP hash (rate limit, `ip_hash` column), e.g. `openssl rand -hex 32`. Required in production **and preview**; only `development` may run without it (no rate limit, `ip_hash` NULL). |
-| `DB` | D1 binding | Enquiries and rate limit; required (without it the form answers 503) |
+| `DB` | D1 binding | Enquiries and rate limit; required (without it the API answers 503) |
 | `EMAIL` | send_email binding | Cloudflare Email Service, production only; restricted to `mirek@sivak.ai` and `matous@sivak.ai` |
 
 ## Cookie consent
 
-Every page that uses `src/layouts/Base.astro` (homepage cs/en, `/ai-skoleni`, the thank-you page, the
-privacy policy, 404) has the cookie banner (`src/components/CookieConsent.astro`, logic in
+Every page (they all use `src/layouts/Document.astro`) has the cookie banner (`src/components/CookieConsent.astro`, logic in
 `src/components/cookie-consent.ts`, shared values and texts in `src/lib/consent.ts`), with **Google
 Consent Mode v2**:
 
@@ -235,37 +235,33 @@ Consent Mode v2**:
 - The choice is stored in `localStorage` (`sivak-ai-consent`: `{ v, at, analytics, marketing }`) for
   **6 months**; expired, or `COOKIE_CONSENT_VERSION` changed (bump it when purposes or texts change), the
   banner asks again and any `_ga*` / `_gcl_*` cookies are deleted.
-- Footer link "Nastavení cookies" / "Cookie settings" (homepage and landing footer, plus a button in the
-  privacy policy) reopens the banner. Withdrawing sets the consent types back to denied and deletes `_ga`,
+- Footer link "Nastavení cookies" / "Cookie settings" (plus a button in the privacy policy) reopens the banner. Withdrawing sets the consent types back to denied and deletes `_ga`,
   `_ga_*` (and, without marketing consent, `_gcl_*`) host-only and on every parent domain (`www.sivak.ai`,
   `.sivak.ai`).
-- The Google Ads conversion on `/ai-skoleni` fires only with marketing consent, and only when
-  `PUBLIC_GOOGLE_ADS_*` are set. The form keeps the campaign parameters in `sessionStorage` only with
-  marketing consent too.
+- No page loads a Google Ads tag or sends a conversion now (that was the removed enquiry form). The
+  Marketingové toggle and the banner text still name Google Ads: changing them means bumping
+  `COOKIE_CONSENT_VERSION`, which asks every visitor again.
 - Without JavaScript there is no banner and no footer link, and no Google tag runs either.
 
 ## Performance
 
 - CSS is inlined into every page (`build.inlineStylesheets: "always"`), so no stylesheet blocks the
   first paint (about 10 kB gzipped per page).
-- Only the Jost files are preloaded (`jost-latin`, `jost-latin-ext`); the mono face loads on demand.
-- Turnstile's `api.js` is not in the page: `src/components/landing/turnstile.ts` loads it with
-  `render=explicit` on the first focus or pointer press in the form, or when the form comes within 600 px
-  of the viewport, and renders into a slot that reserves the widget's height. A submit waits for the
-  token. `/ai-skoleni` preconnects to `challenges.cloudflare.com`.
+- Only the two Archivo files are preloaded (`archivo-latin-wdth-normal`, `archivo-latin-ext-wdth-normal`).
 - Hero text slides in without fading, so it is painted at once and is the LCP element; the cookie bar
   opens after the first paint, in two short paragraphs, so it never is.
-- Measured on `/ai-skoleni` (Chromium, 412 px, 4× CPU, 150 ms / 1.6 Mbit/s, no cache): FCP and LCP
-  2.4 s → 1.4 s. The homepage has a small layout shift right after the earlier first paint (CLS 0.078,
-  within "good" < 0.1; 0 with external CSS, which paints about 1 s later).
 
-## The enquiry form
+## The enquiry API
 
-`POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order. The visitor sees "přijali" (200 or
-the 303 to the thank-you page) **only once the row is stored in D1**; every refusal is an error asking to try again later.
-**No e-mail address appears anywhere on `/ai-skoleni` or `/en/ai-training`** (messages, notice, success state, thank-you page,
-footer: `SiteFooter`'s `contact` prop swaps the addresses for a link to the form there; the homepage
-footer is unchanged). The form is the only contact path; only the privacy policy names a contact e-mail.
+**No page has an enquiry form any more**: it was on the removed AI training pages (see "Removed pages").
+The backend was left exactly as it was, with no migration and no table dropped: the endpoint, its
+validation and notification, the D1 tables, the bindings and the retention cron. This section describes
+that backend. Its texts and defaults still name the removed pages (the notification subject, the `source`
+values, the no-JavaScript redirect to `/ai-skoleni/odeslano`, which now lands on the home page through the
+301). Removing the endpoint, or pointing it at a new form, is a separate decision.
+
+`POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order. The sender gets "přijali" (200 or
+the 303) **only once the row is stored in D1**; every refusal is an error asking to try again later.
 
 1. **Configuration**, before the body is read: no `DB` binding → 503 (every mode). Production and
    preview also refuse with 503 without `IP_HASH_SALT`; production without `TURNSTILE_SECRET_KEY` or with
@@ -282,7 +278,7 @@ footer is unchanged). The form is the only contact path; only the privacy policy
    (the one deliberate exception, for bots).
 5. **Validation** (`src/lib/enquiry/fields.ts`, the same code the browser runs): name, company,
    e-mail and the checkbox required; phone optional but checked; participants 1–500; length limits.
-6. **Turnstile** siteverify (the widget itself loads lazily, see "Performance"). Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged warning
+6. **Turnstile** siteverify. Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged warning
    outside production only. Cloudflare's test keys (`1x00000000000000000000AA` /
    `1x0000000000000000000000000000000AA`) work in development and preview and are refused in production.
 7. **D1** insert with the checkbox time and wording version (`CONSENT_VERSION`), `utm_*`, `gclid`,
@@ -303,12 +299,8 @@ drop the old one once no old pages can be around.
 **Logs** carry the enquiry id, a reason and error class/code only: never names, company, e-mail, phone,
 note, IP, user agent, the e-mail subject or body, nor provider response bodies (`src/lib/server/log.ts`).
 
-With JavaScript the form submits with `fetch`, shows errors next to the fields and the result in an
-`aria-live` region, then pushes `ai_skoleni_lead` to `dataLayer` and, if both `PUBLIC_GOOGLE_ADS_*`
-are set, `gtag('event', 'conversion', { send_to })`. Without JavaScript the browser validates the
-fields natively, posts the form and is redirected (303) to `/ai-skoleni/odeslano`, or gets a short
-error page. Campaign parameters are copied from the landing URL into hidden fields (and kept in
-`sessionStorage` for the visit); without JavaScript the server reads them from the `Referer`.
+A JSON request gets a JSON answer; a plain form post is redirected (303) to `/ai-skoleni/odeslano`, or
+gets a short error page. Campaign parameters come from the request's fields, or from the `Referer`.
 
 Same-origin is enforced by Astro's `security.checkOrigin` (cross-site form posts get 403).
 
@@ -366,17 +358,15 @@ and delete the matching notification e-mails from both mailboxes.
   selector `cf-bounce`, 200 e-mails a day). The `EMAIL` binding sends from `web@sivak.ai` to
   `mirek@sivak.ai` and `matous@sivak.ai` (`allowed_destination_addresses`); no destination verification
   or Email Routing is involved.
-- **Turnstile**: one widget for `sivak.ai`, `www.sivak.ai` and `sivak-ai.onfire4yhwh.workers.dev`; its site
-  key is the build variable `PUBLIC_TURNSTILE_SITE_KEY`, its secret the Worker secret
-  `TURNSTILE_SECRET_KEY`. The code has no hostname check of its own: the widget's hostname list decides
-  where it works.
+- **Turnstile**: one widget for `sivak.ai`, `www.sivak.ai` and `sivak-ai.onfire4yhwh.workers.dev`; its
+  secret is the Worker secret `TURNSTILE_SECRET_KEY`, checked by the enquiry API. No page shows the
+  widget now.
 - Secrets on `sivak-ai`: `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`. (`ADMIN_USER` / `ADMIN_PASSWORD`, if still set
   from the removed admin, are unused and can be deleted.)
-- Google Ads: not configured (`PUBLIC_GOOGLE_ADS_*` unset), so no Ads tag and no conversion.
+- Google Ads: not used; no page loads an Ads tag.
 
-Deploying is `npm run deploy` (build + `wrangler deploy`) with `PUBLIC_TURNSTILE_SITE_KEY` set in the
-environment of the build, or Workers Builds (build command `npm run build`, deploy command
-`npx wrangler deploy`, `NODE_VERSION=24`, the `PUBLIC_*` build variables).
+Deploying is `npm run deploy` (build + `wrangler deploy`), or Workers Builds (build command
+`npm run build`, deploy command `npx wrangler deploy`, `NODE_VERSION=24`).
 
 ### noindex on workers.dev, keyed on the hostname
 
@@ -395,7 +385,7 @@ normally, without a config change. Two parts, both matching only `*.workers.dev`
 Verify:
 
 ```sh
-curl -sI https://sivak-ai.onfire4yhwh.workers.dev/ai-skoleni | grep -i x-robots-tag   # noindex, nofollow
+curl -sI https://sivak-ai.onfire4yhwh.workers.dev/o-nas | grep -i x-robots-tag        # noindex, nofollow
 curl -sI https://sivak-ai.onfire4yhwh.workers.dev/og/cs.png | grep -i x-robots-tag    # noindex, nofollow
 curl -s  https://sivak-ai.onfire4yhwh.workers.dev/robots.txt                          # Disallow: /
 # locally, after `npm run preview`: the same with -H 'Host: sivak-ai.onfire4yhwh.workers.dev' on
@@ -409,7 +399,7 @@ curl -s  https://sivak-ai.onfire4yhwh.workers.dev/robots.txt                    
    issues certificates; MX and the e-mail records are untouched. Then redirect the apex to `www` to match
    the canonical URLs (Rules → Redirect Rules → filter `http.host eq "sivak.ai"`, dynamic target
    `concat("https://www.sivak.ai", http.request.uri.path)`, 301, preserve query string). Check `/`, `/en`,
-   `/ai-skoleni`, a test enquiry (name starting with `TEST`, the e-mail subject gets `[TEST] `), and that
+   the 301 from `/ai-skoleni` and `/en/ai-training` to the home page, and that
    robots.txt and the pages carry **no** noindex on www.sivak.ai.
 2. **Vercel**: remove `sivak.ai` and `www.sivak.ai` from the Vercel project's domains and disconnect its
    Git integration; delete the project once all is well.
@@ -418,12 +408,6 @@ curl -s  https://sivak-ai.onfire4yhwh.workers.dev/robots.txt                    
 
 Rollback before step 2: delete the two Custom Domains and recreate `A sivak.ai 76.76.21.21` and
 `CNAME www cname.vercel-dns.com` (DNS-only).
-
-Google Ads, when wanted: Google Ads → Goals → Conversions → create a "Submit lead form" action
-(website, manual tag) → Tag setup → "Use Google tag" shows `send_to: 'AW-XXXXXXXXX/YYYYYYYY'`. Set
-`PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXX` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=YYYYYYYY` as build variables.
-**The customer ID 285-124-8637 shown in the Ads UI is not the tag ID** and does not work here. The Ads tag
-is configured only on `/ai-skoleni`; GA4 (`G-S98V3B32ZL`) is on every page, both only after consent.
 
 The privacy policy (`src/pages/ochrana-osobnich-udaju.astro`) has one `[DOPLNIT]` left, the Google
 Analytics retention setting; once it is filled in and checked, drop the page's `noindex`.

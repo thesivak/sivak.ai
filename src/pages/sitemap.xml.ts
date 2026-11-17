@@ -11,9 +11,8 @@ type Entry = { path: string; priority: number; alternates?: Record<string, strin
 const absolute = (path: string) => (path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`);
 const lastmod: Record<string, string | undefined> = LASTMOD;
 
-// Priority of each pair's Czech and English page: the homepage, the training page (the Czech one is the
-// Google Ads landing page), then the service pages
-const PRIORITY: Record<string, [number, number]> = { "/": [1, 0.8], "/ai-skoleni": [0.9, 0.7] };
+// Priority of each pair's Czech and English page: the homepage, then the service pages
+const PRIORITY: Record<string, [number, number]> = { "/": [1, 0.8] };
 
 // Every page that exists in both languages, each language with its alternates (cs, en, x-default = cs)
 const twins: Entry[] = TWIN_PAGES.flatMap((pair) => {

@@ -4,42 +4,42 @@ import "@/styles/site.css";
 import Document from "@/layouts/Document.astro";
 import BrandLogo from "@/components/BrandLogo.astro";
 import { czechSpacingHtml } from "@/lib/czech";
-import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_MONTHS, TRACKING_STORAGE_KEY } from "@/lib/consent";
+import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_MONTHS } from "@/lib/consent";
 import { COMPANY, GA_MEASUREMENT_ID, PRIVACY_CONTACT_EMAIL, seatAddress } from "@/lib/site";
 import { LIMIT, WINDOW_MS } from "@/lib/server/rate-limit";
 import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 
 // DRAFT for Mirek's legal check: not final until every [DOPLNIT: …] is filled in and a lawyer has read it.
 // One placeholder remains: the Google Analytics data retention (Mirek's setting in GA).
-// Kept out of search engines (noindex) until then. Linked from the form via PRIVACY_POLICY_URL.
+// Kept out of search engines (noindex) until then. Linked from the footer and the cookie banner.
+// The enquiry form was removed from the site together with its page; the API (/api/poptavka), the database
+// and the retention cron stay, so the policy still covers the enquiries sent while the form existed.
 // It describes what the code does; change both together:
 //  - fields and columns: src/lib/enquiry/fields.ts, src/lib/server/store.ts, migrations/
 //  - rate limit and retention: src/lib/server/rate-limit.ts, src/lib/server/store.ts (pruneEnquiries),
 //    the hourly cron in src/worker.ts; notification e-mails are deleted by hand (README → Retention)
 //  - Turnstile, notification e-mails: src/lib/server/turnstile.ts, src/lib/server/notify.ts
-//  - Google Analytics on every page (src/layouts/Base.astro) under Google Consent Mode v2, with the cookie
+//  - Google Analytics on every page (src/layouts/Document.astro) under Google Consent Mode v2, with the cookie
 //    banner (src/components/CookieConsent.astro, src/lib/consent.ts); the Google Ads parts are shown only
-//    when PUBLIC_GOOGLE_ADS_ID is set at build time, as the Ads tag itself
-//  - the `lang` cookie (src/lib/routing.ts, src/components/language-hint.ts), sessionStorage (src/components/landing/enquiry-form.ts,
-//    written only with marketing consent), the consent record in localStorage (src/lib/consent.ts)
+//    when PUBLIC_GOOGLE_ADS_ID is set at build time (leave it unset: no page loads an Ads tag any more)
+//  - the `lang` cookie (src/lib/routing.ts, src/components/language-hint.ts), the consent record in
+//    localStorage (src/lib/consent.ts)
 // Controller details as verified by Mirek in ARES and the commercial register on 27 October 2026, except the seat:
 // since 1 November 2026 it is The Flow Building (COMPANY.seat in src/lib/site.ts), Mirek's decision ahead of the
 // notarial seat change; the register entry (Krajský soud v Ostravě, C 98925) stays until the court records the move.
 // Notifications: Cloudflare Email Service (src/lib/server/notify.ts) into Google Workspace mailboxes.
 // Open legal point for Mirek: the Google Analytics retention setting.
-// The form's checkbox is an acknowledgement, not consent (CONSENT in fields.ts, one wording and version per language).
-// The training form is on /ai-skoleni and on its English twin /en/ai-training: same fields, same processing;
-// the stored `source` (ai-skoleni / ai-training) records which page it came from.
+// The form's checkbox was an acknowledgement, not consent (CONSENT in fields.ts, one wording and version per language).
+// The stored `source` records which language version of the form an enquiry came from.
 const contact = PRIVACY_CONTACT_EMAIL;
 const ads = Boolean(import.meta.env.PUBLIC_GOOGLE_ADS_ID);
 const windowMinutes = WINDOW_MS / 60_000;
 const mail = `<a href="mailto:${contact}">${contact}</a>`;
 
 const html = `
-<p>Tyto zásady popisují, jak zpracováváme osobní údaje návštěvníků webu www.sivak.ai, především údaje
-z poptávkového formuláře na stránce <a href="/ai-skoleni">AI školení pro firmy</a> a na její anglické verzi
-<a href="/en/ai-training" hreflang="en" lang="en">AI training for companies</a>. Oba formuláře jsou stejné
-a údaje z nich zpracováváme stejně.</p>
+<p>Tyto zásady popisují, jak zpracováváme osobní údaje návštěvníků webu www.sivak.ai. Poptávkový formulář,
+který na webu dříve byl, jsme odstranili. Údaje z poptávek odeslaných před jeho odstraněním zpracováváme
+dál tak, jak popisujeme níže.</p>
 
 <h2>Kdo údaje zpracovává</h2>
 <p>Správcem osobních údajů je ${COMPANY.legalName}, IČO ${COMPANY.ico}, se sídlem ${seatAddress("cs")},
@@ -48,12 +48,12 @@ značkou sivak.ai (dále „my“).</p>
 <p>S dotazy ke zpracování osobních údajů a s uplatněním svých práv se obracejte na e-mail ${mail}.</p>
 
 <h2>Jaké údaje zpracováváme</h2>
-<h3>Údaje z poptávkového formuláře</h3>
+<h3>Údaje z dříve odeslaných poptávek</h3>
 <ul>
   <li>jméno a příjmení, firma a e-mail (povinné),</li>
   <li>telefon, počet účastníků a poznámka nebo preferovaný termín (nepovinné),</li>
   <li>čas odeslání a verze textu u zaškrtávacího pole, které jste potvrdili,</li>
-  <li>ze které stránky jste poptávku odeslali (česká /ai-skoleni, nebo anglická /en/ai-training).</li>
+  <li>ze které jazykové verze formuláře jste poptávku odeslali (česká, nebo anglická).</li>
 </ul>
 <h3>Odkud jste na stránku přišli</h3>
 <ul>
@@ -61,8 +61,8 @@ značkou sivak.ai (dále „my“).</p>
   <li>identifikátor kliknutí na reklamu Google (gclid), pokud ho adresa obsahuje,</li>
   <li>adresa stránky, na kterou jste na web přišli (cesta a parametry, bez domény).</li>
 </ul>
-<p>Tyto údaje připojí k poptávce váš prohlížeč, nebo je čteme z adresy předchozí stránky, kterou prohlížeč
-posílá s formulářem.</p>
+<p>Tyto údaje připojil k poptávce váš prohlížeč, nebo jsme je přečetli z adresy předchozí stránky, kterou
+prohlížeč poslal s formulářem.</p>
 <h3>Technické údaje</h3>
 <ul>
   <li>identifikace prohlížeče (user agent), uložená s poptávkou;</li>
@@ -79,13 +79,6 @@ tehdy, když s analytickými cookies souhlasíte v liště cookies. Google pak z
 například zobrazené stránky, typ zařízení a prohlížeče a přibližnou polohu odvozenou z IP adresy.
 Bez souhlasu běží značka v režimu Google Consent Mode: cookies neukládá ani nečte a Google od ní může
 dostávat jen základní technické údaje o zobrazení stránky bez identifikátorů z cookies.</p>
-${
-  ads
-    ? `<p>Na stránkách AI školení (české i anglické) měříme se souhlasem s marketingovými cookies také konverze z reklam Google Ads:
-po úspěšném odeslání poptávky prohlížeč pošle Google Ads informaci, že konverze proběhla. Bez tohoto souhlasu
-se konverze neodesílá. Obsah formuláře Googlu nepředáváme.</p>`
-    : ""
-}
 
 <h2>Proč a na jakém právním základě</h2>
 <ul>
@@ -107,7 +100,7 @@ se konverze neodesílá. Obsah formuláře Googlu nepředáváme.</p>`
   <li><strong>Uložení vaší volby v liště cookies</strong> – nezbytné pro fungování lišty, ukládá se jen ve vašem
     prohlížeči (§ 89 odst. 3 zákona o elektronických komunikacích, výjimka pro nezbytné ukládání).</li>
 </ul>
-<p>Zaškrtávací pole ve formuláři potvrzuje, že jste se s těmito zásadami seznámili; nejde o souhlas se
+<p>Zaškrtávací pole ve formuláři potvrzovalo, že jste se s těmito zásadami seznámili; nešlo o souhlas se
 zpracováním. Proti zpracování na základě oprávněného zájmu můžete vznést námitku (viz Vaše práva).
 Automatizované rozhodování ani profilování neprovádíme.</p>
 
@@ -133,7 +126,6 @@ zeptáme znovu.</p>
   <tbody>
     <tr><td>${COOKIE_CONSENT_KEY} (úložiště localStorage)</td><td>vaše volba v liště cookies: kategorie, verze lišty a čas volby</td><td>sivak.ai</td><td>${COOKIE_CONSENT_MONTHS} měsíců</td><td>vždy, nezbytné</td></tr>
     <tr><td>lang (cookie)</td><td>zvolený jazyk webu</td><td>sivak.ai</td><td>1 rok</td><td>jen po přepnutí jazyka nebo zavření nabídky jiného jazyka, nezbytné</td></tr>
-    <tr><td>${TRACKING_STORAGE_KEY} (úložiště sessionStorage)</td><td>parametry kampaně z adresy, na kterou jste přišli, aby se připojily k poptávce i po přechodu mezi stránkami</td><td>sivak.ai</td><td>do zavření okna nebo odeslání poptávky</td><td>jen se souhlasem s marketingovými cookies</td></tr>
     <tr><td>_ga</td><td>rozlišení návštěvníků v Google Analytics</td><td>Google</td><td>2 roky</td><td>jen se souhlasem s analytickými cookies</td></tr>
     <tr><td>_ga_${GA_MEASUREMENT_ID.replace(/^G-/, "")}</td><td>stav návštěvy v Google Analytics</td><td>Google</td><td>2 roky</td><td>jen se souhlasem s analytickými cookies</td></tr>
 ${

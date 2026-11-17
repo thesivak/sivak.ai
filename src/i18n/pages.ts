@@ -8,8 +8,6 @@ export const TWIN_PAGES: Record<Locale, string>[] = [
   { cs: "/ai-reseni", en: "/en/ai-solutions" },
   { cs: "/vyvoj-softwaru", en: "/en/software-development" },
   { cs: "/bezpecnost", en: "/en/security" },
-  // The one-day AI training (the Czech page is the Google Ads landing page); not linked from the new pages
-  { cs: "/ai-skoleni", en: "/en/ai-training" },
 ];
 
 // Service pages of the earlier site, each answered with a 308 to the page that replaced it
@@ -24,6 +22,23 @@ export const MOVED_PAGES: Record<string, string> = {
   "/ai-bezpecnost": "/bezpecnost",
   "/en/ai-security": "/en/security",
 };
+
+// Pages that no longer exist and have no replacement: each one, and everything under it (its former
+// thank-you page, …), is answered with a 301 to the home page of its language (src/lib/routing.ts).
+// Keep "<path>" and "<path>/*" in wrangler.jsonc → run_worker_first: there is no static file left, so
+// without the Worker these URLs would be a 404.
+export const REMOVED_PAGES: Record<string, string> = {
+  "/ai-skoleni": "/",
+  "/en/ai-training": "/en",
+};
+
+/** The home page a removed page (or anything under it) redirects to, or undefined. */
+export function removedPageTarget(path: string): string | undefined {
+  for (const [removed, target] of Object.entries(REMOVED_PAGES)) {
+    if (path === removed || path.startsWith(`${removed}/`)) return target;
+  }
+  return undefined;
+}
 
 // Pages in Czech only (src/site/pages.ts): no hreflang alternates and no English URL in the sitemap. Their
 // language link leads to the English home page. The trailing-slash and .html redirects reach them through

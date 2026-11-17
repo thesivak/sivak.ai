@@ -19,19 +19,9 @@ const git = (...args) =>
 // Paths as written, never as a glob
 const literal = (path) => `:(literal)${path}`;
 
-// What a page is made of: its route, its own components and its copy. Shared chrome (the Base layout,
-// header, footer, global styles, src/lib/site.ts, the homepage's nav and contact strings reused
-// elsewhere) is left out on purpose: a footer tweak does not make every page "modified".
-function training(page, copy) {
-  return [
-    page,
-    "src/components/landing",
-    "src/components/sections/Faq.astro",
-    "src/styles/landing.css",
-    `src/content/landing/${copy}.yaml`,
-    `src/content/faq/${copy}`,
-  ];
-}
+// What a page is made of: its route, its own components and its copy. Shared chrome (the document shell,
+// header, footer, global styles, src/lib/site.ts) is left out on purpose: a footer tweak does not make
+// every page "modified".
 // The home page and the three service pages (the 2026 redesign): the route, the page's own components and
 // the copy. The copy of one language is one module (src/site/cs.ts, en.ts), so a change to one page's
 // copy re-dates that language's four pages.
@@ -51,9 +41,6 @@ const SOURCES = {
   "/en/software-development": service("src/pages/en/software-development.astro", "en"),
   "/bezpecnost": service("src/pages/bezpecnost.astro", "cs"),
   "/en/security": service("src/pages/en/security.astro", "en"),
-  // The training page and its English twin share the template (src/components/landing) but not the copy
-  "/ai-skoleni": training("src/pages/ai-skoleni.astro", "ai-skoleni"),
-  "/en/ai-training": training("src/pages/en/ai-training.astro", "ai-training"),
   "/ai-pro-vyrobni-firmy": content("src/pages/ai-pro-vyrobni-firmy.astro"),
   "/ai-pro-softwarove-firmy": content("src/pages/ai-pro-softwarove-firmy.astro"),
   "/ai-pro-obchod-a-eshopy": content("src/pages/ai-pro-obchod-a-eshopy.astro"),

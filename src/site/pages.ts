@@ -368,15 +368,6 @@ export const pages = {
         link: { href: "/bezpecnost", label: "Bezpečnost a bezpečnostní prověrka" },
       },
       {
-        kind: "prose",
-        id: "workshopy",
-        title: "Workshopy a AI školení",
-        text: [
-          "Diagnostika je workshop nad jedním procesem. Pokud chcete nejdřív naučit s AI pracovat celý tým, vedeme také jednodenní praktické AI školení pro zaměstnance i vedení.",
-        ],
-        link: { href: "/ai-skoleni", label: "Jednodenní AI školení pro firmy" },
-      },
-      {
         kind: "questions",
         id: "otazky",
         title: "Na co se firmy ptají, než začneme",

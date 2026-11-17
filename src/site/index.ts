@@ -7,7 +7,7 @@ import type { Page, Service, ServiceKey, Site } from "./types";
 
 export type { Block, Cta, IndexItem, Link, Page, Question, Section, Service, ServiceKey, Sheet, Site, Step } from "./types";
 
-// Czech copy gets its no-break spaces here, as in src/lib/content.ts
+// Czech copy gets its no-break spaces here
 const SITES: Record<Locale, Site> = { cs: czechSpacing(cs), en };
 
 export function getSite(lang: Locale): Site {

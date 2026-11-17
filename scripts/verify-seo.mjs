@@ -1,9 +1,9 @@
 /* global process, console, URL */
 // `npm run verify:seo`: checks the built site in dist/client (run `npm run build` first): JSON-LD,
-// sitemap lastmod, hreflang of the service and training pages, no training price anywhere,
+// sitemap lastmod, hreflang of the service pages, the removed pages (no file, no link, no mention),
 // no "agents running" badge and the content rules.
 // Exits 1 when a check fails.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
@@ -31,11 +31,9 @@ const PAGES = {
   "/ai-reseni": "/",
   "/vyvoj-softwaru": "/",
   "/bezpecnost": "/",
-  "/ai-skoleni": "/",
   "/en/ai-solutions": "/en",
   "/en/software-development": "/en",
   "/en/security": "/en",
-  "/en/ai-training": "/en",
   "/ai-pro-vyrobni-firmy": "/",
   "/ai-pro-softwarove-firmy": "/",
   "/ai-pro-obchod-a-eshopy": "/",
@@ -47,8 +45,8 @@ const PAGES = {
 // The industry pages: reached from the home page's "Pro koho" section, which the main menu links to
 const INDUSTRY = ["/ai-pro-vyrobni-firmy", "/ai-pro-softwarove-firmy", "/ai-pro-obchod-a-eshopy"];
 const CZECH_ONLY = [...INDUSTRY, "/jak-pracujeme", "/vysledky", "/o-nas"];
-// The training page and its English twin
-const TRAINING = { cs: "/ai-skoleni", en: "/en/ai-training" };
+// Removed without a replacement: the Worker answers them with a 301 to the home page (src/lib/routing.ts)
+const REMOVED = ["/ai-skoleni", "/en/ai-training"];
 for (const [path, home] of Object.entries(PAGES)) {
   const h = html(path);
   let blocks = [];
@@ -66,14 +64,6 @@ for (const [path, home] of Object.entries(PAGES)) {
   ok(items.at(-1)?.item === canonical(h), `${path} last item = page canonical ${canonical(h)}`);
   ok(items.every((it) => it.item?.startsWith(`${SITE}/`) || it.item === SITE), `${path} breadcrumb URLs on ${SITE}`);
 }
-for (const [lang, path] of Object.entries(TRAINING)) {
-  const course = jsonLd(html(path)).find((b) => b["@type"] === "Course");
-  // The course is held in Czech or English, whichever page describes it
-  const languages = JSON.stringify(["cs", "en"]);
-  ok(JSON.stringify(course?.inLanguage) === languages && JSON.stringify(course?.hasCourseInstance?.inLanguage) === languages && course?.url === `${SITE}${path}`, `${path} (${lang}) Course + CourseInstance inLanguage ${JSON.stringify(course?.inLanguage)}, url ${course?.url}`);
-  ok(course && !("offers" in course) && !/35000|"price"/.test(JSON.stringify(course)), `${path} Course has no Offer/price`);
-  ok(jsonLd(html(path)).some((b) => b["@type"] === "FAQPage" && b.mainEntity?.length === 9), `${path} FAQPage with 9 questions`);
-}
 
 console.log("== sitemap lastmod");
 const sitemap = readFileSync(`${dist}/sitemap.xml`, "utf8");
@@ -89,62 +79,39 @@ for (const u of urls) {
 }
 ok(urls.length === Object.keys(manifest).length, `sitemap has ${urls.length} URLs, manifest ${Object.keys(manifest).length}`);
 
-console.log("== hreflang /ai-skoleni ↔ /en/ai-training");
-const sk = html(TRAINING.cs);
-const en = html(TRAINING.en);
-const expected = { cs: `${SITE}${TRAINING.cs}`, en: `${SITE}${TRAINING.en}`, "x-default": `${SITE}${TRAINING.cs}` };
+console.log("== removed pages");
 const headAlternates = (h) =>
   Object.fromEntries([...h.slice(0, h.indexOf("</head>")).matchAll(/<link rel="alternate" hreflang="([^"]+)" href="([^"]+)"/g)].map((m) => [m[1], m[2]]));
-for (const [path, h] of [[TRAINING.cs, sk], [TRAINING.en, en]]) {
-  ok(JSON.stringify(headAlternates(h)) === JSON.stringify(expected), `${path} <head> hreflang cs, en, x-default = ${JSON.stringify(headAlternates(h))}`);
-  const loc = urls.find((u) => u.loc === `${SITE}${path}`);
-  ok(JSON.stringify(loc?.alternates) === JSON.stringify(Object.values(expected)), `sitemap ${path} alternates ${loc?.alternates.join(", ")}`);
-}
-ok(canonical(en) === expected.en, `/en/ai-training canonical ${canonical(en)}`);
-ok(/<html lang="en"/.test(en) && /<title>[^<]*AI training[^<]*<\/title>/.test(en) && /<meta name="description" content="[^"]+"/.test(en), "/en/ai-training: lang en, English title, description");
 // The language switch (header and footer) on each page points at the other one
 const switches = (h) => [...h.matchAll(/<a [^>]*data-lang-switch="[^"]+"[^>]*>/g)].map((m) => m[0].match(/href="([^"]+)"/)?.[1]);
-ok(switches(sk).length >= 2 && switches(sk).every((href) => href === TRAINING.en), `/ai-skoleni language switch → ${[...new Set(switches(sk))]}`);
-ok(switches(en).length >= 2 && switches(en).every((href) => href === TRAINING.cs), `/en/ai-training language switch → ${[...new Set(switches(en))]}`);
-ok(!sk.includes("/en/ai-skoleni") && !sitemap.includes("/en/ai-skoleni"), "no /en/ai-skoleni in the page or the sitemap");
-// English: the pages of the redesign do not offer the training. Czech: the training is filed under workshops
-// (the footer and /jak-pracujeme link to it).
-const redesigned = ["/en", ...Object.keys(PAGES).filter((p) => p.startsWith("/en/") && !Object.values(TRAINING).includes(p))];
-ok(redesigned.every((p) => !/href="\/(en\/ai-training|ai-skoleni)[#"]/.test(html(p))), "English home and service pages: no link to the training pages");
-ok(/href="\/ai-skoleni"/.test(html("/jak-pracujeme")) && /href="\/ai-skoleni"/.test(html("/")), "/jak-pracujeme and the Czech footer link to /ai-skoleni");
-
-console.log("== share images of the training pages");
-// og:image and twitter:image: absolute, the page's own 1200 × 630 PNG in public/og
 const meta = (h, attr, name) => h.match(new RegExp(`<meta ${attr}="${name}" content="([^"]+)"`))?.[1];
-for (const [path, h, file] of [[TRAINING.cs, sk, "ai-skoleni.png"], [TRAINING.en, en, "en-ai-training.png"]]) {
-  const image = meta(h, "property", "og:image");
-  ok(image === `${SITE}/og/${file}?v=2` && meta(h, "name", "twitter:image") === image, `${path} og:image = twitter:image = ${image}`);
-  const png = readFileSync(`${dist}/og/${file}`);
-  const [width, height] = [png.readUInt32BE(16), png.readUInt32BE(20)];
-  ok(width === 1200 && height === 630 && meta(h, "property", "og:image:width") === "1200" && meta(h, "property", "og:image:height") === "630", `${path} ${file} is ${width}×${height}, meta 1200×630`);
+const builtHtml = readdirSync(dist, { recursive: true }).filter((file) => file.endsWith(".html")).map((file) => file.replaceAll("\\", "/"));
+for (const path of REMOVED) {
+  const stem = path.slice(1);
+  ok(!builtHtml.some((file) => file === `${stem}.html` || file.startsWith(`${stem}/`)), `${path}: no page is built (the Worker redirects it)`);
+  ok(!sitemap.includes(`${SITE}${path}`), `${path} is not in the sitemap`);
 }
+// No link to them and no mention of the offer in any built page: HTML, meta tags and JSON-LD included
+const REMOVED_RE = /školen|skolen|školic|\btrainings?\b|"Course"/i;
+for (const file of builtHtml) {
+  const raw = readFileSync(`${dist}/${file}`, "utf8");
+  ok(!REMOVED_RE.test(raw) && REMOVED.every((path) => !raw.includes(`"${path}`)), `${file}: no link to a removed page, no mention of it`);
+}
+ok(!existsSync(`${dist}/og/ai-skoleni.png`) && !existsSync(`${dist}/og/en-ai-training.png`), "the removed pages' share images are gone");
 
 console.log("== no price, no agents badge");
 const PRICE_RE = /35[\s\u00a0]?000|Kč/;
-for (const path of ["/", "/en", TRAINING.cs, TRAINING.en]) {
+for (const path of ["/", "/en"]) {
   const raw = html(path);
-  ok(!PRICE_RE.test(raw), `${path} has no 35 000 Kč (HTML incl. JSON-LD and meta)`);
+  ok(!PRICE_RE.test(raw), `${path} has no price (HTML incl. JSON-LD and meta)`);
   ok(!/agentů v provozu|agents running|console-live/.test(raw), `${path} has no "agents running" badge`);
 }
-ok(/Cena na vyžádání/.test(visible(sk)), "/ai-skoleni shows Cena na vyžádání");
-ok(/Price on request/.test(visible(en)), `${TRAINING.en} shows Price on request`);
 
 console.log("== content rules");
 const all = ["/", "/en", ...Object.keys(PAGES)].map((p) => [p, visible(html(p))]);
 ok(all.every(([, t]) => !/dotac|subsid/i.test(t)), "no dotace/subsidies");
 ok(all.every(([, t]) => !/pilotní agent/i.test(t)), 'no "pilotní agent"');
-ok(/Mirek Sivák/.test(visible(sk)) && /Mirek Sivák/.test(visible(en)) && all.every(([, t]) => !/Mirek Sivak\b|Miroslav|Miroslava/.test(t)), 'name is "Mirek Sivák"');
-// The training pages: the form is the only contact, so no e-mail address or phone number in the whole HTML
-// (head, JSON-LD and footer included)
-for (const [path, h] of [[TRAINING.cs, sk], [TRAINING.en, en]]) {
-  ok(!/mailto:|tel:|@sivak\.ai|\+420/.test(h), `${path}: no e-mail address or phone number`);
-  ok(!/dotac|subsid|\bgrants?\b/i.test(h), `${path}: no dotace/subsidies/grants, keywords included`);
-}
+ok(/Mirek Sivák/.test(visible(html("/"))) && /Mirek Sivák/.test(visible(html("/en"))) && all.every(([, t]) => !/Mirek Sivak\b|Miroslav|Miroslava/.test(t)), 'name is "Mirek Sivák"');
 
 console.log("== service pages");
 const TWINS = [["/ai-reseni", "/en/ai-solutions"], ["/vyvoj-softwaru", "/en/software-development"], ["/bezpecnost", "/en/security"]];
@@ -178,10 +145,10 @@ for (const path of CZECH_ONLY) {
     ok(!/\d[\d\s\u00a0.,]*(?:mil\.|mld\.)|obrat/i.test(visible(h)), `${path} states no turnover`);
   } else ok(new RegExp(`href="${path}"[^>]*aria-current="page"`).test(h), `${path} is marked in the main menu`);
 }
-ok(["/", "/bezpecnost", "/en"].every((p) => !html(p).includes("data-lang-home")), "twin pages: the language switch keeps the #section");
+// The links themselves: the header's script, inlined in the page, names the attribute in a selector
+ok(["/", "/bezpecnost", "/en"].every((p) => [...html(p).matchAll(/<a [^>]*data-lang-switch="[^"]+"[^>]*>/g)].every((m) => !m[0].includes("data-lang-home"))), "twin pages: the language switch keeps the #section");
 const enHome = html("/en");
 ok(!/software|develop/i.test(visible(enHome.slice(enHome.indexOf('class="hero"'), enHome.indexOf("</section>", enHome.indexOf('class="hero"'))))), 'English home hero: no "software" or "development"');
-for (const [p, re] of [["/ai-skoleni", /href="\/#bezpecnost"/], ["/en/ai-training", /href="\/en#security"/]]) ok(!re.test(html(p)), `${p}: no link to the missing home section`);
 const home = html("/");
 ok(!/software|vývoj/i.test(visible(home.slice(home.indexOf('class="hero"'), home.indexOf("</section>", home.indexOf('class="hero"'))))), 'home hero: no "software" or "vývoj"');
 ok(CZECH_ONLY.every((p) => home.includes(`href="${p}"`)), "home links to every Czech-only page");
