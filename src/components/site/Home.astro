@@ -46,7 +46,30 @@ const services = t.services.map((service) => ({ name: service.name, description:
     </div>
   </section>
 
-  <section class="band band-sheet" id={h.services.id} aria-labelledby={`${h.services.id}-title`}>
+  {
+    h.audience && (
+      <section class="band band-sheet" id={h.audience.id} aria-labelledby={`${h.audience.id}-title`}>
+        <div class="wrap">
+          <div class="head">
+            <h2 class="h2" id={`${h.audience.id}-title`}>{h.audience.title}</h2>
+            <p class="lead">{h.audience.lead}</p>
+          </div>
+          <ul class="index">
+            {h.audience.items.map((item) => (
+              <li class="index-row">
+                <h3 class="index-name">{item.href ? <a href={item.href}>{item.title}</a> : item.title}</h3>
+                <p class="index-text">{item.text}</p>
+                <ul class="index-items">{item.points.map((point) => <li>{point}</li>)}</ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {/* The offers stand on the sheet unless the audience index above already does */}
+  <section class:list={["band", { "band-sheet": !h.audience }]} id={h.services.id} aria-labelledby={`${h.services.id}-title`}>
     <div class="wrap">
       <div class="head">
         <h2 class="h2" id={`${h.services.id}-title`}>{h.services.title}</h2>

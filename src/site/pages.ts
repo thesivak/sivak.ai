@@ -1,13 +1,34 @@
 import { MIREK_LINKEDIN_URL } from "../lib/site";
-import { CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, LADDER, Q, STARTERS } from "./cs-offer";
-import type { Page } from "./types";
+import { CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, INDUSTRIES, LADDER, OFFERS, Q, STARTERS } from "./cs-offer";
+import type { Page, Section } from "./types";
 
-// České stránky mimo tři služby: pro koho pracujeme, jak pracujeme, výsledky a manifest zakladatele.
+// České stránky mimo tři služby: tři oborové stránky (výroba, softwarové firmy, obchod), jak pracujeme,
+// výsledky a manifest zakladatele. Pozicování je podle problému (rutinní práce), obory jsou jen vstupy.
 // Zatím jen česky (src/i18n/pages.ts → CZECH_ONLY_PAGES). Pravidla obsahu jako v cs.ts: žádná jména klientů,
 // žádná vymyšlená čísla ani certifikace a žádný zástupný text: co nemáme doložené, na stránce není
 // (tests/site.test.mjs).
 // Pevné mezery za jednopísmennými předložkami doplní web sám (src/lib/czech.ts).
 const BOTH = [CTA_DIAGNOSTICS, CTA_ESTIMATE];
+
+/** Konec každé oborové stránky: další dva obory a odkaz na výsledky. */
+const otherIndustries = (current: keyof typeof INDUSTRIES): Section => ({
+  kind: "index",
+  id: "dalsi-obory",
+  title: "Pro koho ještě pracujeme",
+  lead: "Obor nerozhoduje. Rozhoduje, kolik času vašim lidem bere rutinní práce.",
+  items: Object.entries(INDUSTRIES).filter(([key]) => key !== current).map(([, item]) => item),
+  link: { href: "/vysledky", label: "Výsledky a případové studie" },
+});
+/** Čtyři fáze spolupráce, na oborových stránkách stejné. */
+const LADDER_STEPS: Section = {
+  kind: "steps",
+  id: "postup",
+  title: "Od odhadu k agentovi v provozu",
+  lead: "Čtyři fáze. Na konci každé se rozhodujete vy, jestli pokračovat. Bez návratnosti nestavíme.",
+  from: 0,
+  items: LADDER,
+};
+const HOW_WE_WORK = { href: "/jak-pracujeme", label: "Jak pracujeme: od odhadu po provoz" };
 
 export const pages = {
   manufacturing: {
@@ -52,47 +73,222 @@ export const pages = {
         title: "Tři nabídky, kterými začínáme",
         lead: "Každá má jasný výstup a každá začíná odhadem návratnosti zdarma.",
         items: STARTERS,
-        link: { href: "/jak-pracujeme", label: "Jak pracujeme: od odhadu po provoz" },
+        link: HOW_WE_WORK,
       },
       {
         kind: "prose",
         id: "pro-koho",
         title: "Pro koho pracujeme",
         text: [
-          "Pro české výrobní a výrobně-obchodní firmy s obratem 80 mil. až 1,5 mld. Kč a 50 až 500 lidmi, kde rozhoduje majitel nebo ředitel.",
+          "Pro výrobní a výrobně-obchodní firmy zhruba s 20 až 500 lidmi, kde rozhoduje majitel nebo vedení.",
           "Pro firmy, které jedou na ERP jako Helios, K2, ABRA, Money nebo SAP Business One a hodně práce dělají v e-mailu, PDF a Excelu.",
           "Nebavíme se s vámi o modelech a technologiích. Bavíme se o tom, kolik práce a peněz ušetříte a kdy se investice vrátí. Proto s námi obvykle jedná majitel nebo generální, finanční či provozní ředitel.",
         ],
       },
       CONTROL,
       DEPLOYMENT,
-      {
-        kind: "steps",
-        id: "postup",
-        title: "Od odhadu k agentovi v provozu",
-        lead: "Čtyři fáze. Na konci každé se rozhodujete vy, jestli pokračovat. Bez návratnosti nestavíme.",
-        from: 0,
-        items: LADDER,
-      },
+      LADDER_STEPS,
       {
         kind: "questions",
         id: "otazky",
         title: "Na co se výrobní firmy ptají",
         items: [
-          Q.systems,
+          Q.erp,
           Q.mistake,
           Q.price,
           Q.noReturn,
           Q.where,
-          {
-            q: "Co budou dělat lidé, kterým agent práci vezme?",
-            a: "To, na co dnes nemají čas. Agent převezme přepisování a porovnávání, lidem zůstane rozhodování, zákazníci a výjimky. Cílem je víc práce se stejným týmem.",
-          },
+          Q.people,
         ],
       },
+      otherIndustries("manufacturing"),
     ],
     contact: {
       title: "Ukažte nám proces, který vás stojí nejvíc",
+      lead: "Odhad návratnosti je zdarma: 45minutový hovor a jednostránkový odhad. Když čísla vyjdou, navážeme AI diagnostikou.",
+      cta: BOTH,
+    },
+  },
+
+  software: {
+    path: "/ai-pro-softwarove-firmy",
+    name: "AI pro softwarové firmy",
+    metadata: {
+      title: "AI agenti pro softwarové a SaaS firmy | sivak.ai",
+      description:
+        "AI agenti pro softwarové a SaaS firmy: třídění zákaznické podpory, testování před vydáním, pomoc vývojovému týmu a průběžné bezpečnostní testy.",
+    },
+    title: "AI agenti pro softwarové firmy, kde podpora a testování brzdí vydávání",
+    lead: "Požadavky zákazníků, ruční testování před každým vydáním a drobné úpravy, na které nezbývá čas. Agenti tu práci připraví a doloží, vaši lidé ji schvalují. Návratnost spočítáme dřív, než začneme.",
+    sheet: {
+      caption: "Ukázka oprávnění agenta",
+      title: "Agent: testování před vydáním",
+      rows: [
+        ["Zadání a změny v kódu", "Čtení"],
+        ["Testovací prostředí", "Ovládání v prohlížeči"],
+        ["Ostrý provoz", "Bez přístupu"],
+        ["Doklady", "Snímky obrazovky a video"],
+        ["Vydání schvaluje", "Člověk"],
+        ["Záznam", "Každý krok"],
+      ],
+    },
+    cta: BOTH,
+    sections: [
+      {
+        kind: "points",
+        id: "kde-mizi-cas",
+        title: "Kde softwarovým firmám mizí čas",
+        lead: "Čtyři místa, kde zkušení lidé dělají práci, která se opakuje s každým požadavkem a s každým vydáním. Tam začínáme.",
+        items: [
+          { title: "Zákaznická podpora", text: "Každý požadavek někdo čte, dohledává historii zákazníka a ověřuje data v aplikaci, než vůbec začne psát odpověď." },
+          { title: "Testování před vydáním", text: "Před každým vydáním se ručně proklikávají stejné scénáře. Když není čas, testuje se méně." },
+          { title: "Drobné změny v kódu", text: "Malé úpravy a opravy čekají ve frontě za velkými úkoly, i když je zadání jasné." },
+          { title: "Bezpečnost po každé změně", text: "Aplikace se mění každý týden, ale bezpečnostní test proběhne jednou za čas. Nové AI funkce přidávají nová rizika." },
+        ],
+      },
+      {
+        kind: "index",
+        id: "startovni-nabidky",
+        title: "Čtyři nabídky, kterými začínáme",
+        lead: "Každá má jasný výstup a každá začíná odhadem návratnosti zdarma.",
+        items: [OFFERS.support, OFFERS.qa, OFFERS.codeReview, OFFERS.securityTests],
+        link: HOW_WE_WORK,
+      },
+      {
+        kind: "work",
+        id: "z-praxe",
+        title: "Z praxe: tým AI agentů v softwarové firmě",
+        lead: "Pro softwarovou firmu provozujeme agenty, kteří každý den pracují vedle lidí z podpory, testování a vývoje.",
+        columns: CASE.columns,
+        rows: CASE.agents,
+        facts: CASE.facts,
+      },
+      {
+        kind: "prose",
+        id: "pro-koho",
+        title: "Pro koho pracujeme",
+        text: [
+          "Pro softwarové a SaaS firmy zhruba s 20 až 500 lidmi, kde rozhoduje majitel nebo vedení.",
+          "Pro firmy, které vyvíjejí a provozují vlastní aplikaci, mají zákaznickou podporu a vydávají často. Agenti pracují vedle vašich lidí z podpory, testování a vývoje, ne místo nich.",
+          "Nebavíme se s vámi o modelech. Bavíme se o tom, kolik času vašim lidem ušetříme a kdy se investice vrátí.",
+        ],
+      },
+      CONTROL,
+      DEPLOYMENT,
+      LADDER_STEPS,
+      {
+        kind: "questions",
+        id: "otazky",
+        title: "Na co se softwarové firmy ptají",
+        items: [
+          {
+            q: "Má agent přístup do ostrého provozu?",
+            a: "Ne. Agenti pro testování a vývoj pracují mimo ostrý provoz. Do firemních systémů mají přístup jen ke čtení a změnu schvaluje a nasazuje člověk.",
+          },
+          {
+            q: "Odpovídá agent zákazníkům sám?",
+            a: "Ne. Agent požadavek prošetří a odpověď připraví. Odesílá ji váš člověk.",
+          },
+          {
+            q: "Jak poznáme, co agent při testu opravdu ověřil?",
+            a: "Každý test doloží snímky obrazovky a videem. Výsledek je prošlo, neprošlo, nebo nelze ověřit, takže nejasný případ nevydává za úspěch.",
+          },
+          Q.mistake,
+          Q.price,
+          Q.noReturn,
+          Q.where,
+        ],
+      },
+      otherIndustries("software"),
+    ],
+    contact: {
+      title: "Ukažte nám práci, která vám brzdí vydávání",
+      lead: "Odhad návratnosti je zdarma: 45minutový hovor a jednostránkový odhad. Když čísla vyjdou, navážeme AI diagnostikou.",
+      cta: BOTH,
+    },
+  },
+
+  commerce: {
+    path: "/ai-pro-obchod-a-eshopy",
+    name: "AI pro obchod a e-shopy",
+    metadata: {
+      title: "AI agenti pro obchodní firmy a e-shopy | sivak.ai",
+      description:
+        "AI agenti pro obchod a e-shopy: příjem objednávek, produktová data, dotazy zákazníků a faktury dodavatelů. Návratnost spočítáme předem, agenty provozujeme.",
+    },
+    title: "AI agenti pro obchod a e-shopy, kde rutina roste s každou objednávkou",
+    lead: "Objednávky z e-mailu, produktová data od dodavatelů, dotazy zákazníků a faktury. Agenti tu práci připraví ve vašich systémech a vaši lidé ji jen zkontrolují. Návratnost spočítáme dřív, než začneme.",
+    sheet: {
+      caption: "Ukázka oprávnění agenta",
+      title: "Agent: dotazy zákazníků",
+      rows: [
+        ["E-mail info@", "Čtení, návrh odpovědi"],
+        ["Objednávky a sklad", "Čtení"],
+        ["Historie zákazníka", "Čtení"],
+        ["Odesílá", "Zákaznická podpora"],
+        ["Hesla", "Spravuje systém"],
+        ["Záznam", "Každý krok"],
+      ],
+    },
+    cta: BOTH,
+    sections: [
+      {
+        kind: "points",
+        id: "kde-mizi-cas",
+        title: "Kde obchodním firmám mizí čas",
+        lead: "Čtyři místa, kde práce přibývá s každou objednávkou a s každým novým produktem. Tam začínáme.",
+        items: [
+          { title: "Příjem objednávek", text: "Objednávky od firemních zákazníků chodí e-mailem, v PDF i v Excelu. Někdo je čte a ručně přepisuje do systému." },
+          { title: "Produktová data", text: "Každý dodavatel posílá ceník a podklady v jiném formátu. Produkty se zakládají a opravují ručně, položku po položce." },
+          { title: "Dotazy zákazníků", text: "Kde je objednávka, kdy bude zboží skladem, jak vyřídit reklamaci. Odpověď se pokaždé dohledává ve více systémech." },
+          { title: "Faktury dodavatelů", text: "Účetní porovnává každou fakturu s objednávkou a příjemkou řádek po řádku." },
+        ],
+      },
+      {
+        kind: "index",
+        id: "startovni-nabidky",
+        title: "Čtyři nabídky, kterými začínáme",
+        lead: "Každá má jasný výstup a každá začíná odhadem návratnosti zdarma.",
+        items: [OFFERS.orders, OFFERS.productData, OFFERS.support, OFFERS.invoices],
+        link: HOW_WE_WORK,
+      },
+      {
+        kind: "prose",
+        id: "pro-koho",
+        title: "Pro koho pracujeme",
+        text: [
+          "Pro obchodní firmy, velkoobchody a e-shopy zhruba s 20 až 500 lidmi, kde rozhoduje majitel nebo vedení.",
+          "Pro firmy, kde objednávky, produkty a dotazy zákazníků procházejí e-mailem, tabulkami a několika systémy, které spolu nemluví.",
+          "Nebavíme se s vámi o modelech a technologiích. Bavíme se o tom, kolik práce a peněz ušetříte a kdy se investice vrátí.",
+        ],
+      },
+      CONTROL,
+      DEPLOYMENT,
+      LADDER_STEPS,
+      {
+        kind: "questions",
+        id: "otazky",
+        title: "Na co se obchodní firmy ptají",
+        items: [
+          {
+            q: "Musíme kvůli agentům měnit e-shop nebo ERP?",
+            a: Q.systems.a,
+          },
+          {
+            q: "Odpovídá agent zákazníkům sám?",
+            a: "Ne. Agent dotaz prošetří a odpověď připraví. Odesílá ji váš člověk.",
+          },
+          Q.mistake,
+          Q.price,
+          Q.noReturn,
+          Q.where,
+          Q.people,
+        ],
+      },
+      otherIndustries("commerce"),
+    ],
+    contact: {
+      title: "Ukažte nám rutinu, která roste s každou objednávkou",
       lead: "Odhad návratnosti je zdarma: 45minutový hovor a jednostránkový odhad. Když čísla vyjdou, navážeme AI diagnostikou.",
       cta: BOTH,
     },
@@ -166,7 +362,7 @@ export const pages = {
         id: "bezpecnostni-proverka",
         title: "Druhé vstupní dveře: bezpečnostní prověrka",
         text: [
-          "Někdy firmu víc než rutina trápí riziko: co všechno je vidět z internetu, kdo má přístup do ERP a co by se stalo, kdyby výroba týden stála.",
+          "Někdy firmu víc než rutina trápí riziko: co všechno je vidět z internetu, kdo má přístup do firemních systémů a co by se stalo, kdyby provoz týden stál.",
           "Pak začínáme bezpečnostní prověrkou. Zjistíme, kam by se útočník dostal, a nálezy předáme vedení podle dopadu na provoz. Na AI agenty se dostane potom, na bezpečnějším základu.",
         ],
         link: { href: "/bezpecnost", label: "Bezpečnost a bezpečnostní prověrka" },
@@ -245,6 +441,14 @@ export const pages = {
           { title: "Každý krok", text: "Každá akce agenta je zaznamenaná. Víte, co udělal a proč." },
         ],
       },
+      {
+        kind: "index",
+        id: "obory",
+        title: "Kde agenti pomáhají",
+        lead: "Stejný postup, jiná rutina. Vyberte obor, který je vám nejblíž.",
+        items: Object.values(INDUSTRIES),
+        link: HOW_WE_WORK,
+      },
     ],
     contact: {
       title: "Zjistěte, jaký výsledek by vyšel u vás",
@@ -261,7 +465,7 @@ export const pages = {
       description:
         "Proč sivak.ai prodává výsledek, a ne technologii. Krátký manifest zakladatele Mirka Siváka: návratnost předem, člověk rozhoduje a za provoz ručíme.",
     },
-    title: "Výrobní firmy nepotřebují další systém. Potřebují, aby práce ubylo.",
+    title: "Firmy nepotřebují další systém. Potřebují, aby práce ubylo.",
     lead: "Proč sivak.ai dělá to, co dělá, a čeho se držíme. Krátký manifest zakladatele. Píše Mirek Sivák.",
     cta: [CTA_ESTIMATE],
     sections: [
@@ -269,7 +473,7 @@ export const pages = {
         kind: "prose",
         title: "Prodávám výsledek",
         text: [
-          "Majitele výrobní firmy nezajímá, jaký model běží na pozadí. Zajímá ho, kolik lidí dnes přepisuje objednávky z e-mailu do ERP a co by ti lidé mohli dělat místo toho.",
+          "Majitele firmy nezajímá, jaký model běží na pozadí. Zajímá ho, kolik lidí dnes přepisuje objednávky, třídí požadavky zákazníků nebo ručně testuje každou verzi a co by ti lidé mohli dělat místo toho.",
           "Proto nezačínám u technologie. Začínám u práce, která firmě zbytečně žere lidi a peníze.",
         ],
       },
@@ -292,7 +496,7 @@ export const pages = {
         kind: "prose",
         title: "Co postavíme, to sami napadneme",
         text: [
-          "Agent má přístup do vašeho ERP a k vašim datům. Kdo ho nasadí bez bezpečnostních testů, otevírá do firmy nové dveře.",
+          "Agent má přístup do vašich systémů a k vašim datům. Kdo ho nasadí bez bezpečnostních testů, otevírá do firmy nové dveře.",
           "Proto mám v jednom týmu lidi, kteří agenty stavějí, i lidi, kteří systémy napadají. Slabá místa hledáme dřív, než je najde někdo jiný.",
         ],
         link: { href: "/bezpecnost", label: "Bezpečnost" },

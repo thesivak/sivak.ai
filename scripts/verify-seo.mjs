@@ -37,12 +37,16 @@ const PAGES = {
   "/en/security": "/en",
   "/en/ai-training": "/en",
   "/ai-pro-vyrobni-firmy": "/",
+  "/ai-pro-softwarove-firmy": "/",
+  "/ai-pro-obchod-a-eshopy": "/",
   "/jak-pracujeme": "/",
   "/vysledky": "/",
   "/o-nas": "/",
 };
 // Czech only (src/site/pages.ts)
-const CZECH_ONLY = ["/ai-pro-vyrobni-firmy", "/jak-pracujeme", "/vysledky", "/o-nas"];
+// The industry pages: reached from the home page's "Pro koho" section, which the main menu links to
+const INDUSTRY = ["/ai-pro-vyrobni-firmy", "/ai-pro-softwarove-firmy", "/ai-pro-obchod-a-eshopy"];
+const CZECH_ONLY = [...INDUSTRY, "/jak-pracujeme", "/vysledky", "/o-nas"];
 // The training page and its English twin
 const TRAINING = { cs: "/ai-skoleni", en: "/en/ai-training" };
 for (const [path, home] of Object.entries(PAGES)) {
@@ -168,7 +172,11 @@ for (const path of CZECH_ONLY) {
   ok(loc && loc.alternates.length === 0, `sitemap has ${path}, no alternates`);
   ok(/<html lang="cs"/.test(h) && meta(h, "property", "og:image") === `${SITE}/og/cs.png?v=4`, `${path} lang cs, share image`);
   ok(h.includes("mailto:"), `${path} has the contact`);
-  ok(new RegExp(`href="${path}"[^>]*aria-current="page"`).test(h), `${path} is marked in the main menu`);
+  if (INDUSTRY.includes(path)) {
+    ok(/href="\/#pro-koho"[^>]*aria-current="true"/.test(h), `${path}: "Pro koho" is marked in the main menu`);
+    ok(INDUSTRY.every((other) => other === path || h.includes(`href="${other}"`)) && h.includes('href="/jak-pracujeme"') && h.includes('href="/vysledky"'), `${path} links to the other industry pages, /jak-pracujeme and /vysledky`);
+    ok(!/\d[\d\s\u00a0.,]*(?:mil\.|mld\.)|obrat/i.test(visible(h)), `${path} states no turnover`);
+  } else ok(new RegExp(`href="${path}"[^>]*aria-current="page"`).test(h), `${path} is marked in the main menu`);
 }
 ok(["/", "/bezpecnost", "/en"].every((p) => !html(p).includes("data-lang-home")), "twin pages: the language switch keeps the #section");
 const enHome = html("/en");
@@ -177,11 +185,14 @@ for (const [p, re] of [["/ai-skoleni", /href="\/#bezpecnost"/], ["/en/ai-trainin
 const home = html("/");
 ok(!/software|vývoj/i.test(visible(home.slice(home.indexOf('class="hero"'), home.indexOf("</section>", home.indexOf('class="hero"'))))), 'home hero: no "software" or "vývoj"');
 ok(CZECH_ONLY.every((p) => home.includes(`href="${p}"`)), "home links to every Czech-only page");
+const audience = home.slice(home.indexOf('id="pro-koho"'), home.indexOf("</section>", home.indexOf('id="pro-koho"')));
+ok(home.includes('id="pro-koho"') && INDUSTRY.every((p) => audience.includes(`href="${p}"`)), 'home: the "Pro koho" section links to the three industry pages');
+ok(!/výrobní/i.test(visible(home.slice(home.indexOf('class="hero"'), home.indexOf("</section>", home.indexOf('class="hero"'))))), "home hero: not for manufacturing companies only");
 const topNav = home.slice(home.indexOf('class="top-links"'), home.indexOf("</ul>", home.indexOf('class="top-links"')));
 ok(!/vyvoj-softwaru/.test(topNav) && /href="\/vyvoj-softwaru"/.test(home), "software development: out of the main menu, still linked (footer)");
 ok(/subject=Objedn%C3%A1vka%3A%20AI%20diagnostika/.test(home) && /subject=Odhad%20n%C3%A1vratnosti%20zdarma/.test(home), "home: both enquiry types (AI diagnostics, free estimate)");
-// No prices on the site; "obrat 80 mil. až 1,5 mld. Kč" on /ai-pro-vyrobni-firmy is a company size
-ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/\d[\d\s\u00a0.,]*(?:Kč|CZK|EUR)/.test(visible(html(p)).replace(/1,5\smld\.\sKč/, ""))), "no price on any page");
+// No prices and no amounts of money on the site
+ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/\d[\d\s\u00a0.,]*(?:Kč|CZK|EUR)/.test(visible(html(p)))), "no price on any page");
 ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/doplnit|TODO|\[[^\]]*\]/i.test(visible(html(p)))), "no placeholder text on any page");
 const everyPage = [...new Set(["/", "/en", ...Object.keys(PAGES)])].map((p) => html(p));
 ok(everyPage.every((h) => !/dotac|subsid|Miroslav|Zapfloor|\+420/i.test(h)), "no dotace, Miroslav, client name or phone number in any page's HTML");
