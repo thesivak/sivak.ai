@@ -1,5 +1,5 @@
 import { MIREK_LINKEDIN_URL } from "../lib/site";
-import { CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, DIAGNOSTICS_PRICE, LADDER, Q, STARTERS } from "./cs-offer";
+import { CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, LADDER, Q, STARTERS } from "./cs-offer";
 import type { Page } from "./types";
 
 // České stránky mimo tři služby: pro koho pracujeme, jak pracujeme, výsledky a manifest zakladatele.
@@ -135,7 +135,7 @@ export const pages = {
           },
           {
             title: "1 · AI diagnostika",
-            text: `Dvoudenní workshop s lidmi, kteří proces denně dělají. ${DIAGNOSTICS_PRICE}; pokud navážete pilotem, odečteme ji z jeho ceny. Rozhodnete se, jestli chcete pilot.`,
+            text: "Dvoudenní workshop s lidmi, kteří proces denně dělají. Má pevnou cenu, kterou znáte předem; pokud navážete pilotem, odečteme ji z jeho ceny. Rozhodnete se, jestli chcete pilot.",
             points: ["Mapa procesu", "Příležitosti seřazené podle návratnosti", "Klikací prototyp na smyšlených datech", "Nabídka s pevnou cenou"],
           },
           {
@@ -188,7 +188,7 @@ export const pages = {
           Q.noReturn,
           {
             q: "Proč je diagnostika placená?",
-            a: `Dva dny pracujeme s vašimi lidmi a odnesete si mapu procesu, seřazené příležitosti, prototyp a nabídku s pevnou cenou. Výstupy jsou vaše, i když s námi dál nepůjdete. Pokud navážete pilotem, ${DIAGNOSTICS_PRICE.replace(" bez DPH", "")} odečteme z jeho ceny.`,
+            a: `Dva dny pracujeme s vašimi lidmi a odnesete si mapu procesu, seřazené příležitosti, prototyp a nabídku s pevnou cenou. Výstupy jsou vaše, i když s námi dál nepůjdete. Pokud navážete pilotem, cenu diagnostiky odečteme z jeho ceny.`,
           },
           {
             q: "Kolik stojí pilot a provoz?",

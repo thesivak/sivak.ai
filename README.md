@@ -86,7 +86,7 @@ service page has Service, FAQPage and BreadcrumbList JSON-LD pointing at the hom
 header's language link is the switch.
 
 The Czech site is positioned for mid-sized manufacturing companies (November 2026). Its offer (the two
-calls to action, the four-phase ladder, the three starter offers, the one price) lives once in
+calls to action, the four-phase ladder, the three starter offers; no prices) lives once in
 `src/site/cs-offer.ts` and is reused by `src/site/cs.ts` and by the Czech-only pages in
 `src/site/pages.ts` (`/ai-pro-vyrobni-firmy`, `/jak-pracujeme`, `/vysledky`, `/o-nas`; template
 `ContentPage.astro`, listed in `CZECH_ONLY_PAGES`: no hreflang, the language link leads to `/en`). The

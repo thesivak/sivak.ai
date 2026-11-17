@@ -124,8 +124,7 @@ console.log("== no price, no agents badge");
 const PRICE_RE = /35[\s\u00a0]?000|Kč/;
 for (const path of ["/", "/en", TRAINING.cs, TRAINING.en]) {
   const raw = html(path);
-  // The Czech home page states one price, the AI diagnostics; the training price stays off every page
-  ok(!(path === "/" ? /35[\s\u00a0]?000/ : PRICE_RE).test(raw), `${path} has no 35 000 Kč (HTML incl. JSON-LD and meta)`);
+  ok(!PRICE_RE.test(raw), `${path} has no 35 000 Kč (HTML incl. JSON-LD and meta)`);
   ok(!/agentů v provozu|agents running|console-live/.test(raw), `${path} has no "agents running" badge`);
 }
 ok(/Cena na vyžádání/.test(visible(sk)), "/ai-skoleni shows Cena na vyžádání");
@@ -176,6 +175,8 @@ ok(CZECH_ONLY.every((p) => home.includes(`href="${p}"`)), "home links to every C
 const topNav = home.slice(home.indexOf('class="top-links"'), home.indexOf("</ul>", home.indexOf('class="top-links"')));
 ok(!/vyvoj-softwaru/.test(topNav) && /href="\/vyvoj-softwaru"/.test(home), "software development: out of the main menu, still linked (footer)");
 ok(/subject=Objedn%C3%A1vka%3A%20AI%20diagnostika/.test(home) && /subject=Odhad%20n%C3%A1vratnosti%20zdarma/.test(home), "home: both enquiry types (AI diagnostics, free estimate)");
+// No prices on the site; "obrat 80 mil. až 1,5 mld. Kč" on /ai-pro-vyrobni-firmy is a company size
+ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/\d[\d\s\u00a0.,]*(?:Kč|CZK|EUR)/.test(visible(html(p)).replace(/1,5\smld\.\sKč/, ""))), "no price on any page");
 const everyPage = [...new Set(["/", "/en", ...Object.keys(PAGES)])].map((p) => html(p));
 ok(everyPage.every((h) => !/dotac|subsid|Miroslav|Zapfloor|\+420/i.test(h)), "no dotace, Miroslav, client name or phone number in any page's HTML");
 

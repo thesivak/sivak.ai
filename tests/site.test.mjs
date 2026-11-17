@@ -50,7 +50,7 @@ test("service pages of the earlier site redirect to their replacements", () => {
 });
 
 const RULES = /Zapfloor|certif|dotac|subsid|\bgrants?\b|české firmy|Czech companies|Miroslav|\+420/iu;
-// Every amount of money in the copy, e.g. "80 000 Kč"; "obrat 80 mil. až 1,5 mld. Kč" is a company size, not a price
+// Every amount of money in the copy, e.g. "80 000 Kč": none is allowed; "obrat 80 mil. až 1,5 mld. Kč" is a company size, not a price
 const pricesIn = (copy) => [...new Set([...copy.matchAll(/\b\d[\d\s.,]*\s*(?:Kč|CZK|EUR|USD)|[€$]\s*\d+/giu)].map((m) => m[0].replace(/\s+/g, " ")))];
 
 for (const [lang, site] of [["cs", cs], ["en", en]]) {
@@ -58,8 +58,8 @@ for (const [lang, site] of [["cs", cs], ["en", en]]) {
     const copy = JSON.stringify(site);
     // No client names, certificates or subsidies
     assert.doesNotMatch(copy, RULES);
-    // The only price on the site is the Czech AI diagnostics (src/site/cs-offer.ts)
-    assert.deepEqual(pricesIn(copy), lang === "cs" ? ["80 000 Kč"] : []);
+    // No prices anywhere on the site
+    assert.deepEqual(pricesIn(copy), []);
     assert.doesNotMatch(copy, /střední a velké|medium and large/iu);
     // English: AI training is not offered on these pages. Czech: it is filed under workshops, in the footer.
     if (lang === "en") assert.doesNotMatch(copy, /\btraining\b/iu);
@@ -100,7 +100,7 @@ test("the Czech-only pages: routes, sitemap, navigation and content rules", () =
   const internal = [...copy.matchAll(/"href":"(\/[^"#]*)/g)].map((m) => m[1]);
   for (const href of [...menu, ...internal]) assert.ok(SITEMAP_PAGES.includes(href.split("#")[0]), href);
   assert.doesNotMatch(JSON.stringify(pages), RULES);
-  assert.deepEqual(pricesIn(JSON.stringify(pages)), ["80 000 Kč"]);
+  assert.deepEqual(pricesIn(JSON.stringify(pages)), []);
 });
 
 test("positioning: the hero sells a result, software development is out of the main menu", () => {

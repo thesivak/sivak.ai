@@ -1,14 +1,12 @@
 import type { Block, Cta, IndexItem, Question, Step } from "./types";
 
 // Nabídka sivak.ai pro výrobní firmy: to, co se opakuje na více českých stránkách (cs.ts, pages.ts), je tady
-// jednou, aby si web neodporoval. Jediná cena na webu je AI diagnostika; ostatní ceny jsou v nabídce klientovi.
+// jednou, aby si web neodporoval. Web neuvádí žádné ceny: klient je dostane v nabídce.
 
 /** Dvě výzvy k akci celého webu. Otevírají e-mail s typem poptávky v předmětu (meetingHref v src/lib/site.ts). */
 export const CTA_DIAGNOSTICS: Cta = { label: "Objednat AI diagnostiku", subject: "Objednávka: AI diagnostika" };
 export const CTA_ESTIMATE: Cta = { label: "Odhad návratnosti zdarma", subject: "Odhad návratnosti zdarma" };
 export const CTA_SECURITY: Cta = { label: "Domluvit bezpečnostní prověrku", subject: "Poptávka: bezpečnostní prověrka" };
-
-export const DIAGNOSTICS_PRICE = "80 000 Kč bez DPH";
 
 /** Čtyři fáze spolupráce, číslované od nuly. Na konci každé se rozhoduje klient. */
 export const LADDER: Step[] = [
@@ -18,7 +16,7 @@ export const LADDER: Step[] = [
   },
   {
     title: "AI diagnostika",
-    text: `Dvoudenní workshop: mapa procesu, příležitosti seřazené podle návratnosti, klikací prototyp a nabídka s pevnou cenou. ${DIAGNOSTICS_PRICE}; při navazujícím pilotu je odečteme z jeho ceny.`,
+    text: `Dvoudenní workshop: mapa procesu, příležitosti seřazené podle návratnosti, klikací prototyp a nabídka s pevnou cenou. Cenu diagnostiky při navazujícím pilotu odečteme z jeho ceny.`,
   },
   {
     title: "Pilot",
@@ -139,7 +137,7 @@ export const Q = {
   },
   price: {
     q: "Kolik to stojí?",
-    a: `Odhad návratnosti je zdarma. AI diagnostika stojí ${DIAGNOSTICS_PRICE} a při navazujícím pilotu ji odečteme z jeho ceny. Pevnou cenu pilotu a měsíční poplatek za provoz dostanete v nabídce na konci diagnostiky.`,
+    a: "Odhad návratnosti je zdarma. AI diagnostika má pevnou cenu, kterou znáte předem, a při navazujícím pilotu ji odečteme z jeho ceny. Pevnou cenu pilotu a měsíční poplatek za provoz dostanete v nabídce na konci diagnostiky.",
   },
   noReturn: {
     q: "Co když návratnost nevyjde?",
