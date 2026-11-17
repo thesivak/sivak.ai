@@ -118,7 +118,7 @@ export const cs: Site = {
         },
         {
           q: "Pro jaké firmy pracujete?",
-          a: "Pro výrobní a výrobně-obchodní firmy s 50 až 500 lidmi, které jedou na ERP a hodně práce dělají v e-mailu, PDF a Excelu. Jedná s námi obvykle majitel nebo ředitel, ne IT.",
+          a: "Zaměřujeme se na výrobní a výrobně-obchodní firmy s 50 až 500 lidmi, které jedou na ERP a hodně práce dělají v e-mailu, PDF a Excelu. Pokud řešíte podobnou rutinu v jiném oboru, ozvěte se: odhad návratnosti probíhá stejně.",
         },
       ],
     },
