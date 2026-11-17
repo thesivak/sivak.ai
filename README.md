@@ -92,7 +92,7 @@ calls to action, the four-phase ladder, the three starter offers; no prices) liv
 `ContentPage.astro`, listed in `CZECH_ONLY_PAGES`: no hreflang, the language link leads to `/en`). The
 Czech header and footer links are `menu` in `cs.ts`; the English site still derives them from the
 services. Calls to action open an e-mail with the enquiry type as its subject (`meetingHref`).
-Placeholders `[doplnit …]` mark data the founder has to supply; `tests/site.test.mjs` counts them.
+The copy holds no placeholder text: what is not documented is left out (`tests/site.test.mjs`).
 
 The training page, the privacy policy's form references and `src/content/home/{cs,en}.yaml` (header,
 footer and FAQ title of the training page) still use the earlier design: `src/layouts/Base.astro`,

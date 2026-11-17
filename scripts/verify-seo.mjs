@@ -182,6 +182,7 @@ ok(!/vyvoj-softwaru/.test(topNav) && /href="\/vyvoj-softwaru"/.test(home), "soft
 ok(/subject=Objedn%C3%A1vka%3A%20AI%20diagnostika/.test(home) && /subject=Odhad%20n%C3%A1vratnosti%20zdarma/.test(home), "home: both enquiry types (AI diagnostics, free estimate)");
 // No prices on the site; "obrat 80 mil. až 1,5 mld. Kč" on /ai-pro-vyrobni-firmy is a company size
 ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/\d[\d\s\u00a0.,]*(?:Kč|CZK|EUR)/.test(visible(html(p)).replace(/1,5\smld\.\sKč/, ""))), "no price on any page");
+ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/doplnit|TODO|\[[^\]]*\]/i.test(visible(html(p)))), "no placeholder text on any page");
 const everyPage = [...new Set(["/", "/en", ...Object.keys(PAGES)])].map((p) => html(p));
 ok(everyPage.every((h) => !/dotac|subsid|Miroslav|Zapfloor|\+420/i.test(h)), "no dotace, Miroslav, client name or phone number in any page's HTML");
 

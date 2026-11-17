@@ -116,12 +116,9 @@ test("positioning: the hero sells a result, software development is out of the m
   assert.equal(cs.home.process.steps.length, 4);
 });
 
-// Placeholders the founder has to replace before the pages go public: listed, so none hides in the copy
-test("placeholders are only on the results and about pages", () => {
-  const marks = (value) => JSON.stringify(value).match(/\[doplnit[^\]]*\]/g) ?? [];
-  assert.deepEqual(marks(cs), []);
-  assert.deepEqual(marks(pages.manufacturing), []);
-  assert.deepEqual(marks(pages.process), []);
-  assert.equal(marks(pages.results).length, 9);
-  assert.equal(marks(pages.about).length, 1);
+// Nothing unfinished goes public: no "[doplnit …]", TODO or other stand-in text in the copy of either language
+test("no placeholders in the copy", () => {
+  const copy = JSON.stringify([cs, en, pages]);
+  assert.doesNotMatch(copy, /doplnit|TODO|placeholder|lorem|\[[^\]"]*\]/iu);
+  assert.deepEqual(pages.results.sections.map((section) => section.id), ["softwarova-firma", "co-merime"]);
 });

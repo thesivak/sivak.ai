@@ -4,8 +4,8 @@ import type { Page } from "./types";
 
 // České stránky mimo tři služby: pro koho pracujeme, jak pracujeme, výsledky a manifest zakladatele.
 // Zatím jen česky (src/i18n/pages.ts → CZECH_ONLY_PAGES). Pravidla obsahu jako v cs.ts: žádná jména klientů,
-// žádná vymyšlená čísla ani certifikace. Kde data chybí, stojí zástupný text v hranatých závorkách
-// „[doplnit …]“: tests/site.test.mjs je vypisuje a před zveřejněním je musí Mirek nahradit.
+// žádná vymyšlená čísla ani certifikace a žádný zástupný text: co nemáme doložené, na stránce není
+// (tests/site.test.mjs).
 // Pevné mezery za jednopísmennými předložkami doplní web sám (src/lib/czech.ts).
 const BOTH = [CTA_DIAGNOSTICS, CTA_ESTIMATE];
 
@@ -219,10 +219,10 @@ export const pages = {
     metadata: {
       title: "Výsledky: AI agenti v provozu | sivak.ai",
       description:
-        "Případové studie AI agentů, které stavíme a provozujeme. Anonymně a jen s čísly, která jsme změřili proti výchozímu stavu. Co agenti dělají a jak běží.",
+        "Případová studie AI agentů, které stavíme a provozujeme: co agenti dělají, jak běží a co u každého projektu měříme proti výchozímu stavu.",
     },
     title: "Výsledek měříme proti výchozímu stavu",
-    lead: "Co naši agenti v provozu dělají a co odvedli. Případové studie zveřejňujeme anonymně a jen s čísly, která máme změřená.",
+    lead: "Co naši agenti v provozu dělají, jak běží a jak jejich práci měříme. Případové studie zveřejňujeme anonymně.",
     cta: [CTA_ESTIMATE, CTA_DIAGNOSTICS],
     sections: [
       {
@@ -233,29 +233,6 @@ export const pages = {
         columns: CASE.columns,
         rows: CASE.agents,
         facts: CASE.facts,
-      },
-      {
-        kind: "points",
-        id: "cisla",
-        title: "Výsledek v číslech",
-        lead: "[doplnit: období měření a zdroj čísel]",
-        items: [
-          { title: "[doplnit číslo] požadavků", text: "Požadavky zákaznické podpory, které agent prošetří za měsíc. [doplnit]" },
-          { title: "[doplnit číslo] hodin", text: "Čas, který agenti týmu měsíčně ušetří proti výchozímu stavu. [doplnit]" },
-          { title: "[doplnit číslo] verzí", text: "Verze aplikace, které agent před vydáním otestoval. [doplnit]" },
-        ],
-      },
-      {
-        kind: "prose",
-        id: "slovo-klienta",
-        title: "Slovo klienta",
-        text: ["[doplnit: citace klienta, jen s jeho souhlasem; jinak tuto část před zveřejněním odstranit]"],
-      },
-      {
-        kind: "prose",
-        id: "vyroba",
-        title: "Případová studie z výroby",
-        text: ["[doplnit: případová studie z výrobní firmy – proces, výchozí stav, výsledek pilotu; jinak tuto část před zveřejněním odstranit]"],
       },
       {
         kind: "points",
@@ -332,8 +309,7 @@ export const pages = {
         kind: "prose",
         title: "Kdo to píše",
         text: [
-          "Mirek Sivák, zakladatel a CEO sivak.ai.",
-          "[doplnit: 2–3 věty o Mirkovi – odkud přichází a proč sivak.ai založil]",
+          "Mirek Sivák, zakladatel a CEO sivak.ai. Se svým týmem staví AI agenty, kteří běží v provozu.",
         ],
         link: { href: MIREK_LINKEDIN_URL, label: "Mirek Sivák na LinkedInu" },
       },
