@@ -3,6 +3,9 @@
 // sitemap lastmod, hreflang of the service pages, the removed pages (no file, no link, no mention),
 // no "agents running" badge and the content rules.
 // Exits 1 when a check fails.
+// `npm run verify:release` (--release): the same, and no preview value may be left on any page. Without the
+// flag the tag "UKÁZKA – potvrdí Mirek" and the stand-in figure "[X]" are let through and only listed;
+// they mark values Mirek has not confirmed and must be gone before a deploy.
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
@@ -10,6 +13,10 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dist = `${root}dist/client`;
 const SITE = "https://www.sivak.ai";
 const NBSP = " ";
+// The preview tag and stand-in figure (src/site/preview.ts); the tag as typed and as the site spaces it
+const RELEASE = process.argv.includes("--release");
+const PREVIEW_TAG = /UKÁZKA[\s\u00a0]–[\s\u00a0]potvrdí[\s\u00a0]Mirek/g;
+const PREVIEW_FIGURE = "[X]";
 
 let failures = 0;
 const ok = (cond, msg) => {
@@ -38,13 +45,14 @@ const PAGES = {
   "/ai-pro-softwarove-firmy": "/",
   "/ai-pro-obchod-a-eshopy": "/",
   "/jak-pracujeme": "/",
+  "/en/how-we-work": "/en",
   "/vysledky": "/",
   "/o-nas": "/",
 };
 // Czech only (src/site/pages.ts)
 // The industry pages: reached from the home page's "Pro koho" section, which the main menu links to
 const INDUSTRY = ["/ai-pro-vyrobni-firmy", "/ai-pro-softwarove-firmy", "/ai-pro-obchod-a-eshopy"];
-const CZECH_ONLY = [...INDUSTRY, "/jak-pracujeme", "/vysledky", "/o-nas"];
+const CZECH_ONLY = [...INDUSTRY, "/vysledky", "/o-nas"];
 // Removed without a replacement: the Worker answers them with a 301 to the home page (src/lib/routing.ts)
 const REMOVED = ["/ai-skoleni", "/en/ai-training"];
 for (const [path, home] of Object.entries(PAGES)) {
@@ -114,15 +122,19 @@ ok(all.every(([, t]) => !/pilotní agent/i.test(t)), 'no "pilotní agent"');
 ok(/Mirek Sivák/.test(visible(html("/"))) && /Mirek Sivák/.test(visible(html("/en"))) && all.every(([, t]) => !/Mirek Sivak\b|Miroslav|Miroslava/.test(t)), 'name is "Mirek Sivák"');
 
 console.log("== service pages");
-const TWINS = [["/ai-reseni", "/en/ai-solutions"], ["/vyvoj-softwaru", "/en/software-development"], ["/bezpecnost", "/en/security"]];
-for (const [cz, eng] of TWINS) {
+const SERVICE_TWINS = [["/ai-reseni", "/en/ai-solutions"], ["/vyvoj-softwaru", "/en/software-development"], ["/bezpecnost", "/en/security"]];
+// A content page in both languages (src/site/pages.ts, pages-en.ts): the same checks, without Service data
+const CONTENT_TWINS = [["/jak-pracujeme", "/en/how-we-work"]];
+for (const [cz, eng] of [...SERVICE_TWINS, ...CONTENT_TWINS]) {
+  const isService = SERVICE_TWINS.some((pair) => pair[0] === cz);
   const alternates = { cs: `${SITE}${cz}`, en: `${SITE}${eng}`, "x-default": `${SITE}${cz}` };
   for (const [path, twin, lang] of [[cz, eng, "cs"], [eng, cz, "en"]]) {
     const h = html(path);
     ok(canonical(h) === `${SITE}${path}`, `${path} canonical`);
     ok(JSON.stringify(headAlternates(h)) === JSON.stringify(alternates), `${path} hreflang`);
     ok(switches(h).length >= 2 && switches(h).every((href) => href === twin), `${path} language switch`);
-    ok(jsonLd(h).some((b) => b["@type"] === "Service") && jsonLd(h).some((b) => b["@type"] === "FAQPage" && b.mainEntity.length >= 3), `${path} Service and FAQ data`);
+    ok((!isService || jsonLd(h).some((b) => b["@type"] === "Service")) && jsonLd(h).some((b) => b["@type"] === "FAQPage" && b.mainEntity.length >= 3), `${path} ${isService ? "Service and " : ""}FAQ data`);
+    if (!isService) ok(new RegExp(`href="${path}"[^>]*aria-current="page"`).test(h) && new RegExp(`<html lang="${lang}"`).test(h), `${path} is marked in the main menu, lang ${lang}`);
     ok(meta(h, "property", "og:image") === `${SITE}/og/${lang}.png?v=4` && meta(h, "name", "twitter:image") === `${SITE}/og/${lang}.png?v=4`, `${path} share image`);
     ok(h.includes("mailto:"), `${path} has the contact`);
   }
@@ -151,7 +163,8 @@ const enHome = html("/en");
 ok(!/software|develop/i.test(visible(enHome.slice(enHome.indexOf('class="hero"'), enHome.indexOf("</section>", enHome.indexOf('class="hero"'))))), 'English home hero: no "software" or "development"');
 const home = html("/");
 ok(!/software|vývoj/i.test(visible(home.slice(home.indexOf('class="hero"'), home.indexOf("</section>", home.indexOf('class="hero"'))))), 'home hero: no "software" or "vývoj"');
-ok(CZECH_ONLY.every((p) => home.includes(`href="${p}"`)), "home links to every Czech-only page");
+ok([...CZECH_ONLY, "/jak-pracujeme"].every((p) => home.includes(`href="${p}"`)), "home links to every Czech-only page and to /jak-pracujeme");
+ok(enHome.includes('href="/en/how-we-work"') && CZECH_ONLY.every((p) => !enHome.includes(`href="${p}"`)), "English home links to /en/how-we-work and to no Czech-only page");
 const audience = home.slice(home.indexOf('id="pro-koho"'), home.indexOf("</section>", home.indexOf('id="pro-koho"')));
 ok(home.includes('id="pro-koho"') && INDUSTRY.every((p) => audience.includes(`href="${p}"`)), 'home: the "Pro koho" section links to the three industry pages');
 ok(!/výrobní/i.test(visible(home.slice(home.indexOf('class="hero"'), home.indexOf("</section>", home.indexOf('class="hero"'))))), "home hero: not for manufacturing companies only");
@@ -160,7 +173,17 @@ ok(!/vyvoj-softwaru/.test(topNav) && /href="\/vyvoj-softwaru"/.test(home), "soft
 ok(/subject=Objedn%C3%A1vka%3A%20AI%20diagnostika/.test(home) && /subject=Odhad%20n%C3%A1vratnosti%20zdarma/.test(home), "home: both enquiry types (AI diagnostics, free estimate)");
 // No prices and no amounts of money on the site
 ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/\d[\d\s\u00a0.,]*(?:Kč|CZK|EUR)/.test(visible(html(p)))), "no price on any page");
-ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/doplnit|TODO|\[[^\]]*\]/i.test(visible(html(p)))), "no placeholder text on any page");
+// PREVIEW exception, for this exact tag and figure only; --release takes it away
+const withoutPreview = (text) => (RELEASE ? text : text.replace(PREVIEW_TAG, "").replaceAll(PREVIEW_FIGURE, ""));
+ok([...new Set(["/", "/en", ...Object.keys(PAGES)])].every((p) => !/doplnit|TODO|\[[^\]]*\]/i.test(withoutPreview(visible(html(p))))), "no placeholder text on any page");
+const previews = builtHtml
+  .map((file) => [file, (visible(readFileSync(`${dist}/${file}`, "utf8")).match(PREVIEW_TAG) ?? []).length])
+  .filter(([, count]) => count > 0);
+if (RELEASE) ok(previews.length === 0, `no preview value left on any page (${previews.map(([file, count]) => `${file}: ${count}`).join(", ") || "none"})`);
+else if (previews.length) {
+  console.log(`WARN  ${previews.length} pages carry the preview tag "UKÁZKA – potvrdí Mirek"; confirm or remove before a deploy (npm run verify:release):`);
+  for (const [file, count] of previews) console.log(`      ${file}: ${count}×`);
+}
 const everyPage = [...new Set(["/", "/en", ...Object.keys(PAGES)])].map((p) => html(p));
 ok(everyPage.every((h) => !/dotac|subsid|Miroslav|Zapfloor|\+420/i.test(h)), "no dotace, Miroslav, client name or phone number in any page's HTML");
 

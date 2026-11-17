@@ -1,4 +1,24 @@
-import { AUDIENCE_ID, CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, HOME_STARTERS, INDUSTRIES, LADDER, Q } from "./cs-offer";
+import {
+  AUDIENCE_ID,
+  CASE,
+  CONTROL,
+  CTA_DIAGNOSTICS,
+  CTA_ESTIMATE,
+  CTA_SECURITY,
+  DEPLOYMENT,
+  GUARANTEE,
+  GUARANTEE_ID,
+  HOME_STARTERS,
+  INDUSTRIES,
+  LADDER,
+  METHOD,
+  NOT_DOING,
+  NOT_DOING_ID,
+  PROMISE,
+  Q,
+  RESULT,
+  RESULT_ID,
+} from "./cs-offer";
 import type { Site } from "./types";
 
 // České texty webu. Pozicování (listopad 2026): podle problému, ne podle oboru. sivak.ai pracuje pro středně
@@ -52,6 +72,8 @@ export const cs: Site = {
     hero: {
       title: ["AI řešení, která vydělávají peníze.", "A která nikdo nezneužije."],
       lead: "Pro středně velké firmy, kde rutina žere čas lidí. Najdeme jeden proces s nejrychlejší návratností, postavíme na něj agenta a ručíme za jeho provoz i bezpečnost.",
+      // UKÁZKA – potvrdí Mirek: nepotvrzený termín, na webu se štítkem
+      promise: { text: PROMISE, preview: true },
       primary: CTA_DIAGNOSTICS.label,
       secondary: CTA_ESTIMATE.label,
       cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
@@ -100,6 +122,9 @@ export const cs: Site = {
         },
       ],
     },
+    // UKÁZKA – potvrdí Mirek: zástupný výsledek bez čísla, na webu se štítkem
+    result: { id: RESULT_ID, ...RESULT, preview: true, link: { href: `/vysledky#${RESULT_ID}`, label: "Výsledky a případové studie" } },
+    notDoing: { id: NOT_DOING_ID, title: NOT_DOING.title, lead: NOT_DOING.lead, items: NOT_DOING.items },
     work: {
       id: "z-praxe",
       title: "Z praxe: tým AI agentů v softwarové firmě",
@@ -128,11 +153,19 @@ export const cs: Site = {
     },
     process: {
       id: "postup",
-      title: "Jak pracujeme",
+      title: `Jak pracujeme: metoda ${METHOD}`,
       lead: "Čtyři fáze. Na konci každé se rozhodujete vy, jestli pokračovat. Bez návratnosti nestavíme.",
       steps: LADDER,
       from: 0,
       link: { href: "/jak-pracujeme", label: "Co v každé fázi dostanete" },
+    },
+    // UKÁZKA – potvrdí Mirek: nepotvrzená záruka, na webu se štítkem; celé znění je na /jak-pracujeme
+    guarantee: {
+      id: GUARANTEE_ID,
+      title: GUARANTEE.title,
+      text: [GUARANTEE.short],
+      link: { href: `/jak-pracujeme#${GUARANTEE_ID}`, label: "Podmínky záruky" },
+      preview: true,
     },
     contact: {
       id: "kontakt",

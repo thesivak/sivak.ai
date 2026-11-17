@@ -330,6 +330,28 @@ button { font: inherit; color: inherit; }
 .work-facts { display: flex; flex-wrap: wrap; gap: 10px 40px; margin-top: 28px; font-weight: 600; font-stretch: 92%; }
 .work-facts li { padding-left: 18px; background: linear-gradient(var(--on-ink), var(--on-ink)) 0 .7em / 10px 2px no-repeat; }
 
+/* ——— NÁHLED (větev web-v3-preview): štítek nepotvrzené hodnoty „UKÁZKA – potvrdí Mirek“.
+   Jediná nová drobnost vzhledu, ze stávajících barev a písma; před nasazením odejde i s tím, co označuje. ——— */
+
+.preview-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 14px;
+  font-weight: 700;
+  font-stretch: 92%;
+  line-height: 1.45;
+  letter-spacing: 0;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.preview-line { margin-bottom: 14px; }
+.prose .preview-line + p { margin-top: 0; }
+.hero-promise { margin-bottom: 16px; text-wrap: balance; }
+/* The figure of a result (Result.astro) stands above its label like a step's number */
+.points .steps-num + .h3 { margin-top: 14px; }
+
 /* ——— Questions ——— */
 
 .qa { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(32px, 5vw, 80px); margin-top: clamp(32px, 4vw, 56px); }

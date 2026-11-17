@@ -2,17 +2,21 @@ import type { Locale } from "./config";
 
 /** Home page sections that exist in both languages (src/site/{cs,en}.ts), by their id in each. */
 export const SECTION_IDS: readonly Record<Locale, string>[] = [
+  { cs: "pro-koho", en: "who-we-work-for" },
   { cs: "sluzby", en: "services" },
+  { cs: "vysledek", en: "result" },
+  { cs: "co-nedelame", en: "what-we-dont-do" },
   { cs: "z-praxe", en: "case-study" },
   { cs: "otazky", en: "faq" },
   { cs: "postup", en: "process" },
+  { cs: "zaruka", en: "guarantee" },
   { cs: "kontakt", en: "contact" },
 ];
 
 /** Home page sections one language has and the other does not: the language switch drops their fragment.
     Every home page section is in SECTION_IDS or here (tests/section-anchors.test.mjs). */
 export const UNPAIRED_SECTION_IDS: Record<Locale, readonly string[]> = {
-  cs: ["pro-koho"],
+  cs: [],
   en: [],
 };
 

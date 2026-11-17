@@ -8,6 +8,8 @@ export const TWIN_PAGES: Record<Locale, string>[] = [
   { cs: "/ai-reseni", en: "/en/ai-solutions" },
   { cs: "/vyvoj-softwaru", en: "/en/software-development" },
   { cs: "/bezpecnost", en: "/en/security" },
+  // How we work (src/site/pages.ts, pages-en.ts)
+  { cs: "/jak-pracujeme", en: "/en/how-we-work" },
 ];
 
 // Service pages of the earlier site, each answered with a 308 to the page that replaced it
@@ -18,7 +20,7 @@ export const MOVED_PAGES: Record<string, string> = {
   "/ai-automatizace": "/ai-reseni",
   "/en/ai-automation": "/en/ai-solutions",
   "/pilotni-projekt": "/jak-pracujeme",
-  "/en/pilot-project": "/en/ai-solutions",
+  "/en/pilot-project": "/en/how-we-work",
   "/ai-bezpecnost": "/bezpecnost",
   "/en/ai-security": "/en/security",
 };
@@ -44,7 +46,7 @@ export function removedPageTarget(path: string): string | undefined {
 // language link leads to the English home page. The trailing-slash and .html redirects reach them through
 // the wildcards in wrangler.jsonc → run_worker_first; they need no entry of their own, having no ?lang= twin.
 // The first three are the industry pages, reached from the home page's "Pro koho" section.
-export const CZECH_ONLY_PAGES: string[] = ["/ai-pro-vyrobni-firmy", "/ai-pro-softwarove-firmy", "/ai-pro-obchod-a-eshopy", "/jak-pracujeme", "/vysledky", "/o-nas"];
+export const CZECH_ONLY_PAGES: string[] = ["/ai-pro-vyrobni-firmy", "/ai-pro-softwarove-firmy", "/ai-pro-obchod-a-eshopy", "/vysledky", "/o-nas"];
 
 /** Every indexable page, in sitemap order: the twins (Czech, then English), then the Czech-only pages. */
 export const SITEMAP_PAGES: string[] = [...TWIN_PAGES.flatMap((pair) => [pair.cs, pair.en]), ...CZECH_ONLY_PAGES];

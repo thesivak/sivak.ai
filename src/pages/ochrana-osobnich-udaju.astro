@@ -6,11 +6,13 @@ import BrandLogo from "@/components/BrandLogo.astro";
 import { czechSpacingHtml } from "@/lib/czech";
 import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_MONTHS } from "@/lib/consent";
 import { COMPANY, GA_MEASUREMENT_ID, PRIVACY_CONTACT_EMAIL, seatAddress } from "@/lib/site";
+import { PREVIEW_LABEL } from "@/site/preview";
 import { LIMIT, WINDOW_MS } from "@/lib/server/rate-limit";
 import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 
 // DRAFT for Mirek's legal check: not final until every [DOPLNIT: …] is filled in and a lawyer has read it.
-// One placeholder remains: the Google Analytics data retention (Mirek's setting in GA).
+// One placeholder remains: the Google Analytics data retention (Mirek's setting in GA). On the preview
+// branch it stands with the preview tag "UKÁZKA – potvrdí Mirek" so nobody takes it for final text.
 // Kept out of search engines (noindex) until then. Linked from the footer and the cookie banner.
 // The enquiry form was removed from the site together with its page; the API (/api/poptavka), the database
 // and the retention cron stay, so the policy still covers the enquiries sent while the form existed.
@@ -20,8 +22,8 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 //    the hourly cron in src/worker.ts; notification e-mails are deleted by hand (README → Retention)
 //  - Turnstile, notification e-mails: src/lib/server/turnstile.ts, src/lib/server/notify.ts
 //  - Google Analytics on every page (src/layouts/Document.astro) under Google Consent Mode v2, with the cookie
-//    banner (src/components/CookieConsent.astro, src/lib/consent.ts); the Google Ads parts are shown only
-//    when PUBLIC_GOOGLE_ADS_ID is set at build time (leave it unset: no page loads an Ads tag any more)
+//    banner (src/components/CookieConsent.astro, src/lib/consent.ts). Analytics is the only optional purpose:
+//    the site uses no Google Ads and no marketing cookies, and the policy no longer describes any
 //  - the `lang` cookie (src/lib/routing.ts, src/components/language-hint.ts), the consent record in
 //    localStorage (src/lib/consent.ts)
 // Controller details as verified by Mirek in ARES and the commercial register on 27 October 2026, except the seat:
@@ -32,7 +34,6 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 // The form's checkbox was an acknowledgement, not consent (CONSENT in fields.ts, one wording and version per language).
 // The stored `source` records which language version of the form an enquiry came from.
 const contact = PRIVACY_CONTACT_EMAIL;
-const ads = Boolean(import.meta.env.PUBLIC_GOOGLE_ADS_ID);
 const windowMinutes = WINDOW_MS / 60_000;
 const mail = `<a href="mailto:${contact}">${contact}</a>`;
 
@@ -73,12 +74,13 @@ prohlížeč poslal s formulářem.</p>
     a zařízení a IP adresa, podle kterých služba rozpozná automatizované odesílání. Ověřovací token
     a IP adresu předáváme Cloudflare k ověření; výsledek si neukládáme.</li>
 </ul>
-<h3>Měření návštěvnosti${ads ? " a reklam" : ""} – jen s vaším souhlasem</h3>
+<h3>Měření návštěvnosti – jen s vaším souhlasem</h3>
 <p>Na stránkách webu je značka Google Analytics 4 (${GA_MEASUREMENT_ID}). Cookies ukládá a návštěvu měří jen
 tehdy, když s analytickými cookies souhlasíte v liště cookies. Google pak zpracovává údaje o návštěvě –
 například zobrazené stránky, typ zařízení a prohlížeče a přibližnou polohu odvozenou z IP adresy.
 Bez souhlasu běží značka v režimu Google Consent Mode: cookies neukládá ani nečte a Google od ní může
-dostávat jen základní technické údaje o zobrazení stránky bez identifikátorů z cookies.</p>
+dostávat jen základní technické údaje o zobrazení stránky bez identifikátorů z cookies. Reklamní systémy (například Google Ads) ani marketingové cookies na webu
+nepoužíváme.</p>
 
 <h2>Proč a na jakém právním základě</h2>
 <ul>
@@ -92,10 +94,9 @@ dostávat jen základní technické údaje o zobrazení stránky bez identifiká
     písm. f) GDPR.</li>
   <li><strong>Zapamatování zvoleného jazyka</strong> (cookie lang) – oprávněný zájem na fungování
     přepínače jazyka, čl. 6 odst. 1 písm. f) GDPR.</li>
-  <li><strong>Měření návštěvnosti${ads ? " a konverzí z reklam" : ""}</strong> (analytické${ads ? " a marketingové" : ""} cookies,
-    Google Analytics${ads ? ", Google Ads" : ""}) – váš souhlas podle § 89 odst. 3 zákona č. 127/2005 Sb.,
-    o elektronických komunikacích, a čl. 6 odst. 1 písm. a) GDPR. Souhlas dáváte v liště cookies zvlášť
-    pro analytické a pro marketingové cookies a můžete ho kdykoli odvolat (viz Cookies a úložiště v prohlížeči).
+  <li><strong>Měření návštěvnosti</strong> (analytické cookies, Google Analytics) – váš souhlas podle
+    § 89 odst. 3 zákona č. 127/2005 Sb., o elektronických komunikacích, a čl. 6 odst. 1 písm. a) GDPR.
+    Souhlas dáváte v liště cookies a můžete ho kdykoli odvolat (viz Cookies a úložiště v prohlížeči).
     Odvolání se netýká zpracování před ním.</li>
   <li><strong>Uložení vaší volby v liště cookies</strong> – nezbytné pro fungování lišty, ukládá se jen ve vašem
     prohlížeči (§ 89 odst. 3 zákona o elektronických komunikacích, výjimka pro nezbytné ukládání).</li>
@@ -114,7 +115,8 @@ Automatizované rozhodování ani profilování neprovádíme.</p>
   <li><strong>Záznamy pro omezení počtu odeslání</strong> (otisk IP adresy a čas pokusu) mažeme nejpozději
     po 24 hodinách. Formulář přijme z jedné IP adresy nejvýše ${LIMIT} odeslání za ${windowMinutes} minut.</li>
   <li><strong>Cookies a úložiště v prohlížeči</strong>: podle tabulky níže.</li>
-  <li><strong>Údaje o návštěvách v Google Analytics</strong>: [DOPLNIT: doba uchování nastavená ve službě].</li>
+  <li><strong>Údaje o návštěvách v Google Analytics</strong>: <span class="preview-tag">${PREVIEW_LABEL}</span>
+    [DOPLNIT: doba uchování nastavená ve službě Google Analytics – náhledová poznámka, doplní Mirek].</li>
 </ul>
 
 <h2>Cookies a úložiště v prohlížeči</h2>
@@ -128,18 +130,11 @@ zeptáme znovu.</p>
     <tr><td>lang (cookie)</td><td>zvolený jazyk webu</td><td>sivak.ai</td><td>1 rok</td><td>jen po přepnutí jazyka nebo zavření nabídky jiného jazyka, nezbytné</td></tr>
     <tr><td>_ga</td><td>rozlišení návštěvníků v Google Analytics</td><td>Google</td><td>2 roky</td><td>jen se souhlasem s analytickými cookies</td></tr>
     <tr><td>_ga_${GA_MEASUREMENT_ID.replace(/^G-/, "")}</td><td>stav návštěvy v Google Analytics</td><td>Google</td><td>2 roky</td><td>jen se souhlasem s analytickými cookies</td></tr>
-${
-  ads
-    ? `    <tr><td>_gcl_au</td><td>měření konverzí z reklam Google Ads</td><td>Google</td><td>90 dní</td><td>jen se souhlasem s marketingovými cookies</td></tr>
-    <tr><td>_gcl_aw</td><td>identifikátor kliknutí na reklamu, pokud jste přišli z reklamy Google</td><td>Google</td><td>90 dní</td><td>jen se souhlasem s marketingovými cookies</td></tr>`
-    : ""
-}
   </tbody>
 </table></div>
 <p><strong>Jak souhlas změnit nebo odvolat:</strong> odkazem Nastavení cookies v patičce webu<span
 class="privacy-cookies-here" data-cookie-settings-wrap hidden>, nebo zde: <button type="button" class="privacy-cookies" data-cookie-settings>otevřít nastavení cookies</button></span>.
-Po odvolání přestaneme Google Analytics${ads ? " a Google Ads" : ""} používat a cookies _ga, _ga_*${ads ? " a _gcl_*" : ""}
-z vašeho prohlížeče smažeme.</p>
+Po odvolání přestaneme Google Analytics používat a cookies _ga a _ga_* z vašeho prohlížeče smažeme.</p>
 
 <h2>Kdo k údajům má přístup</h2>
 <p>Poptávky vidí jen naši pracovníci, kteří je vyřizují. Údaje neprodáváme a nepředáváme je dalším
@@ -151,7 +146,7 @@ subjektům, kromě těchto zpracovatelů a příjemců:</p>
     parametrů kampaně;</li>
   <li><strong>Google (Google Workspace)</strong> – e-mailové schránky našich pracovníků, do kterých oznámení
     o poptávkách přicházejí;</li>
-  <li><strong>Google Ireland Limited a Google LLC</strong> – Google Analytics${ads ? " a Google Ads" : ""}.</li>
+  <li><strong>Google Ireland Limited a Google LLC</strong> – Google Analytics.</li>
 </ul>
 
 <h2>Předávání mimo EU</h2>
@@ -169,7 +164,7 @@ smluvní doložky schválené Evropskou komisí.</p>
   <li>na omezení zpracování (čl. 18),</li>
   <li>na přenositelnost údajů (čl. 20),</li>
   <li>vznést námitku proti zpracování na základě oprávněného zájmu (čl. 21),</li>
-  <li>kdykoli odvolat souhlas s analytickými a marketingovými cookies (čl. 7 odst. 3), odkazem Nastavení cookies v patičce,</li>
+  <li>kdykoli odvolat souhlas s analytickými cookies (čl. 7 odst. 3), odkazem Nastavení cookies v patičce,</li>
   <li>podat stížnost u Úřadu pro ochranu osobních údajů (<a href="https://www.uoou.cz/" rel="noopener">www.uoou.cz</a>).</li>
 </ul>
 <p>Svá práva uplatníte e-mailem na ${mail}. Odpovíme bez zbytečného odkladu, nejpozději do jednoho měsíce.</p>

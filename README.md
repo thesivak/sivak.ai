@@ -37,7 +37,7 @@ Content pages are prerendered at build time (`output: "static"`); only `src/page
 
 Czech lives at `/`, English at `/en`. Pages that exist in both languages are listed in
 `src/i18n/pages.ts`: `/` ↔ `/en`, `/ai-reseni` ↔ `/en/ai-solutions`, `/vyvoj-softwaru` ↔
-`/en/software-development`, `/bezpecnost` ↔ `/en/security`. That list
+`/en/software-development`, `/bezpecnost` ↔ `/en/security`, `/jak-pracujeme` ↔ `/en/how-we-work`. That list
 drives the sitemap and the `?lang=` compatibility redirect. The service pages of the earlier site
 (`/ai-agenti`, `/ai-automatizace`, `/pilotni-projekt`, `/ai-bezpecnost` and their English twins) answer
 with a 308 to the page that replaced them (`MOVED_PAGES` in the same file); pages removed without a
@@ -100,10 +100,17 @@ four-phase ladder, the named starter offers, the three industries; no prices) li
 `src/site/cs-offer.ts` and is reused by `src/site/cs.ts` and by the Czech-only pages in
 `src/site/pages.ts` (the industry pages `/ai-pro-vyrobni-firmy`, `/ai-pro-softwarove-firmy` and
 `/ai-pro-obchod-a-eshopy`, then `/jak-pracujeme`, `/vysledky`, `/o-nas`; template
-`ContentPage.astro`, listed in `CZECH_ONLY_PAGES`: no hreflang, the language link leads to `/en`). The
-Czech header and footer links are `menu` in `cs.ts`; the menu item "Pro koho" leads to the home page's
-section of that name (`home.audience`), which links to the three industry pages; the English site still derives them from the
-services. Calls to action open an e-mail with the enquiry type as its subject (`meetingHref`).
+`ContentPage.astro`, listed in `CZECH_ONLY_PAGES`: no hreflang, the language link leads to `/en`;
+`/jak-pracujeme` is the exception, with its English twin `/en/how-we-work` in `src/site/pages-en.ts`). The
+header and footer links are `menu` in `cs.ts` and `en.ts`; the menu item "Pro koho" leads to the home page's
+section of that name (`home.audience`), which links to the three industry pages. The English site follows
+the same positioning (`src/site/en-offer.ts`, `en.ts`); its "Who we work for" rows have no links, because
+the industry pages exist in Czech only.
+
+Values Mirek has not confirmed yet are shown with the tag "UKÁZKA – potvrdí Mirek"
+(`src/site/preview.ts`, `PreviewTag.astro`; `preview: true` in the copy). `npm test` and
+`npm run verify:seo` let exactly that tag and the stand-in figure `[X]` through;
+`npm run verify:release` does not, and must pass before a deploy. Calls to action open an e-mail with the enquiry type as its subject (`meetingHref`).
 The copy holds no placeholder text: what is not documented is left out (`tests/site.test.mjs`).
 
 The privacy policy and the 404 page are standalone pages with the same stylesheet. Every page uses
@@ -195,7 +202,6 @@ in Workers Builds):
 
 | Name | Purpose |
 | --- | --- |
-| `PUBLIC_GOOGLE_ADS_ID` | Leave empty. No page loads a Google Ads tag since the enquiry form was removed; set, it would only make the privacy policy describe Google Ads. |
 
 `PUBLIC_TURNSTILE_SITE_KEY` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` belonged to the removed form and are
 read by nothing.
@@ -227,20 +233,20 @@ Consent Mode v2**:
   loaded after the page (window load, then idle time), off the critical path; the queued calls keep their
   order, so Consent Mode stays "advanced" (cookieless pings while denied). Denied, the Google tags set no
   cookies.
-- Banner: "Přijmout vše" / "Odmítnout vše" (same size and style) and "Nastavení" with toggles
-  Analytické (`analytics_storage`) and Marketingové (`ad_storage`, `ad_user_data`, `ad_personalization`);
+- Banner: "Přijmout" / "Odmítnout" (same size and style) and "Nastavení" with the one optional toggle
+  Analytické (`analytics_storage`); the ad consent types (`ad_storage`, `ad_user_data`,
+  `ad_personalization`) stay denied, there is no marketing purpose.
   Nezbytné always on, nothing pre-ticked. English on `/en`. Fixed to the viewport bottom (no layout
   shift), non-modal; when reopened from the footer, focus moves into it and back to the link afterwards;
   Escape closes the settings and never counts as a choice.
-- The choice is stored in `localStorage` (`sivak-ai-consent`: `{ v, at, analytics, marketing }`) for
+- The choice is stored in `localStorage` (`sivak-ai-consent`: `{ v, at, analytics }`) for
   **6 months**; expired, or `COOKIE_CONSENT_VERSION` changed (bump it when purposes or texts change), the
   banner asks again and any `_ga*` / `_gcl_*` cookies are deleted.
 - Footer link "Nastavení cookies" / "Cookie settings" (plus a button in the privacy policy) reopens the banner. Withdrawing sets the consent types back to denied and deletes `_ga`,
-  `_ga_*` (and, without marketing consent, `_gcl_*`) host-only and on every parent domain (`www.sivak.ai`,
-  `.sivak.ai`).
-- No page loads a Google Ads tag or sends a conversion now (that was the removed enquiry form). The
-  Marketingové toggle and the banner text still name Google Ads: changing them means bumping
-  `COOKIE_CONSENT_VERSION`, which asks every visitor again.
+  `_ga_*` host-only and on every parent domain (`www.sivak.ai`, `.sivak.ai`). `_gcl_*` cookies an earlier
+  visit may have left are deleted whatever the choice.
+- No Google Ads and no marketing cookies: the banner and the privacy policy name Google Analytics only
+  (`COOKIE_CONSENT_VERSION` 2026-11-17 asked every visitor again when the marketing purpose was removed).
 - Without JavaScript there is no banner and no footer link, and no Google tag runs either.
 
 ## Performance

@@ -13,7 +13,7 @@ const sites = { cs: (await bundle('src/site/cs.ts')).cs, en: (await bundle('src/
 // The sections the home page really has (src/components/site/Home.astro renders exactly these ids)
 const homeSections = (lang) => {
   const h = sites[lang].home;
-  return [h.audience, h.services, h.work, h.questions, h.process, h.contact].filter(Boolean).map(section => section.id);
+  return [h.audience, h.services, h.result, h.notDoing, h.work, h.questions, h.process, h.guarantee, h.contact].filter(Boolean).map(section => section.id);
 };
 
 for (const lang of ['cs', 'en']) {
@@ -25,7 +25,7 @@ for (const lang of ['cs', 'en']) {
     assert.deepEqual([...paired, ...unpaired].toSorted(), homeSections(lang).toSorted());
     // Home.astro gives each of them an element
     const template = readFileSync(new URL('../src/components/site/Home.astro', import.meta.url), 'utf8');
-    for (const key of ['audience', 'services', 'work', 'questions', 'process', 'contact']) assert.match(template, new RegExp(`id=\\{h\\.${key}\\.id\\}`), key);
+    for (const key of ['audience', 'services', 'result', 'notDoing', 'work', 'questions', 'process', 'guarantee', 'contact']) assert.match(template, new RegExp(`id=\\{h\\.${key}\\.id\\}`), key);
   });
   test(`${lang}: maps every section from either language, including encoded fragments`, () => {
     for (const pair of SECTION_IDS) for (const source of ['cs', 'en']) {
@@ -48,10 +48,12 @@ for (const lang of ['cs', 'en']) {
     for (const id of UNPAIRED_SECTION_IDS[lang]) assert.equal(sectionHashIn(`#${id}`, lang), `#${id}`);
   });
 }
-test('"Pro koho" then "English" leads to /en, not /en#pro-koho', () => {
+// The English page has the section too since it follows the Czech positioning: the fragment is translated
+test('"Pro koho" then "English" leads to the English section, not to /en#pro-koho', () => {
   const hash = new URL(sites.cs.menu.main[0].href, 'https://www.sivak.ai').hash;
   assert.equal(hash, '#pro-koho');
-  assert.equal('/en' + sectionHashIn(hash, 'en'), '/en');
+  assert.equal('/en' + sectionHashIn(hash, 'en'), `/en#${sites.en.home.audience.id}`);
+  assert.equal(new URL(sites.en.menu.main[0].href, 'https://www.sivak.ai').hash, `#${sites.en.home.audience.id}`);
   // The header builds the link exactly this way
   assert.match(readFileSync(new URL('../src/components/site/Header.astro', import.meta.url), 'utf8'), /link\.href = base \+ sectionHashIn\(window\.location\.hash, lang\)/);
 });

@@ -26,16 +26,25 @@ export type Block =
   | { kind: "points"; title: string; lead?: string; items: { title: string; text: string }[] }
   | { kind: "prose"; title: string; text: string[]; link?: Link };
 
-/** A section of a content page (src/site/pages.ts): the blocks of a service page and the home page's sections. */
-export type Section = { id?: string } & (
+/** One hard result with a number: the figure, what it counts and one sentence of context. */
+export type Result = { title: string; lead?: string; figure: string; unit: string; note: string };
+
+/** A section of a content page (src/site/pages.ts): the blocks of a service page and the home page's sections.
+    `preview`: the section states something Mirek has not confirmed yet; it is shown with the preview tag
+    (src/components/site/PreviewTag.astro) and must not be deployed as it is. */
+export type Section = { id?: string; preview?: boolean } & (
   | Block
+  | ({ kind: "result" } & Result)
+  /** Typical situations in the words a client would use: illustrations, never quotes of a real client */
+  | { kind: "voices"; title: string; lead?: string; items: string[] }
   | { kind: "index"; title: string; lead?: string; items: IndexItem[]; link?: Link }
   | { kind: "steps"; title: string; lead?: string; from?: number; items: Step[] }
   | { kind: "work"; title: string; lead: string; columns: [string, string, string]; rows: { name: string; text: string; meta: string }[]; facts: string[] }
   | { kind: "questions"; title: string; items: Question[] }
 );
 
-/** A page outside the three services: the industry pages, how we work, results, about. Czech only for now. */
+/** A page outside the three services: the industry pages, how we work, results, about. Czech only, except
+    how we work (src/site/pages-en.ts). */
 export type Page = {
   path: string;
   /** Short name: navigation, breadcrumb */
@@ -81,6 +90,8 @@ export type Site = {
       /** One sentence per line */
       title: [string, string];
       lead: string;
+      /** A promise with a number and a deadline, above the lead. `preview`: not confirmed yet, shown with the preview tag */
+      promise?: { text: string; preview?: boolean };
       primary: string;
       secondary: string;
       /** When set, the two buttons open an enquiry e-mail instead of scrolling to a section */
@@ -97,6 +108,10 @@ export type Site = {
     /** `items`: named offers shown instead of the list of services */
     services: { id: string; title: string; lead?: string; items?: IndexItem[]; link?: Link };
     why: { title: string; items: { title: string; text: string }[] };
+    /** One hard result with a number, above the case. `preview`: the number is not confirmed yet */
+    result?: Result & { id: string; preview?: boolean; link?: Link };
+    /** What we do not do */
+    notDoing?: { id: string; title: string; lead?: string; items: { title: string; text: string }[]; link?: Link };
     work: {
       id: string;
       title: string;
@@ -109,6 +124,8 @@ export type Site = {
     questions: { id: string; title: string; items: Question[] };
     /** `from`: the number of the first step (the Czech ladder starts at 0) */
     process: { id: string; title: string; lead: string; steps: Step[]; from?: number; link?: Link };
+    /** The conditional guarantee in short, with a link to its conditions. `preview`: not confirmed yet */
+    guarantee?: { id: string; title: string; text: string[]; link?: Link; preview?: boolean };
     contact: { id: string; title: string; lead: string; mailSubject: string; cta?: Cta[] };
   };
   services: Service[];

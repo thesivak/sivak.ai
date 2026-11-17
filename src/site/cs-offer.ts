@@ -1,4 +1,5 @@
-import type { Block, Cta, IndexItem, Question, Step } from "./types";
+import { PREVIEW_FIGURE } from "./preview";
+import type { Block, Cta, IndexItem, Question, Result, Step } from "./types";
 
 // Nabídka sivak.ai: to, co se opakuje na více českých stránkách (cs.ts, pages.ts), je tady
 // jednou, aby si web neodporoval. Web neuvádí žádné ceny: klient je dostane v nabídce.
@@ -7,6 +8,9 @@ import type { Block, Cta, IndexItem, Question, Step } from "./types";
 export const CTA_DIAGNOSTICS: Cta = { label: "Objednat AI diagnostiku", subject: "Objednávka: AI diagnostika" };
 export const CTA_ESTIMATE: Cta = { label: "Odhad návratnosti zdarma", subject: "Odhad návratnosti zdarma" };
 export const CTA_SECURITY: Cta = { label: "Domluvit bezpečnostní prověrku", subject: "Poptávka: bezpečnostní prověrka" };
+
+/** Název metody pro fáze 0–3. NÁHLED: je to návrh, další varianty jsou v popisu PR; mění se jen tady. */
+export const METHOD = "Návratnost napřed";
 
 /** Čtyři fáze spolupráce, číslované od nuly. Na konci každé se rozhoduje klient. */
 export const LADDER: Step[] = [
@@ -27,6 +31,47 @@ export const LADDER: Step[] = [
     text: "Měsíční poplatek za provoz, monitoring, úpravy a opakované bezpečnostní testy. S garantovanými reakčními dobami.",
   },
 ];
+
+// UKÁZKA – potvrdí Mirek: termín „do 6 týdnů“ je nepotvrzený. Na webu stojí se štítkem (hero.promise.preview).
+export const PROMISE = "První agent v provozu do 6 týdnů, návratnost spočítaná předem.";
+
+// UKÁZKA – potvrdí Mirek: záruka i její tři podmínky jsou nepotvrzený návrh. Bez částek.
+// Úvodní stránka má krátkou verzi s odkazem sem (cs.ts → home.guarantee), /jak-pracujeme celou.
+export const GUARANTEE_ID = "zaruka";
+export const GUARANTEE = {
+  title: "Záruka na pilot",
+  short: "Když pilot nesplní cíl, na kterém jsme se před startem dohodli, a vy jste splnili dohodnuté podmínky, doděláme ho bez dalších nákladů.",
+  text: [
+    "Když pilot nesplní cíl, na kterém jsme se před startem dohodli, doděláme ho bez dalších nákladů pro vás.",
+    "Záruka platí, když jsou splněné tři podmínky: cíl pilotu je předem jasně a měřitelně definovaný, máme přístup k datům a systémům, se kterými má agent pracovat, a vaši lidé mají na pilot dohodnutý čas.",
+    "Cíl i podmínky zapíšeme do nabídky na konci AI diagnostiky. Znáte je tedy dřív, než se k pilotu zavážete.",
+  ],
+};
+
+// UKÁZKA – potvrdí Mirek: žádné ověřené číslo zatím nemáme. „[X]“ je zástupný znak, ne údaj o klientovi;
+// na webu stojí se štítkem (preview). Až číslo bude, doplní se sem figure, unit a note.
+export const RESULT: Result = {
+  title: "Jeden výsledek, jedno číslo",
+  lead: "Výsledek uvádíme vždy proti výchozímu stavu, který jsme s klientem změřili před startem.",
+  figure: PREVIEW_FIGURE,
+  unit: "hodin měsíčně ušetřeno",
+  note: "Ukázka: sem přijde jeden ověřený výsledek s číslem. Který proces, za jak dlouho a proti jakému výchozímu stavu.",
+};
+export const RESULT_ID = "vysledek";
+
+/** Co neděláme: čtyři věci, které u nás klient nekoupí. Úvodní stránka i /jak-pracujeme. */
+export const NOT_DOING_ID = "co-nedelame";
+export const NOT_DOING = {
+  kind: "points",
+  title: "Co neděláme",
+  lead: "Čtyři věci, které u nás nekoupíte. Podle nich poznáte, co od nás čekat.",
+  items: [
+    { title: "Nestavíme bez návratnosti", text: "Když odhad nevyjde, řekneme vám to a projekt nezačneme. Je lepší to vědět z jedné stránky než po měsících práce." },
+    { title: "Nenecháme vás s prototypem", text: "Ukázka, která funguje jen na prezentaci, žádnou práci neušetří. Agenta dovedeme do provozu a staráme se o něj dál." },
+    { title: "Nepřeskakujeme bezpečnost", text: "Agent se k vašim datům nedostane, dokud se ho náš bezpečnostní tým nepokusil zneužít. Ani když spěcháte." },
+    { title: "Neprodáváme nástroje místo výsledku", text: "Nedostanete licenci ani platformu, kterou si máte zavést sami. Dostanete odvedenou práci, která se dá změřit." },
+  ],
+} satisfies Block;
 
 /** Tři oborové stránky; odkazuje na ně sekce „Pro koho“ na úvodní stránce a stránky mezi sebou. */
 export const AUDIENCE_ID = "pro-koho";

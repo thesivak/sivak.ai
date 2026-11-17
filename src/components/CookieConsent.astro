@@ -27,10 +27,6 @@ const t = lang === "cs" ? czechSpacing(CONSENT_TEXT.cs) : CONSENT_TEXT[lang];
       <input type="checkbox" id="cc-analytics" data-cc-toggle="analytics" />
       <label for="cc-analytics"><strong>{t.analytics}</strong> {t.analyticsText}</label>
     </div>
-    <div class="cc-option">
-      <input type="checkbox" id="cc-marketing" data-cc-toggle="marketing" />
-      <label for="cc-marketing"><strong>{t.marketing}</strong> {t.marketingText}</label>
-    </div>
   </fieldset>
   <div class="cc-actions">
     {/* Accept and reject look the same: neither is the "default" */}
