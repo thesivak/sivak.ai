@@ -1,10 +1,11 @@
-import { CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, LADDER, Q, STARTERS } from "./cs-offer";
+import { AUDIENCE_ID, CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, HOME_STARTERS, INDUSTRIES, LADDER, Q } from "./cs-offer";
 import type { Site } from "./types";
 
-// České texty webu. Pozicování (listopad 2026): sivak.ai zefektivňuje středně velké výrobní firmy; prodáváme
-// výsledek, ne technologii. Fakta o agentech, nasazení, kontrole a případu softwarové firmy vycházejí ze
-// schválených textů původního webu. Žádná jména klientů ani vymyšlená čísla; jediná cena na webu je
-// AI diagnostika (cs-offer.ts). Stránky mimo tři služby jsou v pages.ts.
+// České texty webu. Pozicování (listopad 2026): podle problému, ne podle oboru. sivak.ai pracuje pro středně
+// velké firmy, kde se hodně času ztrácí v rutinní práci; prodáváme výsledek, ne technologii. Obory (výroba,
+// softwarové firmy, obchod) mají své stránky v pages.ts. Fakta o agentech, nasazení, kontrole a případu
+// softwarové firmy vycházejí ze schválených textů původního webu. Žádná jména klientů, vymyšlená čísla ani
+// ceny (cs-offer.ts). Stránky mimo tři služby jsou v pages.ts.
 // Pevné mezery za jednopísmennými předložkami doplní web sám (src/lib/czech.ts).
 export const cs: Site = {
   skipLink: "Přeskočit na obsah",
@@ -19,17 +20,18 @@ export const cs: Site = {
     close: "Zavřít menu",
   },
   langSwitch: { label: "English", title: "Switch to English" },
-  // Hlavní menu bez vývoje softwaru; ten a AI školení jsou dostupné z patičky
+  // Hlavní menu bez vývoje softwaru; ten a AI školení jsou dostupné z patičky. „Pro koho“ vede na sekci
+  // úvodní stránky se třemi obory a je zvýrazněné i na jejich stránkách (covers).
   menu: {
     main: [
-      { href: "/ai-pro-vyrobni-firmy", label: "AI pro výrobní firmy" },
+      { href: `/#${AUDIENCE_ID}`, label: "Pro koho", covers: Object.values(INDUSTRIES).map((item) => item.href) },
       { href: "/jak-pracujeme", label: "Jak pracujeme" },
       { href: "/vysledky", label: "Výsledky" },
       { href: "/bezpecnost", label: "Bezpečnost" },
       { href: "/o-nas", label: "O nás" },
     ],
     footerServices: [
-      { href: "/ai-pro-vyrobni-firmy", label: "AI pro výrobní firmy" },
+      ...Object.values(INDUSTRIES).map((item) => ({ href: item.href, label: item.title })),
       { href: "/jak-pracujeme", label: "AI diagnostika a pilot" },
       { href: "/bezpecnost", label: "Bezpečnostní prověrka" },
       { href: "/ai-skoleni", label: "Workshopy a AI školení" },
@@ -44,33 +46,39 @@ export const cs: Site = {
   },
   home: {
     metadata: {
-      title: "AI agenti pro výrobní firmy: návratnost předem | sivak.ai",
+      title: "AI agenti na rutinní práci: návratnost předem | sivak.ai",
       description:
-        "Zefektivňujeme středně velké výrobní firmy. Najdeme práci, která zbytečně žere lidi a peníze, a nasadíme na ni AI agenty, které provozujeme a hlídáme.",
+        "Pro středně velké firmy, kde rutina žere čas lidí: objednávky, nabídky, faktury, podpora, testování. Nasadíme AI agenty, které provozujeme a hlídáme.",
     },
     hero: {
       title: ["AI řešení, která vydělávají peníze.", "A která nikdo nezneužije."],
-      lead: "Pro středně velké výrobní firmy. Najdeme jeden proces s nejrychlejší návratností, postavíme na něj agenta a ručíme za jeho provoz i bezpečnost.",
+      lead: "Pro středně velké firmy, kde rutina žere čas lidí. Najdeme jeden proces s nejrychlejší návratností, postavíme na něj agenta a ručíme za jeho provoz i bezpečnost.",
       primary: CTA_DIAGNOSTICS.label,
       secondary: CTA_ESTIMATE.label,
       cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
     },
     system: {
-      caption: "Typické nasazení agenta ve výrobní firmě. Červeně jsou místa, kde náš bezpečnostní tým zaútočí nejdřív.",
+      caption: "Typické nasazení agenta ve středně velké firmě. Červeně jsou místa, kde náš bezpečnostní tým zaútočí nejdřív.",
       stages: [
-        { name: "Lidé", nodes: [{ label: "Obchod a účtárna" }, { label: "Zákazníci a dodavatelé" }] },
-        { name: "Vstupy", nodes: [{ label: "E-mail a PDF", marked: true }, { label: "Excel" }], note: "Pokyny ukryté v příchozím e-mailu" },
+        { name: "Lidé", nodes: [{ label: "Obchod, podpora a účtárna" }, { label: "Zákazníci a dodavatelé" }] },
+        { name: "Vstupy", nodes: [{ label: "E-mail a PDF", marked: true }, { label: "Požadavky zákazníků" }], note: "Pokyny ukryté v příchozím e-mailu" },
         { name: "AI agenti", nodes: [{ label: "Agent připraví práci", marked: true }, { label: "Člověk schválí" }], note: "Agent s širším přístupem, než ke své práci potřebuje" },
-        { name: "Firemní systémy", nodes: [{ label: "ERP", marked: true }, { label: "Dokumenty a data" }], note: "Staré rozhraní bez ochrany přihlášením" },
+        { name: "Firemní systémy", nodes: [{ label: "ERP a interní aplikace", marked: true }, { label: "Dokumenty a data" }], note: "Staré rozhraní bez ochrany přihlášením" },
         { name: "AI modely", nodes: [{ label: "V cloudu" }, { label: "Na vašem hardwaru" }] },
       ],
     },
+    audience: {
+      id: AUDIENCE_ID,
+      title: "Pro koho pracujeme",
+      lead: "Pro středně velké firmy, kde se hodně času ztrácí v rutinní práci: objednávky, nabídky, faktury, zákaznická podpora, testování. Zhruba 20 až 500 lidí, rozhoduje majitel nebo vedení.",
+      items: Object.values(INDUSTRIES),
+    },
     services: {
       id: "sluzby",
-      title: "Tři nabídky, kterými začínáme",
-      lead: "Každá míří na práci, kterou výrobní firmy dělají ručně v e-mailu, PDF a Excelu. Každá má jasný výstup.",
-      items: STARTERS.map((item) => ({ ...item, href: "/ai-pro-vyrobni-firmy#startovni-nabidky" })),
-      link: { href: "/ai-pro-vyrobni-firmy", label: "AI pro výrobní firmy" },
+      title: "Čtyři nabídky, kterými začínáme",
+      lead: "Každá míří na rutinu, která se opakuje každý den a dá se změřit. Každá má jasný výstup.",
+      items: HOME_STARTERS,
+      link: { href: "/jak-pracujeme", label: "Jak pracujeme: od odhadu po provoz" },
     },
     why: {
       title: "Proč sivak.ai",
@@ -116,10 +124,7 @@ export const cs: Site = {
           q: "Jak rychle uvidíme výsledek?",
           a: "Začínáme jedním procesem, kde se práce vrátí nejrychleji. Pilot trvá 4–8 týdnů a od prvního dne provozu měříme odvedenou práci a ušetřený čas.",
         },
-        {
-          q: "Pro jaké firmy pracujete?",
-          a: "Zaměřujeme se na výrobní a výrobně-obchodní firmy s 50 až 500 lidmi, které jedou na ERP a hodně práce dělají v e-mailu, PDF a Excelu. Pokud řešíte podobnou rutinu v jiném oboru, ozvěte se: odhad návratnosti probíhá stejně.",
-        },
+        Q.who,
       ],
     },
     process: {
@@ -302,7 +307,7 @@ export const cs: Site = {
           "Jeden vážný únik dat může firmu položit. Bezpečnostní prověrka, penetrační testy a dohled: ukážeme, kam by se útočník dostal, a pomůžeme ho zastavit.",
       },
       title: "Jeden vážný únik dat může firmu vaší velikosti položit",
-      lead: "Stojící výroba, zašifrované ERP, ceníky a výkresy zákazníků venku. Na vaše systémy a AI agenty zaútočíme dřív než někdo jiný, ukážeme, kam by se útočník dostal, a pomůžeme mu cestu zavřít.",
+      lead: "Stojící provoz, zašifrované systémy, data zákazníků venku. Na vaše systémy a AI agenty zaútočíme dřív než někdo jiný, ukážeme, kam by se útočník dostal, a pomůžeme mu cestu zavřít.",
       summary: "Na vaše systémy a AI agenty zaútočíme stejně jako skutečný útočník. Ukážeme, co by to znamenalo pro provoz, a pomůžeme slabá místa odstranit.",
       sheet: {
         caption: "Ukázka nálezu ze zprávy z testu",
@@ -321,7 +326,7 @@ export const cs: Site = {
         items: [
           {
             title: "Bezpečnostní prověrka",
-            text: "Druhé vstupní dveře ke spolupráci. V dohodnutém rozsahu zjistíme, kam by se útočník ve vaší firmě dostal a co by to znamenalo pro výrobu, data a zákazníky.",
+            text: "Druhé vstupní dveře ke spolupráci. V dohodnutém rozsahu zjistíme, kam by se útočník ve vaší firmě dostal a co by to znamenalo pro provoz, data a zákazníky.",
             points: ["Zpráva srozumitelná pro vedení", "Nálezy podle dopadu na provoz", "Návrh oprav"],
           },
           {
@@ -356,8 +361,8 @@ export const cs: Site = {
           kind: "prose",
           title: "Co firmu stojí jeden incident",
           text: [
-            "Útok dnes neznamená jen ztracená data. Znamená stojící výrobu, nevyřízené objednávky a telefonáty zákazníkům, jejichž dokumentace unikla.",
-            "Velká firma má na takový týden rezervy a vlastní bezpečnostní tým. Středně velká výrobní firma většinou ne. Proto se vyplatí znát svá slabá místa dřív, než je najde někdo jiný.",
+            "Útok dnes neznamená jen ztracená data. Znamená stojící provoz, nevyřízené objednávky a telefonáty zákazníkům, jejichž dokumentace unikla.",
+            "Velká firma má na takový týden rezervy a vlastní bezpečnostní tým. Středně velká firma většinou ne. Proto se vyplatí znát svá slabá místa dřív, než je najde někdo jiný.",
           ],
         },
         {
@@ -409,7 +414,7 @@ export const cs: Site = {
     phoneLabel: "Telefon",
   },
   footer: {
-    tagline: "AI agenti pro středně velké výrobní firmy. Návratnost spočítáme předem, agenty provozujeme a hlídáme.",
+    tagline: "AI agenti pro středně velké firmy, kde rutina žere čas lidí. Návratnost spočítáme předem, agenty provozujeme a hlídáme.",
     servicesLabel: "Služby",
     companyLabel: "Firma",
     contactLabel: "Kontakt",

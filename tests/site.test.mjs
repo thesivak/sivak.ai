@@ -50,7 +50,7 @@ test("service pages of the earlier site redirect to their replacements", () => {
 });
 
 const RULES = /Zapfloor|certif|dotac|subsid|\bgrants?\b|české firmy|Czech companies|Miroslav|\+420/iu;
-// Every amount of money in the copy, e.g. "80 000 Kč": none is allowed; "obrat 80 mil. až 1,5 mld. Kč" is a company size, not a price
+// Every amount of money in the copy, e.g. "80 000 Kč": none is allowed, a company's turnover included
 const pricesIn = (copy) => [...new Set([...copy.matchAll(/\b\d[\d\s.,]*\s*(?:Kč|CZK|EUR|USD)|[€$]\s*\d+/giu)].map((m) => m[0].replace(/\s+/g, " ")))];
 
 for (const [lang, site] of [["cs", cs], ["en", en]]) {
@@ -89,7 +89,10 @@ test("the Czech-only pages: routes, sitemap, navigation and content rules", () =
   for (const [key, page] of list) {
     assert.ok(SITEMAP_PAGES.includes(page.path) && !TWIN_PAGES.some((pair) => pair.cs === page.path), page.path);
     assert.ok(read(`src/pages${page.path}.astro`).includes(`page="${key}"`), page.path);
-    assert.ok(cs.menu.main.some((link) => link.href === page.path), `${page.path} is in the main menu`);
+    // The industry pages stand behind one menu item, "Pro koho", which leads to the home page's section
+    const item = cs.menu.main.find((link) => link.href === page.path || link.covers?.includes(page.path));
+    assert.ok(item, `${page.path} is in the main menu`);
+    if (item.href !== page.path) assert.ok(cs.home.audience.items.some((row) => row.href === page.path), `${page.path} is in "Pro koho"`);
     assert.ok(page.metadata.title.length <= 60, `${page.metadata.title} (${page.metadata.title.length})`);
     const length = page.metadata.description.length;
     assert.ok(length >= 120 && length <= 160, `${page.metadata.description} (${length})`);
@@ -112,7 +115,7 @@ test("positioning: the hero sells a result, software development is out of the m
   // The two calls to action of the home page, each an enquiry type of its own
   assert.deepEqual(cs.home.hero.cta.map((cta) => cta.label), ["Objednat AI diagnostiku", "Odhad návratnosti zdarma"]);
   assert.equal(new Set(cs.home.contact.cta.map((cta) => cta.subject)).size, 2);
-  assert.equal(cs.home.services.items.length, 3);
+  assert.equal(cs.home.services.items.length, 4);
   assert.equal(cs.home.process.steps.length, 4);
 });
 
@@ -120,5 +123,29 @@ test("positioning: the hero sells a result, software development is out of the m
 test("no placeholders in the copy", () => {
   const copy = JSON.stringify([cs, en, pages]);
   assert.doesNotMatch(copy, /doplnit|TODO|placeholder|lorem|\[[^\]"]*\]/iu);
-  assert.deepEqual(pages.results.sections.map((section) => section.id), ["softwarova-firma", "co-merime"]);
+  assert.deepEqual(pages.results.sections.map((section) => section.id), ["softwarova-firma", "co-merime", "obory"]);
+});
+
+test("positioning: by problem, not by industry", () => {
+  const { home, menu, footer } = cs;
+  // The hero, the page's metadata and the footer speak to every mid-sized company, not to manufacturing only
+  assert.doesNotMatch(JSON.stringify([home.hero, home.system, home.metadata, footer]), /výrob/iu);
+  assert.match(home.hero.lead, /středně velké firmy/u);
+  // "Pro koho": the menu item leads to the home page's section, the section to the three industry pages
+  const industries = [pages.manufacturing, pages.software, pages.commerce].map((page) => page.path);
+  assert.deepEqual(home.audience.items.map((item) => item.href), industries);
+  assert.deepEqual(menu.main[0], { href: `/#${home.audience.id}`, label: "Pro koho", covers: industries });
+  // The offers of the home page lead to more than one industry
+  assert.ok(new Set(home.services.items.map((item) => item.href.split("#")[0])).size >= 3);
+  for (const item of home.services.items) assert.ok(item.points.length >= 3, item.title);
+  // The company size is headcount and who decides; no turnover anywhere
+  const copy = JSON.stringify([cs, pages]);
+  assert.doesNotMatch(copy, /obrat|\bmil\.|mld\./iu);
+  for (const path of industries) {
+    const page = Object.values(pages).find((item) => item.path === path);
+    assert.match(JSON.stringify(page), /20 až 500 lidmi, kde rozhoduje majitel nebo vedení/u, path);
+    // Each industry page links to the other two, to how we work and to the results
+    const links = JSON.stringify(page);
+    for (const href of [...industries.filter((other) => other !== path), "/jak-pracujeme", "/vysledky"]) assert.ok(links.includes(`"href":"${href}"`), `${path} → ${href}`);
+  }
 });

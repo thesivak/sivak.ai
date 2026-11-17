@@ -1,6 +1,6 @@
 import type { Block, Cta, IndexItem, Question, Step } from "./types";
 
-// Nabídka sivak.ai pro výrobní firmy: to, co se opakuje na více českých stránkách (cs.ts, pages.ts), je tady
+// Nabídka sivak.ai: to, co se opakuje na více českých stránkách (cs.ts, pages.ts), je tady
 // jednou, aby si web neodporoval. Web neuvádí žádné ceny: klient je dostane v nabídce.
 
 /** Dvě výzvy k akci celého webu. Otevírají e-mail s typem poptávky v předmětu (meetingHref v src/lib/site.ts). */
@@ -28,23 +28,83 @@ export const LADDER: Step[] = [
   },
 ];
 
-/** Tři pojmenované startovní nabídky; `points` je to, co klient dostane. */
-export const STARTERS: IndexItem[] = [
-  {
+/** Tři oborové stránky; odkazuje na ně sekce „Pro koho“ na úvodní stránce a stránky mezi sebou. */
+export const AUDIENCE_ID = "pro-koho";
+export const INDUSTRIES = {
+  manufacturing: {
+    title: "Výrobní firmy",
+    href: "/ai-pro-vyrobni-firmy",
+    text: "Objednávky v e-mailu, nabídky v Excelu, faktury v PDF. Agenti tu práci připraví přímo ve vašem ERP a vaši lidé ji jen zkontrolují.",
+    points: ["Příjem objednávek do ERP", "Nabídky a malé objednávky", "Faktury dodavatelů"],
+  },
+  software: {
+    title: "Softwarové a SaaS firmy",
+    href: "/ai-pro-softwarove-firmy",
+    text: "Požadavky zákazníků, testování před každým vydáním a drobné úpravy, na které nezbývá čas. Agenti pracují vedle vaší podpory, testerů a vývojářů.",
+    points: ["Třídění zákaznické podpory", "Testování před vydáním", "Průběžné bezpečnostní testy"],
+  },
+  commerce: {
+    title: "Obchod a e-shopy",
+    href: "/ai-pro-obchod-a-eshopy",
+    text: "Objednávky z více kanálů, produktová data od dodavatelů a stále stejné dotazy zákazníků. Agenti připraví podklady, vaši lidé rozhodují.",
+    points: ["Příjem objednávek", "Produktová data", "Dotazy zákazníků a faktury dodavatelů"],
+  },
+} satisfies Record<string, IndexItem>;
+
+/** Pojmenované startovní nabídky; `points` je to, co klient dostane. Každá stránka si z nich skládá svůj výběr. */
+export const OFFERS = {
+  smallOrders: {
     title: "Audit malých objednávek",
     text: "Spočítáme, kolik vás stojí vyřízení jedné malé objednávky a kolik jich měsíčně projde. Ukážeme, které kroky může převzít agent.",
     points: ["Náklad na vyřízení jedné objednávky", "Kroky, které převezme agent", "Odhad návratnosti"],
   },
-  {
+  invoices: {
     title: "Kontrola faktur dodavatelů proti objednávkám",
     text: "Agent porovná každou přijatou fakturu s objednávkou a příjemkou v ERP. Shodné připraví k zaúčtování, rozdíly v ceně nebo množství předá účetní s vysvětlením.",
     points: ["Faktury spárované s objednávkami", "Seznam rozdílů k rozhodnutí", "Zaúčtování schvaluje účetní"],
   },
-  {
+  orders: {
     title: "Automatický příjem objednávek z e-mailu do ERP",
     text: "Agent přečte objednávku z e-mailu, PDF nebo Excelu, dohledá zákazníka a položky a připraví ji v ERP. Váš člověk ji zkontroluje a potvrdí.",
     points: ["Objednávka připravená v ERP", "Nejasnosti označené ke kontrole", "Potvrzuje váš člověk"],
   },
+  support: {
+    title: "Agent zákaznické podpory",
+    text: "Agent prošetří každý nový požadavek: přečte historii zákazníka, ověří data ve vašich systémech a připraví odpověď. Odesílá ji váš člověk.",
+    points: ["Požadavek roztříděný a prošetřený", "Připravená odpověď s podklady", "Odesílá váš člověk"],
+  },
+  qa: {
+    title: "QA agent před každým vydáním",
+    text: "Agent vyzkouší novou verzi aplikace ve skutečném prohlížeči jako tester a projde zadání bod po bodu. Výsledek doloží snímky obrazovky a videem.",
+    points: ["Výsledek: prošlo, neprošlo, nebo nelze ověřit", "Snímky obrazovky a video jako doklad", "Vydání schvaluje člověk"],
+  },
+  codeReview: {
+    title: "Agent pro vývojový tým",
+    text: "Podle zadání připraví změnu v kódu a nezávislý agent ji zkontroluje. Pracuje mimo ostrý provoz; schvaluje a nasazuje člověk.",
+    points: ["Připravená změna v kódu", "Nezávislá kontrola kódu", "Schvaluje a nasazuje člověk"],
+  },
+  securityTests: {
+    title: "Průběžné AI bezpečnostní testování",
+    text: "Vaše aplikace se mění s každým vydáním. Po změnách testy opakujeme a u AI funkcí a agentů zkoušíme prompt injection, únik dat a příliš široká oprávnění.",
+    points: ["Opakované testy po změnách", "Nálezy podle dopadu na provoz", "Pravidelné zprávy"],
+  },
+  productData: {
+    title: "Produktová data z podkladů dodavatelů",
+    text: "Agent přečte ceník nebo katalogový list dodavatele, doplní parametry a připraví produktové karty ve vašem systému. Zveřejňuje je váš člověk.",
+    points: ["Produktové karty připravené ke kontrole", "Chybějící údaje označené", "Zveřejňuje váš člověk"],
+  },
+} satisfies Record<string, IndexItem>;
+
+/** Startovní nabídky stránky pro výrobní firmy. */
+export const STARTERS: IndexItem[] = [OFFERS.smallOrders, OFFERS.invoices, OFFERS.orders];
+
+/** Čtyři startovní nabídky úvodní stránky, napříč obory; každá vede na stránku oboru, kde je popsaná. */
+const at = (industry: keyof typeof INDUSTRIES) => `${INDUSTRIES[industry].href}#startovni-nabidky`;
+export const HOME_STARTERS: IndexItem[] = [
+  { ...OFFERS.orders, href: at("manufacturing") },
+  { ...OFFERS.support, href: at("software") },
+  { ...OFFERS.qa, href: at("software") },
+  { ...OFFERS.invoices, href: at("commerce") },
 ];
 
 /** Jediná případová studie, kterou web zveřejňuje: anonymně a jen ve schválených formulacích. */
@@ -120,6 +180,10 @@ export const DEPLOYMENT: Block = {
 /** Otázky, které se opakují na více stránkách. */
 export const Q = {
   systems: {
+    q: "Musíme kvůli agentům měnit své systémy?",
+    a: "Ne. Agent pracuje v systémech, které už používáte. Kde chybí napojení, ovládá program přes obrazovku stejně jako člověk.",
+  },
+  erp: {
     q: "Musíme kvůli agentům měnit ERP?",
     a: "Ne. Agent pracuje v systémech, které už používáte. Kde chybí napojení, ovládá program přes obrazovku stejně jako člověk.",
   },
@@ -138,6 +202,14 @@ export const Q = {
   price: {
     q: "Kolik to stojí?",
     a: "Odhad návratnosti je zdarma. AI diagnostika má pevnou cenu, kterou znáte předem, a při navazujícím pilotu ji odečteme z jeho ceny. Pevnou cenu pilotu a měsíční poplatek za provoz dostanete v nabídce na konci diagnostiky.",
+  },
+  who: {
+    q: "Pro jaké firmy pracujete?",
+    a: "Pro firmy zhruba s 20 až 500 lidmi, kde rozhoduje majitel nebo vedení a kde se hodně času ztrácí v rutinní práci: objednávky, nabídky, faktury, zákaznická podpora, testování. Obor nerozhoduje; rozhoduje, kolik času rutina zabírá.",
+  },
+  people: {
+    q: "Co budou dělat lidé, kterým agent práci vezme?",
+    a: "To, na co dnes nemají čas. Agent převezme přepisování a porovnávání, lidem zůstane rozhodování, zákazníci a výjimky. Cílem je víc práce se stejným týmem.",
   },
   noReturn: {
     q: "Co když návratnost nevyjde?",

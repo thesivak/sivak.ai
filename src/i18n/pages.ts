@@ -28,7 +28,8 @@ export const MOVED_PAGES: Record<string, string> = {
 // Pages in Czech only (src/site/pages.ts): no hreflang alternates and no English URL in the sitemap. Their
 // language link leads to the English home page. The trailing-slash and .html redirects reach them through
 // the wildcards in wrangler.jsonc → run_worker_first; they need no entry of their own, having no ?lang= twin.
-export const CZECH_ONLY_PAGES: string[] = ["/ai-pro-vyrobni-firmy", "/jak-pracujeme", "/vysledky", "/o-nas"];
+// The first three are the industry pages, reached from the home page's "Pro koho" section.
+export const CZECH_ONLY_PAGES: string[] = ["/ai-pro-vyrobni-firmy", "/ai-pro-softwarove-firmy", "/ai-pro-obchod-a-eshopy", "/jak-pracujeme", "/vysledky", "/o-nas"];
 
 /** Every indexable page, in sitemap order: the twins (Czech, then English), then the Czech-only pages. */
 export const SITEMAP_PAGES: string[] = [...TWIN_PAGES.flatMap((pair) => [pair.cs, pair.en]), ...CZECH_ONLY_PAGES];

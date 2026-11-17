@@ -55,6 +55,8 @@ const SOURCES = {
   "/ai-skoleni": training("src/pages/ai-skoleni.astro", "ai-skoleni"),
   "/en/ai-training": training("src/pages/en/ai-training.astro", "ai-training"),
   "/ai-pro-vyrobni-firmy": content("src/pages/ai-pro-vyrobni-firmy.astro"),
+  "/ai-pro-softwarove-firmy": content("src/pages/ai-pro-softwarove-firmy.astro"),
+  "/ai-pro-obchod-a-eshopy": content("src/pages/ai-pro-obchod-a-eshopy.astro"),
   "/jak-pracujeme": content("src/pages/jak-pracujeme.astro"),
   "/vysledky": content("src/pages/vysledky.astro"),
   "/o-nas": content("src/pages/o-nas.astro"),

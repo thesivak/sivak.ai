@@ -35,7 +35,7 @@ export type Section = { id?: string } & (
   | { kind: "questions"; title: string; items: Question[] }
 );
 
-/** A page outside the three services: who we work for, how we work, results, about. Czech only for now. */
+/** A page outside the three services: the industry pages, how we work, results, about. Czech only for now. */
 export type Page = {
   path: string;
   /** Short name: navigation, breadcrumb */
@@ -73,7 +73,8 @@ export type Site = {
   nav: { label: string; home: string; work: string; process: string; contact: string; cta: string; open: string; close: string };
   langSwitch: { label: string; title: string };
   /** The header and footer links when they are not derived from the services (the Czech site) */
-  menu?: { main: Link[]; footerServices: Link[]; footerCompany: Link[] };
+  /** `covers`: pages the link stands for besides its own, so it is marked as current on them too */
+  menu?: { main: (Link & { covers?: string[] })[]; footerServices: Link[]; footerCompany: Link[] };
   home: {
     metadata: { title: string; description: string };
     hero: {
@@ -91,6 +92,8 @@ export type Site = {
           `note` says how, and stands under that stage. */
       stages: { name: string; nodes: { label: string; marked?: boolean }[]; note?: string }[];
     };
+    /** Who we work for: one linked row per industry page, shown under the hero (the Czech site) */
+    audience?: { id: string; title: string; lead: string; items: IndexItem[] };
     /** `items`: named offers shown instead of the list of services */
     services: { id: string; title: string; lead?: string; items?: IndexItem[]; link?: Link };
     why: { title: string; items: { title: string; text: string }[] };
