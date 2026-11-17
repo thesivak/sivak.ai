@@ -10,8 +10,10 @@ interface Props {
   homeHref: string;
   switchHref: string;
   switchLang: Locale;
+  /** The page has no version in the other language: the link leads to that language's home page, without this page's #section */
+  switchToHome?: boolean;
 }
-const { lang, homeHref, switchHref, switchLang } = Astro.props;
+const { lang, homeHref, switchHref, switchLang, switchToHome = false } = Astro.props;
 const t = getSite(lang);
 const f = t.footer;
 ---
@@ -25,16 +27,22 @@ const f = t.footer;
       <nav aria-label={f.servicesLabel}>
         <p class="foot-title">{f.servicesLabel}</p>
         <ul>
-          {t.services.map((service) => <li><a href={service.path}>{service.name}</a></li>)}
+          {(t.menu?.footerServices ?? t.services.map((service) => ({ href: service.path, label: service.name }))).map((link) => <li><a href={link.href}>{link.label}</a></li>)}
         </ul>
       </nav>
       <nav aria-label={f.companyLabel}>
         <p class="foot-title">{f.companyLabel}</p>
         <ul>
-          <li><a href={`${homeHref}#${t.home.work.id}`}>{t.nav.work}</a></li>
-          <li><a href={`${homeHref}#${t.home.process.id}`}>{t.nav.process}</a></li>
+          {
+            (
+              t.menu?.footerCompany ?? [
+                { href: `${homeHref}#${t.home.work.id}`, label: t.nav.work },
+                { href: `${homeHref}#${t.home.process.id}`, label: t.nav.process },
+              ]
+            ).map((link) => <li><a href={link.href}>{link.label}</a></li>)
+          }
           <li><a href={PRIVACY_POLICY_URL} hreflang="cs">{f.privacy}</a></li>
-          <li><a href={switchHref} hreflang={switchLang} lang={switchLang} data-lang-switch={switchLang}>{t.langSwitch.label}</a></li>
+          <li><a href={switchHref} hreflang={switchLang} lang={switchLang} data-lang-switch={switchLang} data-lang-home={switchToHome ? "" : undefined}>{t.langSwitch.label}</a></li>
         </ul>
       </nav>
       <div>

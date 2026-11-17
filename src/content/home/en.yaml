@@ -15,8 +15,6 @@ nav:
       label: What we do
     - id: process
       label: How it works
-    - id: security
-      label: Control
     - id: case-study
       label: In practice
     - id: contact

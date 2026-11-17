@@ -27,7 +27,7 @@ const twins: Entry[] = TWIN_PAGES.flatMap((pair) => {
 const ENTRIES: Entry[] = [
   ...twins,
   // Czech only, so no alternates
-  ...CZECH_ONLY_PAGES.map((path) => ({ path, priority: 0.9 })),
+  ...CZECH_ONLY_PAGES.map((path) => ({ path, priority: 0.8 })),
 ];
 
 export const GET: APIRoute = () => {

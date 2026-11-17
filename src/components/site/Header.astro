@@ -9,11 +9,13 @@ interface Props {
   homeHref: string;
   switchHref: string;
   switchLang: Locale;
+  /** The page has no version in the other language: the link leads to that language's home page, without this page's #section */
+  switchToHome?: boolean;
 }
-const { lang, homeHref, switchHref, switchLang } = Astro.props;
+const { lang, homeHref, switchHref, switchLang, switchToHome = false } = Astro.props;
 const t = getSite(lang);
 const here = Astro.url.pathname.replace(/(\.html|\/)$/, "") || "/";
-const links = [
+const links = t.menu?.main ?? [
   ...t.services.map((service) => ({ href: service.path, label: service.name })),
   { href: `${homeHref}#${t.home.process.id}`, label: t.nav.process },
   { href: `${homeHref}#${t.home.contact.id}`, label: t.nav.contact },
@@ -27,7 +29,7 @@ const links = [
         {links.map((link) => <li><a href={link.href} aria-current={link.href === here ? "page" : undefined} data-close-menu>{link.label}</a></li>)}
       </ul>
       <div class="top-actions">
-        <a class="top-lang" href={switchHref} hreflang={switchLang} lang={switchLang} title={t.langSwitch.title} data-lang-switch={switchLang}>{t.langSwitch.label}</a>
+        <a class="top-lang" href={switchHref} hreflang={switchLang} lang={switchLang} title={t.langSwitch.title} data-lang-switch={switchLang} data-lang-home={switchToHome ? "" : undefined}>{t.langSwitch.label}</a>
         <a class="btn btn-small" href={`${homeHref}#${t.home.contact.id}`} data-close-menu>{t.nav.cta}</a>
       </div>
     </nav>
@@ -41,8 +43,9 @@ const links = [
   import { PATHS } from "../icons";
   import { sectionHashIn } from "../../i18n/sections";
 
-  // The language switch (header and footer) keeps the section the reader is at
-  document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]").forEach((link) => {
+  // The language switch (header and footer) keeps the section the reader is at. A page in one language
+  // only links to the other language's home page, where this page's sections do not exist: no fragment.
+  document.querySelectorAll<HTMLAnchorElement>("[data-lang-switch]:not([data-lang-home])").forEach((link) => {
     const base = link.getAttribute("href")!.split("#")[0];
     const lang = link.dataset.langSwitch === "en" ? "en" : "cs";
     const update = () => { link.href = base + sectionHashIn(window.location.hash, lang); };

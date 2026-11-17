@@ -12,7 +12,8 @@ const bundle = async (entry) => {
   const out = await build({ entryPoints: [`${root}${entry}`], bundle: true, write: false, format: "esm", platform: "neutral", alias: { "@": `${root}src` } });
   return import(`data:text/javascript,${encodeURIComponent(out.outputFiles[0].text)}`);
 };
-const { TWIN_PAGES, SITEMAP_PAGES, MOVED_PAGES, pageIn } = await bundle("src/i18n/pages.ts");
+const { TWIN_PAGES, SITEMAP_PAGES, MOVED_PAGES, CZECH_ONLY_PAGES, pageIn } = await bundle("src/i18n/pages.ts");
+const { pages } = await bundle("src/site/pages.ts");
 const { canonicalRedirect } = await bundle("src/lib/routing.ts");
 const { cs } = await bundle("src/site/cs.ts");
 const { en } = await bundle("src/site/en.ts");
@@ -48,15 +49,21 @@ test("service pages of the earlier site redirect to their replacements", () => {
   assert.equal(canonicalRedirect(new Request("https://www.sivak.ai/bezpecnost")), null);
 });
 
+const RULES = /Zapfloor|certif|dotac|subsid|\bgrants?\b|české firmy|Czech companies|Miroslav|\+420/iu;
+// Every amount of money in the copy, e.g. "80 000 Kč": none is allowed; "obrat 80 mil. až 1,5 mld. Kč" is a company size, not a price
+const pricesIn = (copy) => [...new Set([...copy.matchAll(/\b\d[\d\s.,]*\s*(?:Kč|CZK|EUR|USD)|[€$]\s*\d+/giu)].map((m) => m[0].replace(/\s+/g, " ")))];
+
 for (const [lang, site] of [["cs", cs], ["en", en]]) {
   test(`${lang}: copy follows the content rules`, () => {
     const copy = JSON.stringify(site);
-    // No client names, certificates, subsidies, prices or company size
-    assert.doesNotMatch(copy, /Zapfloor|certif|dotac|subsid|\bgrants?\b|české firmy|Czech companies|Miroslav/iu);
-    assert.doesNotMatch(copy, /\b\d[\d\s.,]*\s*(?:Kč|CZK|EUR|USD)|[€$]\s*\d/iu);
+    // No client names, certificates or subsidies
+    assert.doesNotMatch(copy, RULES);
+    // No prices anywhere on the site
+    assert.deepEqual(pricesIn(copy), []);
     assert.doesNotMatch(copy, /střední a velké|medium and large/iu);
-    // AI training is not offered on these pages
-    assert.doesNotMatch(copy, /školení|ai-skoleni|\btraining\b/iu);
+    // English: AI training is not offered on these pages. Czech: it is filed under workshops, in the footer.
+    if (lang === "en") assert.doesNotMatch(copy, /\btraining\b/iu);
+    else assert.deepEqual(site.menu.footerServices.filter((link) => /školení/.test(link.label)).map((link) => link.href), ["/ai-skoleni"]);
     for (const page of [site.home, ...site.services]) {
       assert.ok(page.metadata.title.length <= 60, `${page.metadata.title} (${page.metadata.title.length})`);
       const length = page.metadata.description.length;
@@ -73,4 +80,45 @@ test("the home page share images are 1200 × 630 PNGs", () => {
     assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630]);
   }
   assert.match(read("src/components/site/Shell.astro"), /\/og\/\$\{lang\}\.png\?v=4/);
+});
+
+test("the Czech-only pages: routes, sitemap, navigation and content rules", () => {
+  const list = Object.entries(pages);
+  assert.deepEqual(list.map(([, page]) => page.path).sort(), [...CZECH_ONLY_PAGES].sort());
+  const menu = [...cs.menu.main, ...cs.menu.footerServices, ...cs.menu.footerCompany].map((link) => link.href);
+  for (const [key, page] of list) {
+    assert.ok(SITEMAP_PAGES.includes(page.path) && !TWIN_PAGES.some((pair) => pair.cs === page.path), page.path);
+    assert.ok(read(`src/pages${page.path}.astro`).includes(`page="${key}"`), page.path);
+    assert.ok(cs.menu.main.some((link) => link.href === page.path), `${page.path} is in the main menu`);
+    assert.ok(page.metadata.title.length <= 60, `${page.metadata.title} (${page.metadata.title.length})`);
+    const length = page.metadata.description.length;
+    assert.ok(length >= 120 && length <= 160, `${page.metadata.description} (${length})`);
+    assert.ok(page.cta.length >= 1 && page.contact.cta.length >= 1, page.path);
+  }
+  // Every internal link of the Czech site leads to a page that exists
+  const copy = JSON.stringify([cs, pages]);
+  const internal = [...copy.matchAll(/"href":"(\/[^"#]*)/g)].map((m) => m[1]);
+  for (const href of [...menu, ...internal]) assert.ok(SITEMAP_PAGES.includes(href.split("#")[0]), href);
+  assert.doesNotMatch(JSON.stringify(pages), RULES);
+  assert.deepEqual(pricesIn(JSON.stringify(pages)), []);
+});
+
+test("positioning: the hero sells a result, software development is out of the main menu", () => {
+  // Both home pages; the page /vyvoj-softwaru itself keeps the word in its own heading
+  assert.doesNotMatch(JSON.stringify(cs.home.hero), /software|vývoj/iu);
+  assert.doesNotMatch(JSON.stringify([en.home.hero, en.home.metadata]), /software|develop/iu);
+  assert.ok(!cs.menu.main.some((link) => /vývoj|software/iu.test(link.label) || link.href === "/vyvoj-softwaru"));
+  assert.ok(cs.menu.footerServices.some((link) => link.href === "/vyvoj-softwaru"));
+  // The two calls to action of the home page, each an enquiry type of its own
+  assert.deepEqual(cs.home.hero.cta.map((cta) => cta.label), ["Objednat AI diagnostiku", "Odhad návratnosti zdarma"]);
+  assert.equal(new Set(cs.home.contact.cta.map((cta) => cta.subject)).size, 2);
+  assert.equal(cs.home.services.items.length, 3);
+  assert.equal(cs.home.process.steps.length, 4);
+});
+
+// Nothing unfinished goes public: no "[doplnit …]", TODO or other stand-in text in the copy of either language
+test("no placeholders in the copy", () => {
+  const copy = JSON.stringify([cs, en, pages]);
+  assert.doesNotMatch(copy, /doplnit|TODO|placeholder|lorem|\[[^\]"]*\]/iu);
+  assert.deepEqual(pages.results.sections.map((section) => section.id), ["softwarova-firma", "co-merime"]);
 });
