@@ -8,6 +8,9 @@ export const CTA_DIAGNOSTICS: Cta = { label: "Objednat AI diagnostiku", subject:
 export const CTA_ESTIMATE: Cta = { label: "Odhad návratnosti zdarma", subject: "Odhad návratnosti zdarma" };
 export const CTA_SECURITY: Cta = { label: "Domluvit bezpečnostní prověrku", subject: "Poptávka: bezpečnostní prověrka" };
 
+/** Název metody pro fáze 0–3; mění se jen tady. */
+export const METHOD = "Návratnost napřed";
+
 /** Čtyři fáze spolupráce, číslované od nuly. Na konci každé se rozhoduje klient. */
 export const LADDER: Step[] = [
   {
@@ -27,6 +30,20 @@ export const LADDER: Step[] = [
     text: "Měsíční poplatek za provoz, monitoring, úpravy a opakované bezpečnostní testy. S garantovanými reakčními dobami.",
   },
 ];
+
+/** Co neděláme: čtyři věci, které u nás klient nekoupí. Úvodní stránka i /jak-pracujeme. */
+export const NOT_DOING_ID = "co-nedelame";
+export const NOT_DOING = {
+  kind: "points",
+  title: "Co neděláme",
+  lead: "Čtyři věci, které u nás nekoupíte. Podle nich poznáte, co od nás čekat.",
+  items: [
+    { title: "Nestavíme bez návratnosti", text: "Když odhad nevyjde, řekneme vám to a projekt nezačneme. Je lepší to vědět z jedné stránky než po měsících práce." },
+    { title: "Nenecháme vás s prototypem", text: "Ukázka, která funguje jen na prezentaci, žádnou práci neušetří. Agenta dovedeme do provozu a staráme se o něj dál." },
+    { title: "Nepřeskakujeme bezpečnost", text: "Agent se k vašim datům nedostane, dokud se ho náš bezpečnostní tým nepokusí zneužít. Ani když spěcháte." },
+    { title: "Neprodáváme nástroje místo výsledku", text: "Nedostanete licenci ani platformu, kterou si máte zavést sami. Dostanete odvedenou práci, která se dá změřit." },
+  ],
+} satisfies Block;
 
 /** Tři oborové stránky; odkazuje na ně sekce „Pro koho“ na úvodní stránce a stránky mezi sebou. */
 export const AUDIENCE_ID = "pro-koho";

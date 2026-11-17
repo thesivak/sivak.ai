@@ -29,13 +29,16 @@ export type Block =
 /** A section of a content page (src/site/pages.ts): the blocks of a service page and the home page's sections. */
 export type Section = { id?: string } & (
   | Block
+  /** Typical situations in the words a client would use: illustrations, never quotes of a real client */
+  | { kind: "voices"; title: string; lead?: string; items: string[] }
   | { kind: "index"; title: string; lead?: string; items: IndexItem[]; link?: Link }
   | { kind: "steps"; title: string; lead?: string; from?: number; items: Step[] }
   | { kind: "work"; title: string; lead: string; columns: [string, string, string]; rows: { name: string; text: string; meta: string }[]; facts: string[] }
   | { kind: "questions"; title: string; items: Question[] }
 );
 
-/** A page outside the three services: the industry pages, how we work, results, about. Czech only for now. */
+/** A page outside the three services: the industry pages, how we work, results, about. Czech only, except
+    how we work (src/site/pages-en.ts). */
 export type Page = {
   path: string;
   /** Short name: navigation, breadcrumb */
@@ -97,6 +100,8 @@ export type Site = {
     /** `items`: named offers shown instead of the list of services */
     services: { id: string; title: string; lead?: string; items?: IndexItem[]; link?: Link };
     why: { title: string; items: { title: string; text: string }[] };
+    /** What we do not do */
+    notDoing?: { id: string; title: string; lead?: string; items: { title: string; text: string }[]; link?: Link };
     work: {
       id: string;
       title: string;

@@ -99,6 +99,23 @@ const services = t.services.map((service) => ({ name: service.name, description:
     </div>
   </section>
 
+  {
+    h.notDoing && (
+      <section class="band" id={h.notDoing.id} aria-labelledby={`${h.notDoing.id}-title`}>
+        <div class="wrap">
+          <div class="head">
+            <h2 class="h2" id={`${h.notDoing.id}-title`}>{h.notDoing.title}</h2>
+            {h.notDoing.lead && <p class="lead">{h.notDoing.lead}</p>}
+          </div>
+          <ul class:list={["points", h.notDoing.items.length % 3 === 0 ? "points-3" : "points-4"]}>
+            {h.notDoing.items.map((item) => <li><h3 class="h3">{item.title}</h3><p>{item.text}</p></li>)}
+          </ul>
+          {h.notDoing.link && <p class="actions"><a class="link" href={h.notDoing.link.href}>{h.notDoing.link.label}</a></p>}
+        </div>
+      </section>
+    )
+  }
+
   <section class="band band-ink" id={h.work.id} aria-labelledby={`${h.work.id}-title`}>
     <div class="wrap">
       <div class="head">

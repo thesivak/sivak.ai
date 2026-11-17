@@ -26,12 +26,14 @@ const literal = (path) => `:(literal)${path}`;
 // the copy. The copy of one language is one module (src/site/cs.ts, en.ts), so a change to one page's
 // copy re-dates that language's four pages.
 const PARTS = ["src/components/site/Questions.astro", "src/components/site/Steps.astro", "src/components/site/ContactBlock.astro"];
-const copy = (lang) => (lang === "cs" ? ["src/site/cs.ts", "src/site/cs-offer.ts"] : [`src/site/${lang}.ts`]);
+const copy = (lang) => [`src/site/${lang}.ts`, `src/site/${lang}-offer.ts`];
 const home = (route, lang) => [route, "src/components/site/Home.astro", "src/components/site/SystemDiagram.astro", ...PARTS, ...copy(lang)];
 const service = (route, lang) => [route, "src/components/site/ServicePage.astro", "src/components/site/Sheet.astro", ...PARTS, ...copy(lang)];
 // The Czech-only pages: one template, the copy in src/site/pages.ts and the offer shared with src/site/cs.ts
 const OFFER = "src/site/cs-offer.ts";
 const content = (route) => [route, "src/components/site/ContentPage.astro", "src/components/site/Sheet.astro", ...PARTS, "src/site/pages.ts", OFFER];
+// The content pages that also exist in English (src/site/pages-en.ts)
+const contentEn = (route) => [route, "src/components/site/ContentPage.astro", "src/components/site/Sheet.astro", ...PARTS, "src/site/pages-en.ts", "src/site/en-offer.ts"];
 const SOURCES = {
   "/": home("src/pages/index.astro", "cs"),
   "/en": home("src/pages/en.astro", "en"),
@@ -45,6 +47,7 @@ const SOURCES = {
   "/ai-pro-softwarove-firmy": content("src/pages/ai-pro-softwarove-firmy.astro"),
   "/ai-pro-obchod-a-eshopy": content("src/pages/ai-pro-obchod-a-eshopy.astro"),
   "/jak-pracujeme": content("src/pages/jak-pracujeme.astro"),
+  "/en/how-we-work": contentEn("src/pages/en/how-we-work.astro"),
   "/vysledky": content("src/pages/vysledky.astro"),
   "/o-nas": content("src/pages/o-nas.astro"),
 };

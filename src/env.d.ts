@@ -24,6 +24,3 @@ declare namespace Cloudflare {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- the global Env the adapter's types expect
 interface Env extends Cloudflare.Env {}
 
-interface ImportMetaEnv {
-  readonly PUBLIC_GOOGLE_ADS_ID?: string;
-}

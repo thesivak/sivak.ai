@@ -1,12 +1,27 @@
 import { MIREK_LINKEDIN_URL } from "../lib/site";
-import { CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, INDUSTRIES, LADDER, OFFERS, Q, STARTERS } from "./cs-offer";
+import {
+  CASE,
+  CONTROL,
+  CTA_DIAGNOSTICS,
+  CTA_ESTIMATE,
+  CTA_SECURITY,
+  DEPLOYMENT,
+  INDUSTRIES,
+  LADDER,
+  METHOD,
+  NOT_DOING,
+  NOT_DOING_ID,
+  OFFERS,
+  Q,
+  STARTERS,
+} from "./cs-offer";
 import type { Page, Section } from "./types";
 
 // České stránky mimo tři služby: tři oborové stránky (výroba, softwarové firmy, obchod), jak pracujeme,
 // výsledky a manifest zakladatele. Pozicování je podle problému (rutinní práce), obory jsou jen vstupy.
-// Zatím jen česky (src/i18n/pages.ts → CZECH_ONLY_PAGES). Pravidla obsahu jako v cs.ts: žádná jména klientů,
-// žádná vymyšlená čísla ani certifikace a žádný zástupný text: co nemáme doložené, na stránce není
-// (tests/site.test.mjs).
+// Jen česky (src/i18n/pages.ts → CZECH_ONLY_PAGES), kromě /jak-pracujeme, které má anglickou verzi
+// v pages-en.ts. Pravidla obsahu jako v cs.ts: žádná jména klientů, žádná vymyšlená čísla ani certifikace
+// a žádný zástupný text: co nemáme doložené, na stránce není (tests/site.test.mjs).
 // Pevné mezery za jednopísmennými předložkami doplní web sám (src/lib/czech.ts).
 const BOTH = [CTA_DIAGNOSTICS, CTA_ESTIMATE];
 
@@ -29,6 +44,14 @@ const LADDER_STEPS: Section = {
   items: LADDER,
 };
 const HOW_WE_WORK = { href: "/jak-pracujeme", label: "Jak pracujeme: od odhadu po provoz" };
+/** Bolesti slovy klientů: typické situace v oboru, žádné citace konkrétních firem a žádná jména. */
+const voices = (who: string, items: string[]): Section => ({
+  kind: "voices",
+  id: "co-slychame",
+  title: "Co od firem jako vy slýcháme",
+  lead: `Typické situace, se kterými za námi ${who} chodí. Nejsou to citace konkrétních klientů.`,
+  items,
+});
 
 export const pages = {
   manufacturing: {
@@ -55,6 +78,12 @@ export const pages = {
     },
     cta: BOTH,
     sections: [
+      voices("výrobní firmy", [
+        "„Objednávky z e-mailu přepisujeme do ERP ručně a pořád se v tom někdo splete.“",
+        "„Než obchodník dá dohromady nabídku, zákazník už má odpověď od konkurence.“",
+        "„Malá objednávka nám dá stejně práce jako velká, jen na ní skoro nic nevyděláme.“",
+        "„Účetní na konci měsíce páruje faktury s objednávkami a na nic jiného nemá čas.“",
+      ]),
       {
         kind: "points",
         id: "kde-mizi-penize",
@@ -134,6 +163,12 @@ export const pages = {
     },
     cta: BOTH,
     sections: [
+      voices("softwarové firmy", [
+        "„Podpora tráví většinu dne dohledáváním, co se u zákazníka vlastně stalo.“",
+        "„Před vydáním proklikáváme pořád ty samé scénáře a stejně nám něco uteče.“",
+        "„Drobné opravy leží ve frontě, protože vývojáři dělají na velkých věcech.“",
+        "„Bezpečnostní test jsme dělali dávno. Od té doby jsme vydali spoustu verzí.“",
+      ]),
       {
         kind: "points",
         id: "kde-mizi-cas",
@@ -232,6 +267,12 @@ export const pages = {
     },
     cta: BOTH,
     sections: [
+      voices("obchodní firmy a e-shopy", [
+        "„Objednávky od firemních zákazníků chodí e-mailem a někdo je musí naťukat do systému.“",
+        "„Každý dodavatel pošle ceník jinak a produkty zakládáme ručně, kus po kusu.“",
+        "„Zákazníci se pořád ptají na totéž: kde je objednávka a kdy bude zboží skladem.“",
+        "„V sezóně nestíháme a chyby z přepisování pak opravujeme ještě dlouho po ní.“",
+      ]),
       {
         kind: "points",
         id: "kde-mizi-cas",
@@ -303,7 +344,7 @@ export const pages = {
         "Odhad návratnosti zdarma, AI diagnostika za pevnou cenu, pilot na jednom procesu a provoz s garantovanými reakčními dobami. Bez návratnosti nestavíme.",
     },
     title: "Bez návratnosti nestavíme",
-    lead: "Spolupráce má čtyři fáze. Každá má pevný rozsah a jasný výstup a na konci každé se rozhodujete vy, jestli pokračovat.",
+    lead: `Naše metoda se jmenuje ${METHOD}. Má čtyři fáze, každá má pevný rozsah a jasný výstup a na konci každé se rozhodujete vy, jestli pokračovat.`,
     sheet: {
       caption: "Ukázka jednostránkového odhadu návratnosti",
       title: "Proces: příjem objednávek z e-mailu",
@@ -321,8 +362,8 @@ export const pages = {
       {
         kind: "index",
         id: "faze",
-        title: "Čtyři fáze, po každé rozhodujete vy",
-        lead: "Začínáme zdarma a malým krokem. K další fázi se zavazujete, až když ta předchozí ukázala, že to dává smysl.",
+        title: `Metoda ${METHOD}: čtyři fáze, po každé rozhodujete vy`,
+        lead: "Tak říkáme postupu, kterým vedeme každý projekt: nejdřív číslo, potom stavba. Začínáme zdarma a malým krokem. K další fázi se zavazujete, až když ta předchozí ukázala, že to dává smysl.",
         items: [
           {
             title: "0 · Odhad návratnosti",
@@ -357,6 +398,7 @@ export const pages = {
           { title: "Stavíme i útočíme", text: "Co postavíme, otestuje náš bezpečnostní tým dřív, než to pustíme k vašim datům." },
         ],
       },
+      { ...NOT_DOING, id: NOT_DOING_ID },
       {
         kind: "prose",
         id: "bezpecnostni-proverka",

@@ -12,6 +12,7 @@ declare global {
 }
 
 const GA_COOKIE = /^_ga($|_)/;
+// Google Ads cookies of the earlier site. Nothing sets them any more; what an earlier visit left is deleted.
 const ADS_COOKIE = /^_gcl_/;
 
 /** Deletes matching cookies host-only and on every parent domain (e.g. www.sivak.ai, .sivak.ai). */
@@ -32,22 +33,25 @@ function deleteCookies(pattern: RegExp) {
   }
 }
 
-function apply(choice: Pick<ConsentChoice, "analytics" | "marketing">) {
-  window.gtag?.("consent", "update", consentParams(choice));
-  // Withdrawn or never given: the Google cookies go too
-  if (!choice.analytics) deleteCookies(GA_COOKIE);
-  if (!choice.marketing) {
-    deleteCookies(ADS_COOKIE);
-    try {
-      sessionStorage.removeItem(TRACKING_STORAGE_KEY);
-    } catch {
-      // storage blocked: nothing stored either
-    }
+/** Removes what the former marketing purpose (Google Ads) may have left in this browser. */
+function clearAds() {
+  deleteCookies(ADS_COOKIE);
+  try {
+    sessionStorage.removeItem(TRACKING_STORAGE_KEY);
+  } catch {
+    // storage blocked: nothing stored either
   }
 }
 
-function store(choice: Pick<ConsentChoice, "analytics" | "marketing">) {
-  const value: ConsentChoice = { v: COOKIE_CONSENT_VERSION, at: Date.now(), analytics: choice.analytics, marketing: choice.marketing };
+function apply(choice: Pick<ConsentChoice, "analytics">) {
+  window.gtag?.("consent", "update", consentParams(choice));
+  // Withdrawn or never given: the Google cookies go too
+  if (!choice.analytics) deleteCookies(GA_COOKIE);
+  clearAds();
+}
+
+function store(choice: Pick<ConsentChoice, "analytics">) {
+  const value: ConsentChoice = { v: COOKIE_CONSENT_VERSION, at: Date.now(), analytics: choice.analytics };
   try {
     localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(value));
   } catch {
@@ -60,7 +64,6 @@ export function setupCookieConsent(banner: HTMLElement) {
   const settingsButton = banner.querySelector<HTMLButtonElement>('[data-cc="settings"]')!;
   const saveButton = banner.querySelector<HTMLButtonElement>('[data-cc="save"]')!;
   const analytics = banner.querySelector<HTMLInputElement>('[data-cc-toggle="analytics"]')!;
-  const marketing = banner.querySelector<HTMLInputElement>('[data-cc-toggle="marketing"]')!;
   let opener: HTMLElement | null = null;
 
   function showSettings(open: boolean) {
@@ -73,7 +76,6 @@ export function setupCookieConsent(banner: HTMLElement) {
     const current = readConsent();
     // Toggles show the stored choice, and nothing is pre-ticked without one
     analytics.checked = current?.analytics ?? false;
-    marketing.checked = current?.marketing ?? false;
     showSettings(false);
     banner.hidden = false;
     opener = from;
@@ -88,7 +90,7 @@ export function setupCookieConsent(banner: HTMLElement) {
     opener = null;
   }
 
-  function decide(choice: Pick<ConsentChoice, "analytics" | "marketing">) {
+  function decide(choice: Pick<ConsentChoice, "analytics">) {
     store(choice);
     apply(choice);
     close();
@@ -96,9 +98,9 @@ export function setupCookieConsent(banner: HTMLElement) {
 
   banner.addEventListener("click", (event) => {
     const action = (event.target as HTMLElement).closest<HTMLButtonElement>("[data-cc]")?.dataset.cc;
-    if (action === "accept") decide({ analytics: true, marketing: true });
-    else if (action === "reject") decide({ analytics: false, marketing: false });
-    else if (action === "save") decide({ analytics: analytics.checked, marketing: marketing.checked });
+    if (action === "accept") decide({ analytics: true });
+    else if (action === "reject") decide({ analytics: false });
+    else if (action === "save") decide({ analytics: analytics.checked });
     else if (action === "settings") {
       const expand = settingsButton.getAttribute("aria-expanded") !== "true";
       showSettings(expand);
@@ -128,7 +130,7 @@ export function setupCookieConsent(banner: HTMLElement) {
   if (!readConsent()) {
     // No current choice (never asked, expired or a new version): nothing of Google's may stay behind
     deleteCookies(GA_COOKIE);
-    deleteCookies(ADS_COOKIE);
+    clearAds();
     // After the first paint: the page's content renders first, the bar right after
     requestAnimationFrame(() => requestAnimationFrame(() => open(null)));
   }

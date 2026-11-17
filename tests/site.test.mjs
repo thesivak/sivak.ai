@@ -14,6 +14,7 @@ const bundle = async (entry) => {
 };
 const { TWIN_PAGES, SITEMAP_PAGES, MOVED_PAGES, CZECH_ONLY_PAGES, pageIn } = await bundle("src/i18n/pages.ts");
 const { pages } = await bundle("src/site/pages.ts");
+const { pagesEn } = await bundle("src/site/pages-en.ts");
 const { canonicalRedirect } = await bundle("src/lib/routing.ts");
 const { cs } = await bundle("src/site/cs.ts");
 const { en } = await bundle("src/site/en.ts");
@@ -81,12 +82,15 @@ test("the home page share images are 1200 × 630 PNGs", () => {
   assert.match(read("src/components/site/Shell.astro"), /\/og\/\$\{lang\}\.png\?v=4/);
 });
 
-test("the Czech-only pages: routes, sitemap, navigation and content rules", () => {
+test("the content pages: routes, sitemap, navigation and content rules", () => {
   const list = Object.entries(pages);
-  assert.deepEqual(list.map(([, page]) => page.path).sort(), [...CZECH_ONLY_PAGES].sort());
+  // Czech only, except the ones with an English twin under the same key (src/site/pages-en.ts)
+  const twinned = Object.keys(pagesEn).map((key) => pages[key].path);
+  assert.deepEqual(list.map(([, page]) => page.path).sort(), [...CZECH_ONLY_PAGES, ...twinned].sort());
   const menu = [...cs.menu.main, ...cs.menu.footerServices, ...cs.menu.footerCompany].map((link) => link.href);
   for (const [key, page] of list) {
-    assert.ok(SITEMAP_PAGES.includes(page.path) && !TWIN_PAGES.some((pair) => pair.cs === page.path), page.path);
+    assert.ok(SITEMAP_PAGES.includes(page.path), page.path);
+    assert.equal(pageIn(page.path, "en"), pagesEn[key]?.path, `${page.path}: its English twin, or none`);
     assert.ok(read(`src/pages${page.path}.astro`).includes(`page="${key}"`), page.path);
     // The industry pages stand behind one menu item, "Pro koho", which leads to the home page's section
     const item = cs.menu.main.find((link) => link.href === page.path || link.covers?.includes(page.path));
@@ -118,11 +122,58 @@ test("positioning: the hero sells a result, software development is out of the m
   assert.equal(cs.home.process.steps.length, 4);
 });
 
-// Nothing unfinished goes public: no "[doplnit …]", TODO or other stand-in text in the copy of either language
-test("no placeholders in the copy", () => {
-  const copy = JSON.stringify([cs, en, pages]);
+test("the English content pages: route, twin, metadata, links and content rules", () => {
+  for (const [key, page] of Object.entries(pagesEn)) {
+    assert.equal(pageIn(page.path, "cs"), pages[key].path);
+    assert.ok(SITEMAP_PAGES.includes(page.path), page.path);
+    const route = read(`src/pages${page.path}.astro`);
+    assert.ok(route.includes(`page="${key}"`) && route.includes('lang="en"'), page.path);
+    assert.ok(page.metadata.title.length <= 60, `${page.metadata.title} (${page.metadata.title.length})`);
+    const length = page.metadata.description.length;
+    assert.ok(length >= 120 && length <= 160, `${page.metadata.description} (${length})`);
+    assert.ok(page.cta.length >= 1 && page.contact.cta.length >= 1, page.path);
+  }
+  // Every internal link of the English site leads to an English page that exists
+  const copy = JSON.stringify([en, pagesEn]);
+  const internal = [...copy.matchAll(/"href":"(\/[^"#]*)/g)].map((m) => m[1]);
+  assert.ok(internal.length > 0);
+  for (const href of internal) assert.ok(TWIN_PAGES.some((pair) => pair.en === href), href);
+  assert.doesNotMatch(JSON.stringify(pagesEn), RULES);
+  assert.deepEqual(pricesIn(JSON.stringify(pagesEn)), []);
+  assert.doesNotMatch(JSON.stringify(pagesEn), /\btrainings?\b/iu);
+});
+
+// Nothing unfinished goes public: no "[doplnit …]", TODO, "[X]" or other stand-in text, no unconfirmed promise,
+// guarantee or result, and no preview tag, in the copy of either language
+test("no placeholders and no unconfirmed values in the copy", () => {
+  const copy = JSON.stringify([cs, en, pages, pagesEn]);
   assert.doesNotMatch(copy, /doplnit|TODO|placeholder|lorem|\[[^\]"]*\]/iu);
+  // "Ukázka oprávnění agenta" is a real caption; the preview tag was in capitals
+  assert.doesNotMatch(copy, /UKÁZKA|"preview"/u);
+  assert.doesNotMatch(copy, /záruk|\bguarantee\b|do 6 týdnů|within 6 weeks/iu);
+  for (const site of [cs, en]) for (const key of ["promise", "result", "guarantee"]) assert.ok(!(key in site.home) && !(key in site.home.hero), key);
   assert.deepEqual(pages.results.sections.map((section) => section.id), ["softwarova-firma", "co-merime", "obory"]);
+  for (const file of ["src/styles/site.css", "src/components/site/Home.astro", "src/components/site/ContentPage.astro", "src/pages/ochrana-osobnich-udaju.astro"]) {
+    assert.doesNotMatch(read(file), /preview-tag|UKÁZKA|DOPLNIT/u, file);
+  }
+});
+
+test("what we do not do, the named method and the typical situations are in the copy", () => {
+  // What we do not do, on the home page and on how we work, in both languages
+  for (const [site, page] of [[cs, pages.process], [en, pagesEn.process]]) {
+    assert.equal(site.home.notDoing.items.length, 4);
+    assert.ok(page.sections.some((section) => section.id === site.home.notDoing.id && section.items.length === 4));
+    // The ladder has four phases, numbered from zero
+    assert.equal(site.home.process.steps.length, 4);
+    assert.equal(site.home.process.from, 0);
+  }
+  // Typical situations in a client's words on the three industry pages, in quotes and with no names
+  for (const page of [pages.manufacturing, pages.software, pages.commerce]) {
+    const voices = page.sections.find((section) => section.kind === "voices");
+    assert.ok(voices.items.length >= 3 && voices.items.length <= 4, page.path);
+    for (const item of voices.items) assert.match(item, /^„.+“$/u);
+    assert.match(voices.lead, /Nejsou to citace konkrétních klientů/u);
+  }
 });
 
 test("positioning: by problem, not by industry", () => {

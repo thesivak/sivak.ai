@@ -1,4 +1,19 @@
-import { AUDIENCE_ID, CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, HOME_STARTERS, INDUSTRIES, LADDER, Q } from "./cs-offer";
+import {
+  AUDIENCE_ID,
+  CASE,
+  CONTROL,
+  CTA_DIAGNOSTICS,
+  CTA_ESTIMATE,
+  CTA_SECURITY,
+  DEPLOYMENT,
+  HOME_STARTERS,
+  INDUSTRIES,
+  LADDER,
+  METHOD,
+  NOT_DOING,
+  NOT_DOING_ID,
+  Q,
+} from "./cs-offer";
 import type { Site } from "./types";
 
 // České texty webu. Pozicování (listopad 2026): podle problému, ne podle oboru. sivak.ai pracuje pro středně
@@ -100,6 +115,7 @@ export const cs: Site = {
         },
       ],
     },
+    notDoing: { id: NOT_DOING_ID, title: NOT_DOING.title, lead: NOT_DOING.lead, items: NOT_DOING.items },
     work: {
       id: "z-praxe",
       title: "Z praxe: tým AI agentů v softwarové firmě",
@@ -128,7 +144,7 @@ export const cs: Site = {
     },
     process: {
       id: "postup",
-      title: "Jak pracujeme",
+      title: `Jak pracujeme: metoda ${METHOD}`,
       lead: "Čtyři fáze. Na konci každé se rozhodujete vy, jestli pokračovat. Bez návratnosti nestavíme.",
       steps: LADDER,
       from: 0,
