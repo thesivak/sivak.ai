@@ -36,7 +36,13 @@ const PAGES = {
   "/en/software-development": "/en",
   "/en/security": "/en",
   "/en/ai-training": "/en",
+  "/ai-pro-vyrobni-firmy": "/",
+  "/jak-pracujeme": "/",
+  "/vysledky": "/",
+  "/o-nas": "/",
 };
+// Czech only (src/site/pages.ts)
+const CZECH_ONLY = ["/ai-pro-vyrobni-firmy", "/jak-pracujeme", "/vysledky", "/o-nas"];
 // The training page and its English twin
 const TRAINING = { cs: "/ai-skoleni", en: "/en/ai-training" };
 for (const [path, home] of Object.entries(PAGES)) {
@@ -97,9 +103,11 @@ const switches = (h) => [...h.matchAll(/<a [^>]*data-lang-switch="[^"]+"[^>]*>/g
 ok(switches(sk).length >= 2 && switches(sk).every((href) => href === TRAINING.en), `/ai-skoleni language switch → ${[...new Set(switches(sk))]}`);
 ok(switches(en).length >= 2 && switches(en).every((href) => href === TRAINING.cs), `/en/ai-training language switch → ${[...new Set(switches(en))]}`);
 ok(!sk.includes("/en/ai-skoleni") && !sitemap.includes("/en/ai-skoleni"), "no /en/ai-skoleni in the page or the sitemap");
-// The pages of the redesign do not offer the training: no link to either training page
-const redesigned = ["/", "/en", ...Object.keys(PAGES).filter((p) => !Object.values(TRAINING).includes(p))];
-ok(redesigned.every((p) => !/href="\/(en\/ai-training|ai-skoleni)[#"]/.test(html(p))), "home and service pages: no link to the training pages");
+// English: the pages of the redesign do not offer the training. Czech: the training is filed under workshops
+// (the footer and /jak-pracujeme link to it).
+const redesigned = ["/en", ...Object.keys(PAGES).filter((p) => p.startsWith("/en/") && !Object.values(TRAINING).includes(p))];
+ok(redesigned.every((p) => !/href="\/(en\/ai-training|ai-skoleni)[#"]/.test(html(p))), "English home and service pages: no link to the training pages");
+ok(/href="\/ai-skoleni"/.test(html("/jak-pracujeme")) && /href="\/ai-skoleni"/.test(html("/")), "/jak-pracujeme and the Czech footer link to /ai-skoleni");
 
 console.log("== share images of the training pages");
 // og:image and twitter:image: absolute, the page's own 1200 × 630 PNG in public/og
@@ -116,7 +124,8 @@ console.log("== no price, no agents badge");
 const PRICE_RE = /35[\s\u00a0]?000|Kč/;
 for (const path of ["/", "/en", TRAINING.cs, TRAINING.en]) {
   const raw = html(path);
-  ok(!PRICE_RE.test(raw), `${path} has no 35 000 Kč (HTML incl. JSON-LD and meta)`);
+  // The Czech home page states one price, the AI diagnostics; the training price stays off every page
+  ok(!(path === "/" ? /35[\s\u00a0]?000/ : PRICE_RE).test(raw), `${path} has no 35 000 Kč (HTML incl. JSON-LD and meta)`);
   ok(!/agentů v provozu|agents running|console-live/.test(raw), `${path} has no "agents running" badge`);
 }
 ok(/Cena na vyžádání/.test(visible(sk)), "/ai-skoleni shows Cena na vyžádání");
@@ -148,6 +157,27 @@ for (const [cz, eng] of TWINS) {
     ok(h.includes("mailto:"), `${path} has the contact`);
   }
 }
+
+console.log("== Czech-only pages");
+for (const path of CZECH_ONLY) {
+  const h = html(path);
+  ok(canonical(h) === `${SITE}${path}`, `${path} canonical`);
+  ok(Object.keys(headAlternates(h)).length === 0, `${path} has no hreflang (Czech only)`);
+  ok(switches(h).length >= 2 && switches(h).every((href) => href === "/en"), `${path} language switch → /en`);
+  const loc = urls.find((u) => u.loc === `${SITE}${path}`);
+  ok(loc && loc.alternates.length === 0, `sitemap has ${path}, no alternates`);
+  ok(/<html lang="cs"/.test(h) && meta(h, "property", "og:image") === `${SITE}/og/cs.png?v=4`, `${path} lang cs, share image`);
+  ok(h.includes("mailto:"), `${path} has the contact`);
+  ok(new RegExp(`href="${path}"[^>]*aria-current="page"`).test(h), `${path} is marked in the main menu`);
+}
+const home = html("/");
+ok(!/software|vývoj/i.test(visible(home.slice(home.indexOf('class="hero"'), home.indexOf("</section>", home.indexOf('class="hero"'))))), 'home hero: no "software" or "vývoj"');
+ok(CZECH_ONLY.every((p) => home.includes(`href="${p}"`)), "home links to every Czech-only page");
+const topNav = home.slice(home.indexOf('class="top-links"'), home.indexOf("</ul>", home.indexOf('class="top-links"')));
+ok(!/vyvoj-softwaru/.test(topNav) && /href="\/vyvoj-softwaru"/.test(home), "software development: out of the main menu, still linked (footer)");
+ok(/subject=Objedn%C3%A1vka%3A%20AI%20diagnostika/.test(home) && /subject=Odhad%20n%C3%A1vratnosti%20zdarma/.test(home), "home: both enquiry types (AI diagnostics, free estimate)");
+const everyPage = [...new Set(["/", "/en", ...Object.keys(PAGES)])].map((p) => html(p));
+ok(everyPage.every((h) => !/dotac|subsid|Miroslav|Zapfloor|\+420/i.test(h)), "no dotace, Miroslav, client name or phone number in any page's HTML");
 
 console.log(failures ? `\n${failures} FAILED` : "\nALL CHECKS PASSED");
 process.exit(failures ? 1 : 0);

@@ -85,6 +85,15 @@ service page has Service, FAQPage and BreadcrumbList JSON-LD pointing at the hom
 (`ORGANIZATION_ID` in `src/lib/site.ts`). The language suggestion is not shown on these pages; the
 header's language link is the switch.
 
+The Czech site is positioned for mid-sized manufacturing companies (November 2026). Its offer (the two
+calls to action, the four-phase ladder, the three starter offers, the one price) lives once in
+`src/site/cs-offer.ts` and is reused by `src/site/cs.ts` and by the Czech-only pages in
+`src/site/pages.ts` (`/ai-pro-vyrobni-firmy`, `/jak-pracujeme`, `/vysledky`, `/o-nas`; template
+`ContentPage.astro`, listed in `CZECH_ONLY_PAGES`: no hreflang, the language link leads to `/en`). The
+Czech header and footer links are `menu` in `cs.ts`; the English site still derives them from the
+services. Calls to action open an e-mail with the enquiry type as its subject (`meetingHref`).
+Placeholders `[doplnit …]` mark data the founder has to supply; `tests/site.test.mjs` counts them.
+
 The training page, the privacy policy's form references and `src/content/home/{cs,en}.yaml` (header,
 footer and FAQ title of the training page) still use the earlier design: `src/layouts/Base.astro`,
 `src/styles/global.css`, `src/components/SiteHeader.astro`, `SiteFooter.astro`. Both designs share
@@ -93,7 +102,7 @@ footer and FAQ title of the training page) still use the earlier design: `src/la
 ### Sitemap `<lastmod>`
 
 `/sitemap.xml` lists every page in `SITEMAP_PAGES` (`src/i18n/pages.ts`): the twins with hreflang
-alternates, the Czech-only pages (`CZECH_ONLY_PAGES`, none at the moment) without any. Each `<lastmod>`
+alternates, the Czech-only pages (`CZECH_ONLY_PAGES`) without any. Each `<lastmod>`
 is the time of the last commit that changed **that page's own sources**, read from the committed
 `src/data/lastmod.json`, not the build date (which would mark every page as changed on every deploy).
 

@@ -21,6 +21,7 @@ const twin = getService(other, page.key);
 const url = `${SITE_URL}${page.path}`;
 const homeUrl = lang === "cs" ? SITE_URL : `${SITE_URL}/en`;
 const others = t.services.filter((service) => service.key !== page.key);
+const cta = page.contact.cta ?? t.nav.cta;
 
 const jsonLd = [
   { "@context": "https://schema.org", "@type": "WebPage", "@id": `${url}#webpage`, url, name: page.metadata.title, inLanguage: lang, mainEntity: { "@id": `${url}#service` } },
@@ -52,7 +53,7 @@ const jsonLd = [
         <h1 class="display display-2" id="hero-title">{page.title}</h1>
         <p class="lead">{page.lead}</p>
         <div class="actions">
-          <a class="btn" href="#contact">{t.nav.cta}</a>
+          <a class="btn" href="#contact">{cta}</a>
         </div>
       </div>
       <Sheet sheet={page.sheet} note={t.shared.sample} />
@@ -83,7 +84,10 @@ const jsonLd = [
           {block.kind === "prose" ? (
             <div class="prose">
               <h2 class="h2" id={`block-${i}-title`}>{block.title}</h2>
-              <div>{block.text.map((paragraph) => <p>{paragraph}</p>)}</div>
+              <div>
+                {block.text.map((paragraph) => <p>{paragraph}</p>)}
+                {block.link && <p><a class="link" href={block.link.href}>{block.link.label}</a></p>}
+              </div>
             </div>
           ) : (
             <div class="head">
@@ -113,7 +117,7 @@ const jsonLd = [
     ))
   }
 
-  <Steps id="steps" title={page.steps.title} lead={page.steps.lead} steps={page.steps.items} />
+  <Steps id="steps" title={page.steps.title} lead={page.steps.lead} steps={page.steps.items} from={page.steps.from} />
   <Questions id="questions" title={t.shared.questionsTitle} items={page.questions} />
 
   <section class="band band-ink others" aria-labelledby="others-title">
@@ -132,5 +136,5 @@ const jsonLd = [
     </div>
   </section>
 
-  <ContactBlock lang={lang} id="contact" title={page.contact.title} lead={page.contact.lead} mailSubject={page.contact.mailSubject} />
+  <ContactBlock lang={lang} id="contact" title={page.contact.title} lead={page.contact.lead} mailSubject={page.contact.mailSubject} actions={[{ label: cta, subject: page.contact.mailSubject }]} />
 </Shell>

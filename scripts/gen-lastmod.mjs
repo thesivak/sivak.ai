@@ -36,8 +36,12 @@ function training(page, copy) {
 // the copy. The copy of one language is one module (src/site/cs.ts, en.ts), so a change to one page's
 // copy re-dates that language's four pages.
 const PARTS = ["src/components/site/Questions.astro", "src/components/site/Steps.astro", "src/components/site/ContactBlock.astro"];
-const home = (route, lang) => [route, "src/components/site/Home.astro", "src/components/site/SystemDiagram.astro", ...PARTS, `src/site/${lang}.ts`];
-const service = (route, lang) => [route, "src/components/site/ServicePage.astro", "src/components/site/Sheet.astro", ...PARTS, `src/site/${lang}.ts`];
+const copy = (lang) => (lang === "cs" ? ["src/site/cs.ts", "src/site/cs-offer.ts"] : [`src/site/${lang}.ts`]);
+const home = (route, lang) => [route, "src/components/site/Home.astro", "src/components/site/SystemDiagram.astro", ...PARTS, ...copy(lang)];
+const service = (route, lang) => [route, "src/components/site/ServicePage.astro", "src/components/site/Sheet.astro", ...PARTS, ...copy(lang)];
+// The Czech-only pages: one template, the copy in src/site/pages.ts and the offer shared with src/site/cs.ts
+const OFFER = "src/site/cs-offer.ts";
+const content = (route) => [route, "src/components/site/ContentPage.astro", "src/components/site/Sheet.astro", ...PARTS, "src/site/pages.ts", OFFER];
 const SOURCES = {
   "/": home("src/pages/index.astro", "cs"),
   "/en": home("src/pages/en.astro", "en"),
@@ -50,6 +54,10 @@ const SOURCES = {
   // The training page and its English twin share the template (src/components/landing) but not the copy
   "/ai-skoleni": training("src/pages/ai-skoleni.astro", "ai-skoleni"),
   "/en/ai-training": training("src/pages/en/ai-training.astro", "ai-training"),
+  "/ai-pro-vyrobni-firmy": content("src/pages/ai-pro-vyrobni-firmy.astro"),
+  "/jak-pracujeme": content("src/pages/jak-pracujeme.astro"),
+  "/vysledky": content("src/pages/vysledky.astro"),
+  "/o-nas": content("src/pages/o-nas.astro"),
 };
 
 const { SITEMAP_PAGES } = await loadPages();

@@ -13,7 +13,7 @@ interface Props {
 const { lang, homeHref, switchHref, switchLang } = Astro.props;
 const t = getSite(lang);
 const here = Astro.url.pathname.replace(/(\.html|\/)$/, "") || "/";
-const links = [
+const links = t.menu?.main ?? [
   ...t.services.map((service) => ({ href: service.path, label: service.name })),
   { href: `${homeHref}#${t.home.process.id}`, label: t.nav.process },
   { href: `${homeHref}#${t.home.contact.id}`, label: t.nav.contact },

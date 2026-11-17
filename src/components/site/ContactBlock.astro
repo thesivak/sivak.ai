@@ -1,7 +1,7 @@
 ---
 import type { Locale } from "@/i18n/config";
 import { PEOPLE, meetingHref, telHref } from "@/lib/site";
-import { getSite } from "@/site";
+import { getSite, type Cta } from "@/site";
 
 interface Props {
   lang: Locale;
@@ -9,16 +9,22 @@ interface Props {
   title: string;
   lead: string;
   mailSubject: string;
+  /** The buttons, the first one filled; default: the site-wide call to action with `mailSubject` */
+  actions?: Cta[];
 }
 const { lang, id, title, lead, mailSubject } = Astro.props;
 const t = getSite(lang);
+const [main, ...more] = Astro.props.actions ?? [{ label: t.nav.cta, subject: mailSubject }];
 ---
 <section class="band contact" id={id} aria-labelledby={`${id}-title`}>
   <div class="wrap contact-grid">
     <div>
       <h2 class="h2" id={`${id}-title`}>{title}</h2>
       <p class="lead">{lead}</p>
-      <a class="btn contact-btn" href={meetingHref(mailSubject)}>{t.nav.cta}</a>
+      <div class="actions">
+        <a class="btn" href={meetingHref(main.subject)}>{main.label}</a>
+        {more.map((action) => <a class="link" href={meetingHref(action.subject)}>{action.label}</a>)}
+      </div>
     </div>
     <ul class="people">
       {

@@ -1,0 +1,122 @@
+---
+import Shell from "./Shell.astro";
+import Sheet from "./Sheet.astro";
+import Questions from "./Questions.astro";
+import Steps from "./Steps.astro";
+import ContactBlock from "./ContactBlock.astro";
+import { ORGANIZATION_ID, SITE_URL, breadcrumbJsonLd, meetingHref } from "@/lib/site";
+import { getPage, getSite, type PageKey } from "@/site";
+
+// A Czech-only page outside the three services (src/site/pages.ts): who we work for, how we work, results,
+// about. It is laid out from the same sections as the home and service pages; nothing here is a new design.
+interface Props {
+  page: PageKey;
+}
+const lang = "cs";
+const t = getSite(lang);
+const page = getPage(Astro.props.page);
+const url = `${SITE_URL}${page.path}`;
+const [main, ...more] = page.cta;
+const questions = page.sections.flatMap((section) => (section.kind === "questions" ? section.items : []));
+
+const jsonLd = [
+  { "@context": "https://schema.org", "@type": "WebPage", "@id": `${url}#webpage`, url, name: page.metadata.title, description: page.metadata.description, inLanguage: lang, publisher: { "@id": ORGANIZATION_ID } },
+  breadcrumbJsonLd([
+    { name: "Domů", url: SITE_URL },
+    { name: page.name, url },
+  ]),
+  ...(questions.length
+    ? [{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: questions.map((item) => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })) }]
+    : []),
+];
+---
+<Shell lang={lang} title={page.metadata.title} description={page.metadata.description} path={page.path} jsonLd={jsonLd}>
+  <section class="hero hero-service" aria-labelledby="hero-title">
+    <div class:list={["wrap", { "service-grid": page.sheet }]}>
+      <div class="service-copy">
+        <p class="crumb"><a href="/">sivak.ai</a><span aria-hidden="true">/</span>{page.name}</p>
+        <h1 class="display display-2" id="hero-title">{page.title}</h1>
+        <p class="lead">{page.lead}</p>
+        <div class="actions">
+          <a class="btn" href={meetingHref(main.subject)}>{main.label}</a>
+          {more.map((action) => <a class="link" href={meetingHref(action.subject)}>{action.label}</a>)}
+        </div>
+      </div>
+      {page.sheet && <Sheet sheet={page.sheet} note={t.shared.sample} />}
+    </div>
+  </section>
+
+  {
+    page.sections.map((section, i) => {
+      const id = section.id ?? `section-${i}`;
+      if (section.kind === "steps") return <Steps id={id} title={section.title} lead={section.lead} steps={section.items} from={section.from} />;
+      if (section.kind === "questions") return <Questions id={id} title={section.title} items={section.items} />;
+      return (
+        <section class:list={["band", { "band-sheet": section.kind === "index", "band-ink": section.kind === "work" }]} id={id} aria-labelledby={`${id}-title`}>
+          <div class="wrap">
+            {section.kind === "prose" ? (
+              <div class="prose">
+                <h2 class="h2" id={`${id}-title`}>{section.title}</h2>
+                <div>
+                  {section.text.map((paragraph) => <p>{paragraph}</p>)}
+                  {section.link && <p><a class="link" href={section.link.href}>{section.link.label}</a></p>}
+                </div>
+              </div>
+            ) : (
+              <div class="head">
+                <h2 class="h2" id={`${id}-title`}>{section.title}</h2>
+                {section.lead && <p class="lead">{section.lead}</p>}
+              </div>
+            )}
+            {section.kind === "index" && (
+              <>
+                <ul class="index index-offers">
+                  {section.items.map((item) => (
+                    <li class="index-row">
+                      <h3 class="index-name">{item.href ? <a href={item.href}>{item.title}</a> : item.title}</h3>
+                      <p class="index-text">{item.text}</p>
+                      <ul class="index-items">{item.points.map((point) => <li>{point}</li>)}</ul>
+                    </li>
+                  ))}
+                </ul>
+                {section.link && <p class="actions"><a class="link" href={section.link.href}>{section.link.label}</a></p>}
+              </>
+            )}
+            {section.kind === "compare" && (
+              <div class="compare">
+                {section.columns.map((column) => (
+                  <div>
+                    <h3 class="h3">{column.title}</h3>
+                    <p>{column.text}</p>
+                    <dl>{column.rows.map(([label, value]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+                    <p class="compare-fit">{column.fit}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {section.kind === "points" && (
+              <ul class:list={["points", section.items.length % 3 === 0 ? "points-3" : "points-4"]}>
+                {section.items.map((item) => <li><h3 class="h3">{item.title}</h3><p>{item.text}</p></li>)}
+              </ul>
+            )}
+            {section.kind === "work" && (
+              <>
+                <table class="work">
+                  <thead>
+                    <tr>{section.columns.map((column) => <th scope="col">{column}</th>)}</tr>
+                  </thead>
+                  <tbody>
+                    {section.rows.map((row) => <tr><th scope="row">{row.name}</th><td>{row.text}</td><td>{row.meta}</td></tr>)}
+                  </tbody>
+                </table>
+                <ul class="work-facts">{section.facts.map((fact) => <li>{fact}</li>)}</ul>
+              </>
+            )}
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <ContactBlock lang={lang} id="kontakt" title={page.contact.title} lead={page.contact.lead} mailSubject={page.contact.cta[0].subject} actions={page.contact.cta} />
+</Shell>

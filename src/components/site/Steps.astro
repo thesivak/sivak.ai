@@ -1,5 +1,5 @@
 ---
-import type { Step } from "@/site";
+import type { Link, Step } from "@/site";
 
 // A numbered sequence: the steps of a project, in order.
 interface Props {
@@ -7,8 +7,11 @@ interface Props {
   title: string;
   lead?: string;
   steps: Step[];
+  /** Number of the first step; the ladder of phases starts at 0 */
+  from?: number;
+  link?: Link;
 }
-const { id, title, lead, steps } = Astro.props;
+const { id, title, lead, steps, from = 1, link } = Astro.props;
 ---
 <section class="band band-sheet" id={id} aria-labelledby={`${id}-title`}>
   <div class="wrap">
@@ -19,11 +22,12 @@ const { id, title, lead, steps } = Astro.props;
     <ol class="steps">
       {steps.map((step, i) => (
         <li>
-          <span class="steps-num" aria-hidden="true">{i + 1}</span>
+          <span class="steps-num" aria-hidden="true">{i + from}</span>
           <h3 class="h3">{step.title}</h3>
           <p>{step.text}</p>
         </li>
       ))}
     </ol>
+    {link && <p class="actions"><a class="link" href={link.href}>{link.label}</a></p>}
   </div>
 </section>

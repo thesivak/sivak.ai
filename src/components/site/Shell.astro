@@ -15,26 +15,32 @@ interface Props {
   description: string;
   /** Canonical path of this page and of its twin in the other language */
   path: string;
-  twinPath: string;
+  /** Missing on a page in one language only: no hreflang, and the language link leads to the other home page */
+  twinPath?: string;
   jsonLd?: object[];
 }
 const { lang, title, description, path, twinPath, jsonLd = [] } = Astro.props;
 const t = getSite(lang);
 const other: Locale = lang === "cs" ? "en" : "cs";
 const absolute = (p: string) => (p === "/" ? SITE_URL : `${SITE_URL}${p}`);
-const paths: Record<Locale, string> = lang === "cs" ? { cs: path, en: twinPath } : { cs: twinPath, en: path };
+const paths: Record<Locale, string> | null = twinPath ? (lang === "cs" ? { cs: path, en: twinPath } : { cs: twinPath, en: path }) : null;
 const homeHref = localePath(lang);
+const switchHref = twinPath ?? localePath(other);
 ---
 <Document
   lang={lang}
   title={title}
   description={description}
   canonical={absolute(path)}
-  alternates={[
-    { hreflang: "cs", href: absolute(paths.cs) },
-    { hreflang: "en", href: absolute(paths.en) },
-    { hreflang: "x-default", href: absolute(paths.cs) },
-  ]}
+  alternates={
+    paths
+      ? [
+          { hreflang: "cs", href: absolute(paths.cs) },
+          { hreflang: "en", href: absolute(paths.en) },
+          { hreflang: "x-default", href: absolute(paths.cs) },
+        ]
+      : []
+  }
   // ?v=4: the share image changed with the redesign; LinkedIn and Slack cache by URL
   ogImage={{ path: `/og/${lang}.png?v=4`, alt: title }}
   jsonLd={jsonLd}
@@ -42,7 +48,7 @@ const homeHref = localePath(lang);
   themeColor="#F4F5F2"
 >
   <a class="skip-link" href="#main">{t.skipLink}</a>
-  <Header lang={lang} homeHref={homeHref} switchHref={twinPath} switchLang={other} />
+  <Header lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
   <main id="main"><slot /></main>
-  <Footer lang={lang} homeHref={homeHref} switchHref={twinPath} switchLang={other} />
+  <Footer lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} />
 </Document>

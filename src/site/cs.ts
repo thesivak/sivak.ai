@@ -1,7 +1,10 @@
+import { CASE, CONTROL, CTA_DIAGNOSTICS, CTA_ESTIMATE, CTA_SECURITY, DEPLOYMENT, LADDER, Q, STARTERS } from "./cs-offer";
 import type { Site } from "./types";
 
-// České texty redesignu. Fakta o agentech, nasazení, kontrole a případu softwarové firmy vycházejí ze
-// schválených textů původního webu. Žádné ceny, jména klientů ani čísla.
+// České texty webu. Pozicování (listopad 2026): sivak.ai zefektivňuje středně velké výrobní firmy; prodáváme
+// výsledek, ne technologii. Fakta o agentech, nasazení, kontrole a případu softwarové firmy vycházejí ze
+// schválených textů původního webu. Žádná jména klientů ani vymyšlená čísla; jediná cena na webu je
+// AI diagnostika (cs-offer.ts). Stránky mimo tři služby jsou v pages.ts.
 // Pevné mezery za jednopísmennými předložkami doplní web sám (src/lib/czech.ts).
 export const cs: Site = {
   skipLink: "Přeskočit na obsah",
@@ -11,134 +14,128 @@ export const cs: Site = {
     work: "Z praxe",
     process: "Jak pracujeme",
     contact: "Kontakt",
-    cta: "Domluvit schůzku",
+    cta: "Odhad návratnosti zdarma",
     open: "Otevřít menu",
     close: "Zavřít menu",
   },
   langSwitch: { label: "English", title: "Switch to English" },
+  // Hlavní menu bez vývoje softwaru; ten a AI školení jsou dostupné z patičky
+  menu: {
+    main: [
+      { href: "/ai-pro-vyrobni-firmy", label: "AI pro výrobní firmy" },
+      { href: "/jak-pracujeme", label: "Jak pracujeme" },
+      { href: "/vysledky", label: "Výsledky" },
+      { href: "/bezpecnost", label: "Bezpečnost" },
+      { href: "/o-nas", label: "O nás" },
+    ],
+    footerServices: [
+      { href: "/ai-pro-vyrobni-firmy", label: "AI pro výrobní firmy" },
+      { href: "/jak-pracujeme", label: "AI diagnostika a pilot" },
+      { href: "/bezpecnost", label: "Bezpečnostní prověrka" },
+      { href: "/ai-skoleni", label: "Workshopy a AI školení" },
+      { href: "/ai-reseni", label: "AI řešení" },
+      { href: "/vyvoj-softwaru", label: "Vývoj softwaru" },
+    ],
+    footerCompany: [
+      { href: "/vysledky", label: "Výsledky" },
+      { href: "/jak-pracujeme", label: "Jak pracujeme" },
+      { href: "/o-nas", label: "Proč sivak.ai" },
+    ],
+  },
   home: {
     metadata: {
-      title: "AI systémy, software a bezpečnost pro firmy | sivak.ai",
+      title: "AI agenti pro výrobní firmy: návratnost předem | sivak.ai",
       description:
-        "Stavíme AI agenty a software na míru pro firmy a testujeme jejich bezpečnost: penetrační testy, red teaming a nepřetržitý dohled.",
+        "Zefektivňujeme středně velké výrobní firmy. Najdeme práci, která zbytečně žere lidi a peníze, a nasadíme na ni AI agenty, které provozujeme a hlídáme.",
     },
     hero: {
-      title: ["Stavíme AI systémy a software.", "A pak se je snažíme prolomit."],
-      lead: "sivak.ai je jeden tým pro AI řešení, vývoj softwaru a bezpečnost. Stavíme systémy, které odvedou skutečnou práci a odolají skutečnému útoku.",
-      primary: "Domluvit schůzku",
-      secondary: "Co děláme",
+      title: ["AI řešení, která vydělávají peníze.", "A která nikdo nezneužije."],
+      lead: "Pro středně velké výrobní firmy. Najdeme jeden proces s nejrychlejší návratností, postavíme na něj agenta a ručíme za jeho provoz i bezpečnost.",
+      primary: CTA_DIAGNOSTICS.label,
+      secondary: CTA_ESTIMATE.label,
+      cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
     },
     system: {
-      caption: "Typický systém, jaký stavíme. Červeně jsou místa, kde náš bezpečnostní tým zaútočí nejdřív.",
+      caption: "Typické nasazení agenta ve výrobní firmě. Červeně jsou místa, kde náš bezpečnostní tým zaútočí nejdřív.",
       stages: [
-        { name: "Lidé", nodes: [{ label: "Zaměstnanci" }, { label: "Zákazníci" }] },
-        { name: "Aplikace", nodes: [{ label: "Webové a mobilní aplikace" }, { label: "E-mail a chat", marked: true }], note: "Pokyny ukryté v příchozím e-mailu" },
+        { name: "Lidé", nodes: [{ label: "Obchod a účtárna" }, { label: "Zákazníci a dodavatelé" }] },
+        { name: "Vstupy", nodes: [{ label: "E-mail a PDF", marked: true }, { label: "Excel" }], note: "Pokyny ukryté v příchozím e-mailu" },
         { name: "AI agenti", nodes: [{ label: "Agent připraví práci", marked: true }, { label: "Člověk schválí" }], note: "Agent s širším přístupem, než ke své práci potřebuje" },
-        { name: "Firemní systémy", nodes: [{ label: "ERP a CRM", marked: true }, { label: "Dokumenty a data" }], note: "Staré rozhraní bez ochrany přihlášením" },
+        { name: "Firemní systémy", nodes: [{ label: "ERP", marked: true }, { label: "Dokumenty a data" }], note: "Staré rozhraní bez ochrany přihlášením" },
         { name: "AI modely", nodes: [{ label: "V cloudu" }, { label: "Na vašem hardwaru" }] },
       ],
     },
-    services: { id: "sluzby", title: "Co děláme" },
+    services: {
+      id: "sluzby",
+      title: "Tři nabídky, kterými začínáme",
+      lead: "Každá míří na práci, kterou výrobní firmy dělají ručně v e-mailu, PDF a Excelu. Každá má jasný výstup.",
+      items: STARTERS.map((item) => ({ ...item, href: "/ai-pro-vyrobni-firmy#startovni-nabidky" })),
+      link: { href: "/ai-pro-vyrobni-firmy", label: "AI pro výrobní firmy" },
+    },
     why: {
-      title: "Proč jeden tým na všechno",
+      title: "Proč sivak.ai",
       items: [
         {
-          title: "Bezpečnost začíná návrhem",
-          text: "Lidé, kteří váš systém stavějí, sedí vedle lidí, kteří systémy napadají. Slabá místa odstraníme před prvním nasazením, ne až po incidentu.",
+          title: "Bez návratnosti nestavíme",
+          text: "Návratnost spočítáme dřív, než začneme. Když nevychází, řekneme vám to a nestavíme.",
         },
         {
-          title: "Nález se opraví",
-          text: "Samotná zpráva z testu nic nezmění. Tým, který slabinu najde, ji umí také opravit a znovu otestovat.",
+          title: "Agent připraví, člověk rozhodne",
+          text: "Důležité kroky schvaluje váš člověk. Každá akce agenta je zaznamenaná, takže víte, co udělal a proč.",
         },
         {
-          title: "AI známe zevnitř",
-          text: "AI agenty sami stavíme. Víme, jaká oprávnění dostávají, jaká data čtou a jak je může ovlivnit podvržený obsah.",
+          title: "Stavíme i útočíme v jednom týmu",
+          text: "Lidé, kteří agenty stavějí, sedí vedle lidí, kteří systémy napadají. Slabá místa odstraníme před nasazením, ne po incidentu.",
+        },
+        {
+          title: "Provozujeme a hlídáme",
+          text: "Agenta vám nepředáme a neodejdeme. Provozujeme ho v cloudu, nebo na vašem vlastním hardwaru, a za provoz ručíme.",
         },
       ],
     },
     work: {
       id: "z-praxe",
-      title: "V provozu: tým AI agentů v softwarové firmě",
+      title: "Z praxe: tým AI agentů v softwarové firmě",
       lead: "Pro softwarovou firmu provozujeme agenty, kteří každý den pracují vedle lidí z podpory, testování a vývoje.",
-      columns: ["Agent", "Co dělá", "Jak běží"],
-      agents: [
-        {
-          name: "Zákaznická podpora",
-          text: "Prošetří každý nový požadavek. Přečte historii zákazníka, ověří data v aplikaci a připraví odpověď. Odesílá ji člověk.",
-          meta: "Nové požadavky kontroluje každých 10 minut",
-        },
-        {
-          name: "Testování",
-          text: "Novou verzi aplikace vyzkouší ve skutečném prohlížeči jako tester. Výsledek doloží snímky obrazovky a videem.",
-          meta: "Výsledek: prošlo, neprošlo, nebo nelze ověřit",
-        },
-        {
-          name: "Vývoj a kontrola kódu",
-          text: "Podle zadání připraví změnu v kódu a nezávislý agent ji zkontroluje. Schvaluje a nasazuje člověk.",
-          meta: "Mimo ostrý provoz",
-        },
-        {
-          name: "Studio pro kolegy",
-          text: "Kolegové, kteří neprogramují, popíšou nápad a hned ho vidí v aplikaci. Vývojářům předají hotový návrh.",
-          meta: "Od nápadu k návrhu bez programování",
-        },
-      ],
-      facts: ["Do firemních systémů jen ke čtení", "Každý krok zaznamenaný", "Běží ve dne i v noci"],
+      columns: CASE.columns,
+      agents: CASE.agents,
+      facts: CASE.facts,
+      link: { href: "/vysledky", label: "Výsledky a případové studie" },
     },
     questions: {
       id: "otazky",
       title: "Na co se firmy ptají, než začneme",
       items: [
-        {
-          q: "Musíme měnit své systémy?",
-          a: "Ne. Agent pracuje v aplikacích, které už používáte. Kde chybí napojení, ovládá program přes obrazovku stejně jako člověk.",
-        },
-        {
-          q: "Kde AI běží?",
-          a: "V cloudu, nebo na vašem vlastním hardwaru. Pokud data nesmí opustit firmu, nasadíme lokální modely na váš server. Fungují i bez přístupu k internetu.",
-        },
-        {
-          q: "Co když agent udělá chybu?",
-          a: "Agent připraví, člověk rozhodne. Důležité kroky vždy schvaluje člověk a každá akce agenta je zaznamenaná, takže víte, co udělal a proč.",
-        },
-        {
-          q: "K čemu má agent přístup?",
-          a: "Jen k tomu, co ke své práci potřebuje, většinou jen ke čtení. Hesla nevidí a zkouší na kopii dat, ne v ostrém provozu.",
-        },
-        {
-          q: "Testujete i systémy od jiného dodavatele?",
-          a: "Ano. Testujeme aplikace, sítě i AI systémy bez ohledu na to, kdo je postavil.",
-        },
-        {
-          q: "Je simulovaný útok bezpečný?",
-          a: "Předem dohodneme cíle, hranice testu a způsob vyhodnocení. Simulace probíhá vždy v dohodnutém rozsahu a s písemným souhlasem vedení. Výsledky sdílíme důvěrně.",
-        },
+        Q.price,
+        Q.noReturn,
+        Q.systems,
+        Q.mistake,
+        Q.where,
+        Q.access,
         {
           q: "Jak rychle uvidíme výsledek?",
-          a: "Začínáme jedním procesem nebo jedním systémem, kde se práce vrátí nejrychleji. Od prvního dne provozu měříme odvedenou práci a ušetřený čas.",
+          a: "Začínáme jedním procesem, kde se práce vrátí nejrychleji. Pilot trvá 4–8 týdnů a od prvního dne provozu měříme odvedenou práci a ušetřený čas.",
         },
         {
           q: "Pro jaké firmy pracujete?",
-          a: "Pro malé i velké firmy z výroby, obchodu, služeb a softwaru. Obor rozhoduje méně než systémy, na kterých firma stojí.",
+          a: "Pro výrobní a výrobně-obchodní firmy s 50 až 500 lidmi, které jedou na ERP a hodně práce dělají v e-mailu, PDF a Excelu. Jedná s námi obvykle majitel nebo ředitel, ne IT.",
         },
       ],
     },
     process: {
       id: "postup",
-      title: "Jak spolupráce začíná",
-      lead: "Začínáme malým krokem s jasným výsledkem. Rozšiřujeme, až když se osvědčí.",
-      steps: [
-        { title: "První schůzka", text: "Projdeme vaše procesy a systémy a najdeme, kde se práce vrátí nejrychleji." },
-        { title: "Rozsah a návratnost", text: "Určíme rozsah a spočítáme návratnost: ušetřené hodiny nebo odstraněná rizika. Víte to dřív, než začneme." },
-        { title: "Pilot nebo první test", text: "Postavíme jednoho agenta, dodáme první verzi nebo provedeme první test. Výsledek zkontrolují vaši lidé." },
-        { title: "Provoz", text: "Dodané řešení provozujeme, hlídáme a zlepšujeme. Bezpečnostní testy opakujeme, když se systém změní." },
-      ],
+      title: "Jak pracujeme",
+      lead: "Čtyři fáze. Na konci každé se rozhodujete vy, jestli pokračovat. Bez návratnosti nestavíme.",
+      steps: LADDER,
+      from: 0,
+      link: { href: "/jak-pracujeme", label: "Co v každé fázi dostanete" },
     },
     contact: {
       id: "kontakt",
-      title: "Řekněte nám, co potřebujete postavit nebo otestovat",
-      lead: "Na první schůzce projdeme vaši situaci a navrhneme první krok.",
-      mailSubject: "Schůzka: sivak.ai",
+      title: "Zjistěte, kolik vám mizí v rutinní práci",
+      lead: "Odhad návratnosti je zdarma: 45minutový hovor a jednostránkový odhad. Pokud už víte, který proces chcete řešit, objednejte rovnou AI diagnostiku.",
+      mailSubject: CTA_DIAGNOSTICS.subject,
+      cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
     },
   },
   services: [
@@ -151,8 +148,8 @@ export const cs: Site = {
         description:
           "AI agenti, AI nad firemními daty, automatizace procesů a roboti pro starý software. V cloudu i na vašem hardwaru. Agent připraví, člověk rozhodne.",
       },
-      title: "AI agenti a nástroje, které ve vašich systémech odvedou skutečnou práci",
-      lead: "Stavíme agenty na míru vašim procesům. Čtou e-maily a dokumenty, vyplňují formuláře, pracují ve vašich aplikacích a hotovou práci předají člověku ke schválení.",
+      title: "AI agenti, kteří ve vašich systémech odvedou skutečnou práci",
+      lead: "Stavíme agenty na míru vašim procesům. Čtou e-maily a dokumenty, vyplňují formuláře, pracují ve vašem ERP a hotovou práci předají člověku ke schválení.",
       summary: "Agenti a nástroje, které ve vašich systémech odvedou jasně danou práci. Agent připraví, člověk rozhodne.",
       sheet: {
         caption: "Ukázka oprávnění agenta",
@@ -191,69 +188,25 @@ export const cs: Site = {
           },
         ],
       },
-      blocks: [
-        {
-          kind: "compare",
-          title: "V cloudu i na vašem hardwaru",
-          lead: "Kde agenti poběží, rozhodnete vy. Pokud data nesmí opustit firmu, nasadíme je na váš server s lokálními AI modely. Fungují i úplně bez přístupu k internetu.",
-          columns: [
-            {
-              title: "Cloud",
-              text: "Agenti využívají nejvýkonnější AI modely v cloudu. Nepotřebujete vlastní hardware, takže začnete rychleji.",
-              rows: [
-                ["Model", "Nejvýkonnější cloudové modely"],
-                ["Hardware", "Není potřeba"],
-                ["Start", "Nejrychlejší"],
-              ],
-              fit: "Pro rychlý start a nejvyšší výkon.",
-            },
-            {
-              title: "Váš vlastní hardware",
-              text: "Agenti i AI modely běží na serveru ve vaší firmě. Data nikdy neopustí vaši síť a vše funguje i bez přístupu k internetu.",
-              rows: [
-                ["Model", "Lokální, běží u vás"],
-                ["Data", "Neopustí firmu"],
-                ["Internet", "Není potřeba"],
-              ],
-              fit: "Pro citlivá data, výrobu a uzavřené sítě.",
-            },
-          ],
-        },
-        {
-          kind: "points",
-          title: "Agent připraví. Člověk rozhodne.",
-          lead: "Agenti pracují v jasných mantinelech. Vždy víte, co dělají, k čemu mají přístup a proč došli k výsledku.",
-          items: [
-            { title: "Schvaluje člověk", text: "Důležité kroky, jako odpověď zákazníkovi, zaúčtování nebo objednávku, vždy potvrdí člověk." },
-            { title: "Jen nutná oprávnění", text: "Agent dostane přístup jen k tomu, co ke své práci potřebuje. Většinou jen ke čtení." },
-            { title: "Hesla nevidí", text: "Přístupové údaje spravuje systém. Agent je nikdy nedostane do rukou." },
-            { title: "Zkouší na kopii", text: "Testuje a zkouší na kopii dat. Ostrý provoz zůstává nedotčený." },
-            { title: "Záznam každého kroku", text: "Každá akce je zaznamenaná, včetně snímků obrazovky a videa. Víte, co agent udělal a proč." },
-            { title: "Měřitelný výsledek", text: "Vidíte, kolik práce agent odvedl a kolik času vám ušetřil." },
-          ],
-        },
-      ],
+      blocks: [DEPLOYMENT, CONTROL],
       steps: {
-        title: "Od první schůzky k agentovi v provozu",
-        lead: "Začínáme malým krokem s jasným výsledkem. Rozšiřujeme, až když se agent osvědčí.",
-        items: [
-          { title: "Úvodní schůzka", text: "Projdeme vaše procesy a najdeme rutinu, která zabírá nejvíc času." },
-          { title: "Výpočet návratnosti", text: "Spočítáme, kolik hodin agent ušetří a kdy se investice vrátí. Víte to dřív, než začneme." },
-          { title: "Pilotní projekt", text: "Postavíme agenta na jeden proces. Vaši lidé kontrolují jeho práci a my měříme výsledky." },
-          { title: "Provoz a rozšíření", text: "Agenta provozujeme, hlídáme a zlepšujeme. Když se osvědčí, převezme další práci." },
-        ],
+        title: "Od odhadu k agentovi v provozu",
+        lead: "Čtyři fáze. Na konci každé se rozhodujete vy, jestli pokračovat. Bez návratnosti nestavíme.",
+        from: 0,
+        items: LADDER,
       },
       questions: [
-        { q: "Musíme kvůli agentům měnit své systémy?", a: "Ne. Agent pracuje v aplikacích, které už používáte. Kde chybí napojení, ovládá program přes obrazovku stejně jako člověk." },
-        { q: "Co když agent udělá chybu?", a: "Agent připraví, člověk rozhodne. Důležité kroky vždy schvaluje člověk a každá akce agenta je zaznamenaná, takže víte, co udělal a proč." },
+        Q.systems,
+        Q.mistake,
+        Q.price,
         { q: "Jak rychle uvidíme výsledek?", a: "Začínáme procesem, kde se agent zaplatí nejrychleji. Od prvního dne provozu měříme, kolik práce odvedl a kolik času ušetřil." },
         { q: "Jsou naše data v bezpečí?", a: "Agent má přístup jen k tomu, co ke své práci potřebuje, většinou jen ke čtení. Hesla nevidí a zkouší na kopii dat, ne v ostrém provozu." },
         { q: "Musí agent běžet v cloudu?", a: "Nemusí. Agenty stavíme v cloudu i na vašem vlastním hardwaru s lokálními modely, které fungují i bez přístupu k internetu. Data pak nikdy neopustí firmu." },
       ],
       contact: {
         title: "Ukažte nám práci, která vás zdržuje",
-        lead: "Na první schůzce projdeme vaše procesy a ukážeme, kde se agent zaplatí nejrychleji.",
-        mailSubject: "Schůzka: AI řešení pro naši firmu",
+        lead: "Odhad návratnosti je zdarma: v 45minutovém hovoru projdeme váš proces a pošleme jednostránkový odhad, kde se agent zaplatí nejrychleji.",
+        mailSubject: CTA_ESTIMATE.subject,
       },
     },
     {
@@ -336,6 +289,7 @@ export const cs: Site = {
         title: "Řekněte nám, co vaše systémy dnes neumějí",
         lead: "Na první schůzce projdeme váš proces a systémy a navrhneme první verzi.",
         mailSubject: "Schůzka: vývoj softwaru",
+        cta: "Domluvit schůzku",
       },
     },
     {
@@ -343,50 +297,55 @@ export const cs: Site = {
       path: "/bezpecnost",
       name: "Bezpečnost",
       metadata: {
-        title: "Penetrační testy, red teaming a AI bezpečnost | sivak.ai",
+        title: "Bezpečnostní prověrka firmy a AI agentů | sivak.ai",
         description:
-          "Penetrační testy, red teaming, bezpečnostní analýza a nepřetržitý dohled pro aplikace, sítě a AI. Doložíme, co útočník dokáže, a pomůžeme ho zastavit.",
+          "Jeden vážný únik dat může firmu položit. Bezpečnostní prověrka, penetrační testy a dohled: ukážeme, kam by se útočník dostal, a pomůžeme ho zastavit.",
       },
-      title: "Na vaše systémy zaútočíme dřív než někdo jiný",
-      lead: "Penetrační testy, red teaming a nepřetržitý dohled pro aplikace, sítě a AI. Doložíme, co útočník dokáže, a pomůžeme ho zastavit.",
-      summary: "Na vaše aplikace, sítě a AI zaútočíme stejně jako skutečný útočník. Potom pomůžeme slabá místa odstranit.",
+      title: "Jeden vážný únik dat může firmu vaší velikosti položit",
+      lead: "Stojící výroba, zašifrované ERP, ceníky a výkresy zákazníků venku. Na vaše systémy a AI agenty zaútočíme dřív než někdo jiný, ukážeme, kam by se útočník dostal, a pomůžeme mu cestu zavřít.",
+      summary: "Na vaše systémy a AI agenty zaútočíme stejně jako skutečný útočník. Ukážeme, co by to znamenalo pro provoz, a pomůžeme slabá místa odstranit.",
       sheet: {
         caption: "Ukázka nálezu ze zprávy z testu",
         title: "F-03 Agent plní pokyny ukryté v e-mailu",
         severity: "Vysoká",
         rows: [
-          ["Cíl", "Agent podpory, sdílená schránka"],
+          ["Cíl", "Agent pro příjem objednávek, sdílená schránka"],
           ["Útok", "Příchozí e-mail obsahuje ukryté pokyny. Agent je přečte jako zadání."],
-          ["Dopad", "Záznamy zákazníků z CRM mohou opustit firmu"],
-          ["Oprava", "Brát obsah e-mailu jako data, omezit přístup agenta do CRM, schvalovat odchozí poštu"],
+          ["Dopad na firmu", "Ceníky a údaje zákazníků z ERP mohou opustit firmu"],
+          ["Oprava", "Brát obsah e-mailu jako data, omezit přístup agenta do ERP, schvalovat odchozí poštu"],
           ["Opakovaný test", "Po opravě prošel"],
         ],
       },
       offers: {
-        title: "Co děláme",
+        title: "S čím pomůžeme",
         items: [
           {
+            title: "Bezpečnostní prověrka",
+            text: "Druhé vstupní dveře ke spolupráci. V dohodnutém rozsahu zjistíme, kam by se útočník ve vaší firmě dostal a co by to znamenalo pro výrobu, data a zákazníky.",
+            points: ["Zpráva srozumitelná pro vedení", "Nálezy podle dopadu na provoz", "Návrh oprav"],
+          },
+          {
             title: "Penetrační testy",
-            text: "V dohodnutém rozsahu hledáme slabiny, které může útočník využít, a ukážeme, kam až vedou.",
+            text: "Hledáme slabiny, kterými se dá dostat k vašim datům nebo zastavit provoz, a ukážeme, kam až vedou.",
             points: ["Webové a mobilní aplikace", "API", "Sítě a cloud"],
           },
           {
-            title: "Red teaming",
-            text: "Simulovaný útok na celou firmu: lidi, procesy i technologie. Vždy s písemným souhlasem vedení.",
+            title: "Simulovaný útok",
+            text: "Red teaming: útok na celou firmu, tedy na lidi, procesy i technologie. Ukáže, jestli by někdo z vašich lidí útočníka pustil dál. Vždy s písemným souhlasem vedení.",
             points: ["Phishing a vishing", "AI phishing", "Deepfake hovor jen s výslovným souhlasem"],
           },
           {
-            title: "Bezpečnostní analýza",
-            text: "Zmapujeme vaše systémy, AI nástroje a agenty včetně shadow AI, jejich přístup k datům a rizika zneužití. Výstupem je písemná zpráva a prezentace pro vedení.",
+            title: "Prověrka AI a agentů",
+            text: "Zmapujeme AI nástroje a agenty ve firmě včetně těch, o kterých vedení neví, jejich přístup k datům a rizika zneužití. Výstupem je písemná zpráva a prezentace pro vedení.",
             points: ["Shadow AI", "Oprávnění a dodavatelé", "Prompt injection"],
           },
           {
-            title: "Bezpečnostní řešení",
+            title: "Opravy",
             text: "Zprávou nekončíme. Slabiny opravíme, nastavíme pravidla přístupu a doplníme kontroly pro AI agenty s lidským schvalováním.",
             points: ["Opravy a opakované testy", "Pravidla přístupu", "Pravidla používání AI"],
           },
           {
-            title: "Nepřetržitý dohled",
+            title: "Průběžný dohled",
             text: "Vaše systémy se mění každý týden. Hlídáme je, po změnách testy opakujeme a hlásíme nová rizika.",
             points: ["Opakované testy", "Sledování změn", "Pravidelné zprávy"],
           },
@@ -395,10 +354,18 @@ export const cs: Site = {
       blocks: [
         {
           kind: "prose",
-          title: "AI dala útočníkům nové nástroje",
+          title: "Co firmu stojí jeden incident",
           text: [
-            "Útočníci s AI snadno vytvoří přesvědčivé zprávy, napodobí hlas i video a podvrženým obsahem ovlivní vašeho agenta. Rizikem jsou také interní a osobní data v neschválených nástrojích.",
-            "AI agenty sami stavíme. V praxi řešíme, jaká oprávnění dostávají, jaká data čtou a jak je může ovlivnit podvržený obsah. Proto u AI agentů a chatbotů testujeme prompt injection, únik dat a příliš široká oprávnění.",
+            "Útok dnes neznamená jen ztracená data. Znamená stojící výrobu, nevyřízené objednávky a telefonáty zákazníkům, jejichž dokumentace unikla.",
+            "Velká firma má na takový týden rezervy a vlastní bezpečnostní tým. Středně velká výrobní firma většinou ne. Proto se vyplatí znát svá slabá místa dřív, než je najde někdo jiný.",
+          ],
+        },
+        {
+          kind: "prose",
+          title: "AI agenti jsou nové dveře do firmy",
+          text: [
+            "Útočníci s AI snadno vytvoří přesvědčivé zprávy, napodobí hlas i video a podvrženým obsahem ovlivní vašeho agenta. Rizikem jsou také interní data v nástrojích, které nikdo neschválil.",
+            "AI agenty sami stavíme a provozujeme. Víme, jaká oprávnění dostávají, jaká data čtou a jak je může ovlivnit podvržený obsah. Proto u agentů a chatbotů testujeme prompt injection, únik dat a příliš široká oprávnění. Stavíme i útočíme v jednom týmu.",
           ],
         },
         {
@@ -410,12 +377,12 @@ export const cs: Site = {
         },
       ],
       steps: {
-        title: "Jak test probíhá",
+        title: "Jak prověrka probíhá",
         items: [
-          { title: "Úvodní rozhovor", text: "Co provozujete, jak používáte AI a co potřebujete chránit." },
+          { title: "Úvodní rozhovor", text: "Co provozujete, jak používáte AI a co by firmu bolelo nejvíc, kdyby to uniklo nebo přestalo fungovat." },
           { title: "Rozsah a souhlas", text: "Dohodneme cíle, hranice a písemný souhlas vedení." },
           { title: "Test", text: "Testujeme v dohodnutém rozsahu a práci plánujeme tak, aby nenarušila provoz." },
-          { title: "Zpráva a oprava", text: "Nálezy podle priority, prezentace pro vedení a po dohodě pomoc s opravami." },
+          { title: "Zpráva a oprava", text: "Nálezy podle dopadu na firmu, prezentace pro vedení a po dohodě pomoc s opravami." },
         ],
       },
       questions: [
@@ -427,8 +394,9 @@ export const cs: Site = {
       ],
       contact: {
         title: "Zjistěte, co by u vás našel útočník",
-        lead: "Řekněte nám, co potřebujete chránit. Navrhneme rozsah prvního testu.",
-        mailSubject: "Poptávka: bezpečnost",
+        lead: "Řekněte nám, co potřebujete chránit. Navrhneme rozsah bezpečnostní prověrky.",
+        mailSubject: CTA_SECURITY.subject,
+        cta: CTA_SECURITY.label,
       },
     },
   ],
@@ -441,7 +409,7 @@ export const cs: Site = {
     phoneLabel: "Telefon",
   },
   footer: {
-    tagline: "AI řešení, vývoj softwaru a bezpečnost pro firmy.",
+    tagline: "AI agenti pro středně velké výrobní firmy. Návratnost spočítáme předem, agenty provozujeme a hlídáme.",
     servicesLabel: "Služby",
     companyLabel: "Firma",
     contactLabel: "Kontakt",
