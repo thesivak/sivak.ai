@@ -61,9 +61,8 @@ for (const [lang, site] of [["cs", cs], ["en", en]]) {
     // No prices anywhere on the site
     assert.deepEqual(pricesIn(copy), []);
     assert.doesNotMatch(copy, /střední a velké|medium and large/iu);
-    // English: AI training is not offered on these pages. Czech: it is filed under workshops, in the footer.
-    if (lang === "en") assert.doesNotMatch(copy, /\btraining\b/iu);
-    else assert.deepEqual(site.menu.footerServices.filter((link) => /školení/.test(link.label)).map((link) => link.href), ["/ai-skoleni"]);
+    // AI training is not offered: no mention of it and no link to its removed pages
+    assert.doesNotMatch(copy, /školen|skolen|školic|\btrainings?\b/iu);
     for (const page of [site.home, ...site.services]) {
       assert.ok(page.metadata.title.length <= 60, `${page.metadata.title} (${page.metadata.title.length})`);
       const length = page.metadata.description.length;

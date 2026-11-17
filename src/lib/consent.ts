@@ -4,14 +4,15 @@ import type { Locale } from "@/i18n/config";
 // first-party in localStorage as { v, at, analytics, marketing } for six months, and asked again when
 // it expires or COOKIE_CONSENT_VERSION changes (bump it when the purposes or the banner text change).
 //   analytics → analytics_storage (Google Analytics 4)
-//   marketing → ad_storage, ad_user_data, ad_personalization (Google Ads, only if PUBLIC_GOOGLE_ADS_ID is set)
+//   marketing → ad_storage, ad_user_data, ad_personalization (Google Ads; no page loads an Ads tag at present)
 // The privacy policy (/ochrana-osobnich-udaju) lists the same storage and cookies; change both together.
 
 export const COOKIE_CONSENT_KEY = "sivak-ai-consent";
 export const COOKIE_CONSENT_VERSION = "2026-10-27";
 export const COOKIE_CONSENT_MAX_AGE_MS = 183 * 24 * 60 * 60 * 1000; // ~6 months
 export const COOKIE_CONSENT_MONTHS = 6;
-// The landing form's campaign parameters in sessionStorage: kept only with marketing consent
+// Campaign parameters the removed enquiry form kept in sessionStorage (marketing consent only). Nothing
+// writes this key any more; the cookie banner still clears it when marketing consent is withdrawn.
 export const TRACKING_STORAGE_KEY = "sivak-ai-tracking";
 
 export type ConsentChoice = { v: string; at: number; analytics: boolean; marketing: boolean };

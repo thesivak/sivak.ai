@@ -5,7 +5,7 @@ export const SITE_URL = "https://www.sivak.ai";
 // The organisation's node in the homepage JSON-LD; other pages refer to it by this @id
 export const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
-// Mirek's LinkedIn profile: the /ai-skoleni trainer section, the homepage contact card and JSON-LD sameAs.
+// Mirek's LinkedIn profile: the homepage contact card and JSON-LD sameAs.
 // Set it back to a "/in/TODO" placeholder and every LinkedIn link disappears.
 export const MIREK_LINKEDIN_URL = "https://www.linkedin.com/in/mireksivak/";
 export const MIREK_LINKEDIN: string | null = MIREK_LINKEDIN_URL.includes("/in/TODO") ? null : MIREK_LINKEDIN_URL;
@@ -23,7 +23,7 @@ export const COMPANY = {
   // The seat (sídlo) as stated on the site: Mirek's decision of 1 November 2026, ahead of the notarial
   // seat change in the commercial register. Shown in the footer's legal line, the privacy policy
   // (controller), the vCards and the Organization JSON-LD. The register entry (court, section, insert) is
-  // unchanged in src/content/home/{cs,en}.yaml and the privacy policy until the court records the move.
+  // unchanged in the footer copy (src/site/{cs,en}.ts) and the privacy policy until the court records the move.
   seat: {
     building: "The Flow Building",
     street: "Václavské náměstí 47",
@@ -66,7 +66,7 @@ export const PEOPLE: Person[] = [
 
 const [FOUNDER, ACCOUNT_MANAGER] = PEOPLE;
 
-// The controller contact in the privacy policy. Not shown on /ai-skoleni, where the form is the only contact.
+// The controller contact in the privacy policy.
 export const PRIVACY_CONTACT_EMAIL = ACCOUNT_MANAGER.email;
 
 // Meeting requests go to the key account manager, with the founder in copy.

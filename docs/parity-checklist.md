@@ -1,5 +1,10 @@
 # Parity checklist: Next.js (origin/main) → Astro on Cloudflare
 
+> **Historical record (27 October 2026).** It describes the migration from Next.js as it was done then.
+> The AI training pages it mentions (`/ai-skoleni`, `/en/ai-training`), their enquiry form and the earlier
+> design were removed in November 2026; those URLs now answer with a 301 to the home page (README →
+> "Removed pages").
+
 Every item from `docs/migration-inventory.md`, old behaviour vs new, and how it was checked.
 
 ## How it was verified (27 October 2026)
