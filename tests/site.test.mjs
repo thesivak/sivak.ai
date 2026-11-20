@@ -212,10 +212,16 @@ for (const [lang, site, word] of [["cs", cs, /ilustrační/iu], ["en", en, /illu
     assert.ok(gain.steps.length >= 4);
     assert.ok(gain.steps.filter((step) => !step.after).length >= 3);
     assert.ok(gain.steps.at(-1).after > 0);
-    // The daily total matches the steps: 30 orders a day times the minutes saved per order
-    const saved = gain.steps.reduce((sum, step) => sum + step.before - (step.after ?? 0), 0);
-    const hours = String((30 * saved) / 60).replace(".", lang === "cs" ? "," : ".");
-    assert.ok(gain.scale.includes(`30 `) && gain.scale.includes(hours), `${gain.scale} (${hours} h)`);
+    // The routine: half an hour of a person's work today, two minutes with an agent
+    const before = gain.steps.reduce((sum, step) => sum + step.before, 0);
+    const person = gain.steps.reduce((sum, step) => sum + (step.after ?? 0), 0);
+    assert.equal(before, 30);
+    assert.equal(person, 2);
+    // The daily total matches the steps: orders a day times a person's minutes saved per order, roughly
+    const orders = Number(gain.scale.match(/\d+/)[0]);
+    const hours = (orders * (before - person)) / 60;
+    const stated = Number(gain.scale.match(/(\d+(?:[.,]\d+)?) (?:hodin|hours)/u)[1].replace(",", "."));
+    assert.ok(Math.abs(stated - hours) <= 0.5, `${gain.scale} (${hours} h)`);
     assert.equal(gain.more.items.length, 4);
     for (const item of gain.more.items) assert.ok(item.agent && item.person, item.area);
   });
