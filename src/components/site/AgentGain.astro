@@ -5,6 +5,8 @@ import type { Site } from "@/site";
 // The routine's steps run down the page; for each, who does it today and who does it with an agent, and how
 // long a person spends on it. The totals are drawn as two bars of a person's time, to one scale. Every
 // number here is illustrative and says so. Under it, the same split on four other routines.
+// On narrow screens each step stacks: the header row stays for assistive technology (visually hidden, so the
+// cells keep their column headers) and each cell shows its column's name as a visible label, hidden from AT.
 interface Props {
   t: Site["home"]["gain"];
 }
@@ -31,11 +33,13 @@ const minutes = (n: number) => `${n} ${t.unit}`;
             t.steps.map((step) => (
               <div class="gain-row" role="row">
                 <span class="gain-task" role="rowheader">{step.task}</span>
-                <span class="gain-cell" role="cell" data-label={t.columns[1]}>
+                <span class="gain-cell" role="cell">
+                  <span class="gain-label" aria-hidden="true">{t.columns[1]}</span>
                   <span class="gain-who is-person">{t.person}</span>
                   <span class="gain-min">{minutes(step.before)}</span>
                 </span>
-                <span class="gain-cell" role="cell" data-label={t.columns[2]}>
+                <span class="gain-cell" role="cell">
+                  <span class="gain-label" aria-hidden="true">{t.columns[2]}</span>
                   {step.after ? (
                     <>
                       <span class="gain-who is-person">{t.person}</span>
