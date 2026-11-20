@@ -14,7 +14,7 @@ const sites = { cs: (await bundle('src/site/cs.ts')).cs, en: (await bundle('src/
 // The sections the home page really has (src/components/site/Home.astro renders exactly these ids)
 const homeSections = (lang) => {
   const h = sites[lang].home;
-  return [h.audience, h.services, h.notDoing, h.work, h.questions, h.process, h.contact].filter(Boolean).map(section => section.id);
+  return [h.gain, h.audience, h.services, h.notDoing, h.work, h.questions, h.process, h.contact].filter(Boolean).map(section => section.id);
 };
 
 for (const lang of ['cs', 'en']) {
@@ -27,6 +27,9 @@ for (const lang of ['cs', 'en']) {
     // Home.astro gives each of them an element
     const template = readFileSync(new URL('../src/components/site/Home.astro', import.meta.url), 'utf8');
     for (const key of ['audience', 'services', 'notDoing', 'work', 'questions', 'process', 'contact']) assert.match(template, new RegExp(`id=\\{h\\.${key}\\.id\\}`), key);
+    // The section under the hero is a component of its own, given the home page's copy
+    assert.match(template, /<AgentGain t=\{h\.gain\} \/>/);
+    assert.match(readFileSync(new URL('../src/components/site/AgentGain.astro', import.meta.url), 'utf8'), /id=\{t\.id\}/);
   });
   test(`${lang}: maps every section from either language, including encoded fragments`, () => {
     for (const pair of SECTION_IDS) for (const source of ['cs', 'en']) {

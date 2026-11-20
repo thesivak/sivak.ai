@@ -89,11 +89,33 @@ export type Site = {
       /** When set, the two buttons open an enquiry e-mail instead of scrolling to a section */
       cta?: [Cta, Cta];
     };
-    system: {
-      caption: string;
-      /** Five stages, left to right. A `marked` node is one our security team attacks first; the stage's
-          `note` says how, and stands under that stage. */
-      stages: { name: string; nodes: { label: string; marked?: boolean }[]; note?: string }[];
+    /** The first section under the hero: what an agent does instead of people, shown on one everyday routine
+        (src/components/site/AgentGain.astro). Every number in it is illustrative, and `tag`, `note` and
+        `scale` say so. */
+    gain: {
+      id: string;
+      title: string;
+      lead: string;
+      /** The routine, for screen readers: the table's name */
+      routine: string;
+      /** Labels the figure as an illustration */
+      tag: string;
+      /** The step, today, with an agent */
+      columns: [string, string, string];
+      person: string;
+      agent: string;
+      /** Minutes, e.g. "min" */
+      unit: string;
+      /** `before`: a person's minutes today. `after`: a person's minutes with an agent; none means the agent
+          does the step. */
+      steps: { task: string; before: number; after?: number }[];
+      /** What the two totals measure, e.g. "a person's time per order" */
+      total: string;
+      /** What the totals add up to over a day; illustrative and labelled so */
+      scale: string;
+      note: string;
+      /** The same split on other routines: what comes in, what the agent does, what is left to a person */
+      more: { title: string; items: { area: string; input: string; agent: string; person: string }[] };
     };
     /** Who we work for: one linked row per industry page, shown under the hero (the Czech site) */
     audience?: { id: string; title: string; lead: string; items: IndexItem[] };

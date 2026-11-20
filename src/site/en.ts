@@ -69,15 +69,35 @@ export const en: Site = {
       secondary: CTA_ESTIMATE.label,
       cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
     },
-    system: {
-      caption: "A typical agent deployment in a mid-sized company. Red shows where our security team attacks first.",
-      stages: [
-        { name: "People", nodes: [{ label: "Sales, support and accounting" }, { label: "Customers and suppliers" }] },
-        { name: "Inputs", nodes: [{ label: "Email and PDF", marked: true }, { label: "Customer requests" }], note: "Instructions hidden in an incoming email" },
-        { name: "AI agents", nodes: [{ label: "Agent prepares the work", marked: true }, { label: "A person approves" }], note: "An agent with wider access than its job needs" },
-        { name: "Company systems", nodes: [{ label: "ERP and internal applications", marked: true }, { label: "Documents and data" }], note: "An old interface with no login protection" },
-        { name: "AI models", nodes: [{ label: "In the cloud" }, { label: "On your hardware" }] },
+    gain: {
+      id: "what-an-agent-does",
+      title: "What an agent does instead of your people",
+      lead: "Shown on one everyday routine: an order arrives by email as a PDF and has to end up in the ERP. The agent takes over the retyping and the looking up. Your person is left with checking and confirming.",
+      routine: "An order from email to the ERP: who does which step",
+      tag: "Illustrative example: one order from an email",
+      columns: ["Step", "Today", "With an agent"],
+      person: "Person",
+      agent: "Agent",
+      unit: "min",
+      steps: [
+        { task: "Read the email and open the order PDF", before: 3 },
+        { task: "Look up the customer and their prices", before: 6 },
+        { task: "Retype the items into the ERP", before: 13 },
+        { task: "Check stock and the delivery date", before: 5 },
+        { task: "Check and confirm the order", before: 3, after: 2 },
       ],
+      total: "a person's time per order",
+      scale: "At 20 orders a day, that is roughly 9 hours of work a day your people no longer do by hand. An illustrative calculation.",
+      note: "The numbers are illustrative. We measure the real times in your company in the payback estimate.",
+      more: {
+        title: "The same split works in other routines",
+        items: [
+          { area: "Accounting", input: "A supplier invoice as a PDF", agent: "Matches it to the order and the goods receipt in the ERP and flags differences.", person: "Approves the booking." },
+          { area: "Customer support", input: "A new customer request", agent: "Reads the customer's history, checks the data and drafts a reply.", person: "Edits and sends the reply." },
+          { area: "Sales", input: "A request for a quote by email", agent: "Drafts a quote from the price list and similar past orders.", person: "Checks and sends the quote." },
+          { area: "E-shop", input: "A price list from a supplier", agent: "Fills in the parameters and prepares the product pages.", person: "Publishes the pages." },
+        ],
+      },
     },
     audience: {
       id: AUDIENCE_ID,

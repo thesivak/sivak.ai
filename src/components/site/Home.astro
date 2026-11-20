@@ -1,6 +1,6 @@
 ---
 import Shell from "./Shell.astro";
-import SystemDiagram from "./SystemDiagram.astro";
+import AgentGain from "./AgentGain.astro";
 import Questions from "./Questions.astro";
 import Steps from "./Steps.astro";
 import ContactBlock from "./ContactBlock.astro";
@@ -24,27 +24,26 @@ const services = t.services.map((service) => ({ name: service.name, description:
   <section class="hero" aria-labelledby="hero-title">
     <div class="wrap">
       <h1 class="display" id="hero-title">{h.hero.title.map((line) => <span>{line} </span>)}</h1>
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <p class="lead">{h.hero.lead}</p>
-          <div class="actions">
-            {h.hero.cta ? (
-              <>
-                <a class="btn" href={meetingHref(h.hero.cta[0].subject)}>{h.hero.cta[0].label}</a>
-                <a class="link" href={meetingHref(h.hero.cta[1].subject)}>{h.hero.cta[1].label}</a>
-              </>
-            ) : (
-              <>
-                <a class="btn" href={`#${h.contact.id}`}>{h.hero.primary}</a>
-                <a class="link" href={`#${h.services.id}`}>{h.hero.secondary}</a>
-              </>
-            )}
-          </div>
+      <div class="hero-copy">
+        <p class="lead">{h.hero.lead}</p>
+        <div class="actions">
+          {h.hero.cta ? (
+            <>
+              <a class="btn" href={meetingHref(h.hero.cta[0].subject)}>{h.hero.cta[0].label}</a>
+              <a class="link" href={meetingHref(h.hero.cta[1].subject)}>{h.hero.cta[1].label}</a>
+            </>
+          ) : (
+            <>
+              <a class="btn" href={`#${h.contact.id}`}>{h.hero.primary}</a>
+              <a class="link" href={`#${h.services.id}`}>{h.hero.secondary}</a>
+            </>
+          )}
         </div>
-        <SystemDiagram t={h.system} />
       </div>
     </div>
   </section>
+
+  <AgentGain t={h.gain} />
 
   {
     h.audience && (
