@@ -1,6 +1,6 @@
 # sivak.ai
 
-Company website of sivak.ai (TheSivak s.r.o.): Czech at `/`, English at `/en`, with three service
+Company website of sivak.ai (sivak.ai s.r.o.): Czech at `/`, English at `/en`, with three service
 pages (AI solutions, software development, security) and, in Czech, the industry pages, how we work,
 results and about us. AI training is not offered: its pages `/ai-skoleni` and `/en/ai-training` were
 removed in November 2026 and redirect to the home page (see "Removed pages").

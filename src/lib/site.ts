@@ -18,15 +18,15 @@ export const GA_MEASUREMENT_ID = "G-S98V3B32ZL";
 
 export const COMPANY = {
   brand: "sivak.ai",
-  legalName: "TheSivak s.r.o.",
+  // Name and seat (sídlo) as recorded in the commercial register on 20 November 2026. Register entry:
+  // Krajský soud v Ostravě, oddíl C, vložka 98925 (the footer copy in src/site/{cs,en}.ts and the privacy
+  // policy). Name and seat are shown in the footer's legal line, the privacy policy (controller), the
+  // vCards (public/*.vcf) and the Organization JSON-LD.
+  legalName: "sivak.ai s.r.o.",
   ico: "23010282",
-  // The seat (sídlo) as stated on the site: Mirek's decision of 1 November 2026, ahead of the notarial
-  // seat change in the commercial register. Shown in the footer's legal line, the privacy policy
-  // (controller), the vCards and the Organization JSON-LD. The register entry (court, section, insert) is
-  // unchanged in the footer copy (src/site/{cs,en}.ts) and the privacy policy until the court records the move.
   seat: {
-    building: "The Flow Building",
-    street: "Václavské náměstí 47",
+    street: "Václavské náměstí 2132/47",
+    district: "Nové Město",
     postalCode: "110 00",
     locality: { cs: "Praha 1", en: "Prague 1" },
   },
@@ -34,13 +34,13 @@ export const COMPANY = {
 
 /**
  * The seat on one line. English uses the English name of the city and adds the country
- * ("…, 110 00 Prague 1, Czech Republic"); the building and street keep their Czech names in both.
+ * ("…, 110 00 Prague 1, Czech Republic"); the street and the district (Nové Město) keep their Czech names.
  * Postal code and district number are joined with no-break spaces so they never split across lines.
  */
 export function seatAddress(lang: Locale): string {
-  const { building, street, postalCode, locality } = COMPANY.seat;
+  const { street, district, postalCode, locality } = COMPANY.seat;
   const nb = (text: string) => text.replaceAll(" ", "\u00a0");
-  const line = `${building}, ${street}, ${nb(postalCode)} ${nb(locality[lang])}`;
+  const line = `${street}, ${district}, ${nb(postalCode)} ${nb(locality[lang])}`;
   return lang === "cs" ? line : `${line}, Czech Republic`;
 }
 
@@ -99,10 +99,9 @@ function organization() {
     identifier: { "@type": "PropertyValue", propertyID: "IČO", value: COMPANY.ico },
     address: {
       "@type": "PostalAddress",
-      name: COMPANY.seat.building,
       streetAddress: COMPANY.seat.street,
-      addressLocality: COMPANY.seat.locality.cs,
-      postalCode: COMPANY.seat.postalCode.replaceAll(" ", ""),
+      addressLocality: `${COMPANY.seat.district}, ${COMPANY.seat.locality.cs}`,
+      postalCode: COMPANY.seat.postalCode,
       addressCountry: "CZ",
     },
     founder: {
