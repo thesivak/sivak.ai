@@ -179,7 +179,7 @@ test("what we do not do, the named method and the typical situations are in the 
 test("positioning: by problem, not by industry", () => {
   const { home, menu, footer } = cs;
   // The hero, the page's metadata and the footer speak to every mid-sized company, not to manufacturing only
-  assert.doesNotMatch(JSON.stringify([home.hero, home.system, home.metadata, footer]), /výrob/iu);
+  assert.doesNotMatch(JSON.stringify([home.hero, home.gain, home.metadata, footer]), /výrob/iu);
   assert.match(home.hero.lead, /středně velké firmy/u);
   // "Pro koho": the menu item leads to the home page's section, the section to the three industry pages
   const industries = [pages.manufacturing, pages.software, pages.commerce].map((page) => page.path);
@@ -199,3 +199,24 @@ test("positioning: by problem, not by industry", () => {
     for (const href of [...industries.filter((other) => other !== path), "/jak-pracujeme", "/vysledky"]) assert.ok(links.includes(`"href":"${href}"`), `${path} → ${href}`);
   }
 });
+
+// The first section under the hero: the benefit of an agent on one routine, with no security talk in it
+for (const [lang, site, word] of [["cs", cs, /ilustrační/iu], ["en", en, /illustrative/iu]]) {
+  test(`${lang}: the section under the hero shows what an agent does instead of people, with illustrative numbers`, () => {
+    const { gain } = site.home;
+    assert.ok(!("system" in site.home), "the system diagram is gone");
+    assert.doesNotMatch(JSON.stringify(gain), /bezpečn|útok|zaútoč|security|attack/iu);
+    // Every number in it is labelled: the figure, the note under it and the daily total
+    for (const text of [gain.tag, gain.note, gain.scale]) assert.match(text, word, text);
+    // The agent takes over steps, a person still confirms: the last step stays with a person
+    assert.ok(gain.steps.length >= 4);
+    assert.ok(gain.steps.filter((step) => !step.after).length >= 3);
+    assert.ok(gain.steps.at(-1).after > 0);
+    // The daily total matches the steps: 30 orders a day times the minutes saved per order
+    const saved = gain.steps.reduce((sum, step) => sum + step.before - (step.after ?? 0), 0);
+    const hours = String((30 * saved) / 60).replace(".", lang === "cs" ? "," : ".");
+    assert.ok(gain.scale.includes(`30 `) && gain.scale.includes(hours), `${gain.scale} (${hours} h)`);
+    assert.equal(gain.more.items.length, 4);
+    for (const item of gain.more.items) assert.ok(item.agent && item.person, item.area);
+  });
+}

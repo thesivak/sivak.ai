@@ -2,6 +2,7 @@ import type { Locale } from "./config";
 
 /** Home page sections that exist in both languages (src/site/{cs,en}.ts), by their id in each. */
 export const SECTION_IDS: readonly Record<Locale, string>[] = [
+  { cs: "co-agent-udela", en: "what-an-agent-does" },
   { cs: "pro-koho", en: "who-we-work-for" },
   { cs: "sluzby", en: "services" },
   { cs: "co-nedelame", en: "what-we-dont-do" },

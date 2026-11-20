@@ -1,0 +1,81 @@
+---
+import type { Site } from "@/site";
+
+// The first section under the hero: what an agent takes off people's hands, shown on one everyday routine.
+// The routine's steps run down the page; for each, who does it today and who does it with an agent, and how
+// long a person spends on it. The totals are drawn as two bars of a person's time. Every number here is
+// illustrative and says so. Under it, the same split on four other routines.
+interface Props {
+  t: Site["home"]["gain"];
+}
+const { t } = Astro.props;
+const before = t.steps.reduce((sum, step) => sum + step.before, 0);
+const after = t.steps.reduce((sum, step) => sum + (step.after ?? 0), 0);
+const minutes = (n: number) => `${n} ${t.unit}`;
+---
+<section class="band gain" id={t.id} aria-labelledby={`${t.id}-title`}>
+  <div class="wrap">
+    <div class="gain-grid">
+      <div class="gain-copy">
+        <h2 class="h2" id={`${t.id}-title`}>{t.title}</h2>
+        <p class="lead">{t.lead}</p>
+        <p class="gain-scale">{t.scale}</p>
+      </div>
+      <figure class="gain-run">
+        <figcaption class="gain-tag">{t.tag}</figcaption>
+        <div class="gain-table" role="table" aria-label={t.routine}>
+          <div class="gain-row gain-head" role="row">
+            {t.columns.map((column) => <span role="columnheader">{column}</span>)}
+          </div>
+          {
+            t.steps.map((step) => (
+              <div class="gain-row" role="row">
+                <span class="gain-task" role="rowheader">{step.task}</span>
+                <span class="gain-cell" role="cell" data-label={t.columns[1]}>
+                  <span class="gain-who is-person">{t.person}</span>
+                  <span class="gain-min">{minutes(step.before)}</span>
+                </span>
+                <span class="gain-cell" role="cell" data-label={t.columns[2]}>
+                  {step.after ? (
+                    <>
+                      <span class="gain-who is-person">{t.person}</span>
+                      <span class="gain-min">{minutes(step.after)}</span>
+                    </>
+                  ) : (
+                    <span class="gain-who is-agent">{t.agent}</span>
+                  )}
+                </span>
+              </div>
+            ))
+          }
+        </div>
+        <dl class="gain-total">
+          <div style="--share:100%">
+            <dt>{t.columns[1]}: {t.total}</dt>
+            <dd><span class="gain-num">{minutes(before)}</span><span class="gain-bar" aria-hidden="true"></span></dd>
+          </div>
+          <div class="is-after" style={`--share:${(after / before) * 100}%`}>
+            <dt>{t.columns[2]}: {t.total}</dt>
+            <dd><span class="gain-num">{minutes(after)}</span><span class="gain-bar" aria-hidden="true"></span></dd>
+          </div>
+        </dl>
+        <p class="gain-note">{t.note}</p>
+      </figure>
+    </div>
+    <h3 class="h3 gain-more-title">{t.more.title}</h3>
+    <ul class="gain-more">
+      {
+        t.more.items.map((item) => (
+          <li>
+            <p class="gain-area">{item.area}</p>
+            <p class="gain-input">{item.input}</p>
+            <dl>
+              <div><dt>{t.agent}</dt><dd>{item.agent}</dd></div>
+              <div><dt>{t.person}</dt><dd>{item.person}</dd></div>
+            </dl>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

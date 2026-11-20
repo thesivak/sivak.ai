@@ -71,15 +71,35 @@ export const cs: Site = {
       secondary: CTA_ESTIMATE.label,
       cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
     },
-    system: {
-      caption: "Typické nasazení agenta ve středně velké firmě. Červeně jsou místa, kde náš bezpečnostní tým zaútočí nejdřív.",
-      stages: [
-        { name: "Lidé", nodes: [{ label: "Obchod, podpora a účtárna" }, { label: "Zákazníci a dodavatelé" }] },
-        { name: "Vstupy", nodes: [{ label: "E-mail a PDF", marked: true }, { label: "Požadavky zákazníků" }], note: "Pokyny ukryté v příchozím e-mailu" },
-        { name: "AI agenti", nodes: [{ label: "Agent připraví práci", marked: true }, { label: "Člověk schválí" }], note: "Agent s širším přístupem, než ke své práci potřebuje" },
-        { name: "Firemní systémy", nodes: [{ label: "ERP a interní aplikace", marked: true }, { label: "Dokumenty a data" }], note: "Staré rozhraní bez ochrany přihlášením" },
-        { name: "AI modely", nodes: [{ label: "V cloudu" }, { label: "Na vašem hardwaru" }] },
+    gain: {
+      id: "co-agent-udela",
+      title: "Co agent udělá místo vašich lidí",
+      lead: "Ukázka na jedné běžné rutině: objednávka přijde e-mailem v PDF a má skončit v ERP. Přepisování a dohledávání převezme agent. Vašemu člověku zůstane kontrola a potvrzení.",
+      routine: "Objednávka z e-mailu do ERP: kdo dělá který krok",
+      tag: "Ilustrační příklad: jedna objednávka z e-mailu",
+      columns: ["Krok", "Dnes", "S agentem"],
+      person: "Člověk",
+      agent: "Agent",
+      unit: "min",
+      steps: [
+        { task: "Přečíst e-mail a otevřít PDF s objednávkou", before: 2 },
+        { task: "Dohledat zákazníka a jeho ceny", before: 3 },
+        { task: "Přepsat položky do ERP", before: 6 },
+        { task: "Ověřit sklad a termín dodání", before: 3 },
+        { task: "Zkontrolovat a potvrdit objednávku", before: 1, after: 2 },
       ],
+      total: "čas člověka na jednu objednávku",
+      scale: "Při 30 objednávkách denně je to zhruba 6,5 hodiny práce denně, kterou vaši lidé nemusí dělat ručně. Ilustrační výpočet.",
+      note: "Čísla jsou ilustrační. Skutečné časy ve vaší firmě změříme v odhadu návratnosti.",
+      more: {
+        title: "Stejně to funguje i v jiné rutině",
+        items: [
+          { area: "Účtárna", input: "Faktura dodavatele v PDF", agent: "Spáruje ji s objednávkou a příjemkou v ERP a označí rozdíly.", person: "Schválí zaúčtování." },
+          { area: "Zákaznická podpora", input: "Nový dotaz zákazníka", agent: "Přečte historii zákazníka, ověří data a připraví odpověď.", person: "Odpověď upraví a odešle." },
+          { area: "Obchod", input: "Poptávka v e-mailu", agent: "Připraví nabídku podle ceníku a podobných zakázek.", person: "Nabídku zkontroluje a pošle." },
+          { area: "E-shop", input: "Ceník od dodavatele", agent: "Doplní parametry a připraví produktové karty.", person: "Karty zveřejní." },
+        ],
+      },
     },
     audience: {
       id: AUDIENCE_ID,
