@@ -119,6 +119,8 @@ export type Site = {
     };
     /** Who we work for: one linked row per industry page, shown under the hero (the Czech site) */
     audience?: { id: string; title: string; lead: string; items: IndexItem[] };
+    /** What we do: the three services (src/site/{cs,en}.ts → services) as one index, under a one-sentence lead */
+    pillars: { id: string; title: string; lead: string };
     /** `items`: named offers shown instead of the list of services */
     services: { id: string; title: string; lead?: string; items?: IndexItem[]; link?: Link };
     why: { title: string; items: { title: string; text: string }[] };

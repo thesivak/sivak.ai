@@ -50,7 +50,7 @@ export const cs: Site = {
       { href: "/jak-pracujeme", label: "AI diagnostika a pilot" },
       { href: "/bezpecnost", label: "Bezpečnostní prověrka" },
       { href: "/ai-reseni", label: "AI řešení" },
-      { href: "/vyvoj-softwaru", label: "Vývoj softwaru" },
+      { href: "/vyvoj-softwaru", label: "Software na míru" },
     ],
     footerCompany: [
       { href: "/vysledky", label: "Výsledky" },
@@ -106,6 +106,11 @@ export const cs: Site = {
       title: "Pro koho pracujeme",
       lead: "Pro středně velké firmy, kde se hodně času ztrácí v rutinní práci: objednávky, nabídky, faktury, zákaznická podpora, testování. Zhruba 20 až 500 lidí, rozhoduje majitel nebo vedení.",
       items: Object.values(INDUSTRIES),
+    },
+    pillars: {
+      id: "co-delame",
+      title: "Co děláme",
+      lead: "Tři věci v jednom týmu: AI agenti na rutinní práci, software na míru, ve kterém AI rovnou pracuje, a bezpečnost, která obojí prověří dřív než útočník.",
     },
     services: {
       id: "sluzby",
@@ -252,15 +257,15 @@ export const cs: Site = {
     {
       key: "software",
       path: "/vyvoj-softwaru",
-      name: "Vývoj softwaru",
+      name: "Software na míru",
       metadata: {
-        title: "Vývoj softwaru na míru pro firmy | sivak.ai",
+        title: "Software na míru, ve kterém pracuje AI | sivak.ai",
         description:
-          "Webové aplikace, interní systémy, propojení systémů a modernizace starého softwaru. Krátké verze, každou před schválením člověkem otestujeme a zkontrolujeme.",
+          "Interní systémy, CRM, portály a napojení na ERP na míru vašemu procesu. Od zadání přes prototyp a milníky po provoz. AI tam, kde ušetří práci.",
       },
-      title: "Software na míru pro systémy, na kterých vaše firma stojí",
-      lead: "Navrhujeme, vyvíjíme a provozujeme aplikace, interní systémy a propojení. Každou verzi otestujeme ve skutečném prohlížeči a zkontrolujeme, než ji člověk schválí.",
-      summary: "Aplikace na míru, interní systémy a propojení. Dodáváme po krátkých verzích a každou před nasazením otestujeme.",
+      title: "Stavíme software na míru, ve kterém AI rovnou pracuje",
+      lead: "Interní systémy, CRM, portály pro zákazníky a partnery a napojení na ERP. Navrhneme je podle toho, jak vaše firma skutečně pracuje, postavíme po milnících a provozujeme dál.",
+      summary: "Stavíme software na míru, ve kterém AI rovnou pracuje: interní systémy, CRM, portály a napojení na ERP. Od zadání přes prototyp po provoz.",
       sheet: {
         caption: "Ukázka zprávy o vydání",
         title: "Verze 4.12",
@@ -277,33 +282,67 @@ export const cs: Site = {
         title: "Co stavíme",
         items: [
           {
-            title: "Webové aplikace a portály",
-            text: "Aplikace, které každý den používají vaši zákazníci, partneři i zaměstnanci, na počítači i v telefonu.",
-            points: ["Zákaznické portály", "Objednávkové systémy", "Aplikace pro lidi v terénu"],
-          },
-          {
             title: "Interní systémy",
-            text: "Nástroje postavené pro váš proces tam, kde běžný software nestačí.",
+            text: "Nástroje postavené pro váš proces tam, kde krabicový software nestačí nebo vás nutí pracovat po svém.",
             points: ["Plánování a evidence", "Schvalování", "Přehledy pro vedení"],
           },
           {
-            title: "Propojení systémů",
-            text: "Propojíme systémy, které spolu nemluví. Data se přenesou sama, bez přepisování.",
-            points: ["ERP a CRM", "Účetnictví", "E-shop a sklad"],
+            title: "CRM na míru",
+            text: "Zákazníci, poptávky a zakázky v systému, který odpovídá tomu, jak skutečně prodáváte. AI v něm připraví podklady, obchodník rozhodne.",
+            points: ["Zákazníci a zakázky", "Nabídky", "Historie komunikace"],
           },
           {
-            title: "Modernizace starého softwaru",
-            text: "Systémy, na které nikdo nechce sáhnout, nahradíme nebo rozšíříme krok za krokem a za plného provozu.",
-            points: ["Postupná náhrada", "Převod dat", "Bez zastavení provozu"],
+            title: "Portály pro zákazníky a partnery",
+            text: "Objednávky, rezervace, stav zakázek a dokumenty na jednom místě, na počítači i v telefonu.",
+            points: ["Zákaznické portály", "Objednávky a rezervace", "E-shopy s konfigurátorem"],
+          },
+          {
+            title: "Napojení na ERP",
+            text: "Nový software propojíme s ERP, účetnictvím a skladem. Data se přenesou sama, bez přepisování z okna do okna.",
+            points: ["ERP a účetnictví", "Sklad a e-shop", "Postupná náhrada starého systému"],
           },
         ],
       },
       blocks: [
         {
+          kind: "prose",
+          title: "Kde v softwaru pracuje AI",
+          text: [
+            "AI nepřidáváme na ozdobu. Stavíme ji do míst, kde dnes člověk přepisuje, dohledává nebo porovnává: návrh nabídky v CRM, roztřídění požadavku v portálu, kontrola dokladu před zápisem do ERP.",
+            "Platí stejná pravidla jako u našich agentů: AI připraví, člověk rozhodne. Má jen oprávnění, která ke své práci potřebuje, a každý její krok je zaznamenaný. Kde AI práci neušetří, nepoužijeme ji.",
+          ],
+          link: { href: "/ai-reseni", label: "Jak stavíme AI agenty" },
+        },
+        {
+          kind: "compare",
+          title: "Z praxe",
+          lead: "Dva projekty, na kterých jsme software navrhli a postavili. Klienty nejmenujeme.",
+          columns: [
+            {
+              title: "E-shop s konfigurátorem produktů",
+              text: "Pro výrobce nábytku jsme postavili e-shop, ve kterém si zákazník produkt sestaví sám: vybere rozměry, materiál a provedení a objedná si přesně svou variantu.",
+              rows: [
+                ["Pro koho", "Výrobce nábytku"],
+                ["Co to je", "E-shop s konfigurátorem"],
+              ],
+              fit: "Podobné zadání: výrobky na míru, které dnes prodáváte přes e-maily a tabulky.",
+            },
+            {
+              title: "Platforma pro chaty a krátkodobé pronájmy",
+              text: "Pro obor ubytování jsme postavili webovou platformu, na které se nabídka chat a krátkodobých pronájmů, rezervace a jejich správa potkají na jednom místě.",
+              rows: [
+                ["Pro koho", "Ubytování a krátkodobé pronájmy"],
+                ["Co to je", "Webová platforma"],
+              ],
+              fit: "Podobné zadání: rezervace a správa, které dnes běží v několika oddělených nástrojích.",
+            },
+          ],
+        },
+        {
           kind: "points",
           title: "Jak dodáváme",
           items: [
-            { title: "Krátké verze", text: "Fungující software vidíte brzy a často, ne až při jedné velké dodávce na konci." },
+            { title: "Po milnících", text: "Fungující software vidíte brzy a často, ne až při jedné velké dodávce na konci." },
             { title: "Test před každým nasazením", text: "Naši vlastní AI agenti vyzkouší každou verzi ve skutečném prohlížeči jako tester a uloží video jako doklad." },
             { title: "Nezávislá kontrola kódu", text: "Každá změna v kódu projde nezávislou kontrolou. Schvaluje a nasazuje ji člověk." },
             { title: "Prověřeno útočníky", text: "Náš bezpečnostní tým otestuje, co postavíme, dřív než to spustíme." },
@@ -312,23 +351,26 @@ export const cs: Site = {
       ],
       steps: {
         title: "Jak probíhá softwarový projekt",
+        lead: "Od zadání po provoz. Na konci každé fáze se rozhodujete vy, jestli pokračovat.",
         items: [
-          { title: "Seznámení", text: "Zmapujeme proces, uživatele a systémy, se kterými musí software pracovat." },
-          { title: "Rozsah a odhad", text: "Než začneme, dostanete písemný rozsah, plán verzí a odhad." },
-          { title: "Vývoj a testy", text: "Dodáváme po krátkých verzích. Každou otestujeme, zkontrolujeme a schválí ji člověk." },
-          { title: "Provoz a rozvoj", text: "Software provozujeme, hlídáme a dál rozvíjíme podle toho, jak se vaše firma mění." },
+          { title: "Zadání", text: "Projdeme proces, lidi, kteří budou software používat, a systémy, se kterými se musí propojit. Výstupem je písemné zadání." },
+          { title: "Prototyp", text: "Klikací prototyp hlavních obrazovek si vaši lidé vyzkouší dřív, než začneme stavět. Spolu s ním dostanete plán milníků a odhad." },
+          { title: "Milníky", text: "Stavíme po milnících. Na konci každého vidíte fungující část systému, otestovanou a schválenou člověkem." },
+          { title: "Provoz", text: "Software provozujeme, hlídáme a dál rozvíjíme podle toho, jak se vaše firma mění. V cloudu, nebo na vašich serverech." },
         ],
       },
       questions: [
+        { q: "Musí software obsahovat AI?", a: "Nemusí. AI používáme tam, kde ušetří práci. Mnoha systémům stačí dobrý a spolehlivý software." },
+        { q: "Nahradíte naše ERP?", a: "Většinou ne. ERP necháme a nový software na něj napojíme. Systém na míru stavíme tam, kde hotový nástroj nesedí na váš proces." },
         { q: "Převezmete software od jiného dodavatele?", a: "Ano. Začneme kontrolou kódu a provozu. Potom navrhneme, co ponechat, opravit, nebo nahradit." },
         { q: "Spolupracujete s naším interním IT?", a: "Ano. Dodáme celý projekt, nebo pracujeme jako součást vašeho týmu." },
-        { q: "Musí software obsahovat AI?", a: "Nemusí. AI používáme tam, kde ušetří práci. Mnoha systémům stačí dobrý a spolehlivý software." },
         { q: "Kde software poběží?", a: "V cloudu, nebo na vašich vlastních serverech. Rozhodnete vy." },
+        { q: "Pracujete i pro firmy mimo Česko?", a: "Ano. Projekty vedeme česky i anglicky a většina spolupráce funguje na dálku." },
       ],
       contact: {
         title: "Řekněte nám, co vaše systémy dnes neumějí",
-        lead: "Na první schůzce projdeme váš proces a systémy a navrhneme první verzi.",
-        mailSubject: "Schůzka: vývoj softwaru",
+        lead: "Na první schůzce projdeme váš proces a systémy a navrhneme, co ukáže prototyp.",
+        mailSubject: "Schůzka: software na míru",
         cta: "Domluvit schůzku",
       },
     },
