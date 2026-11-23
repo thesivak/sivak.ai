@@ -110,9 +110,10 @@ test("the content pages: routes, sitemap, navigation and content rules", () => {
 });
 
 test("positioning: the hero sells a result, software development is out of the main menu", () => {
-  // Both home pages; the page /vyvoj-softwaru itself keeps the word in its own heading
-  assert.doesNotMatch(JSON.stringify(cs.home.hero), /software|vývoj/iu);
-  assert.doesNotMatch(JSON.stringify([en.home.hero, en.home.metadata]), /software|develop/iu);
+  // Both home pages: the hero heading sells the result; only the subtitle names custom software
+  // as the second service. The page /vyvoj-softwaru itself keeps the word in its own heading
+  assert.doesNotMatch(JSON.stringify(cs.home.hero.title), /software|vývoj/iu);
+  assert.doesNotMatch(JSON.stringify([en.home.hero.title, en.home.metadata]), /software|develop/iu);
   assert.ok(!cs.menu.main.some((link) => /vývoj|software/iu.test(link.label) || link.href === "/vyvoj-softwaru"));
   assert.ok(cs.menu.footerServices.some((link) => link.href === "/vyvoj-softwaru"));
   // The two calls to action of the home page, each an enquiry type of its own

@@ -66,7 +66,7 @@ export const cs: Site = {
     },
     hero: {
       title: ["AI řešení, která vydělávají peníze.", "A která nikdo nezneužije."],
-      lead: "Pro středně velké firmy, kde rutina žere čas lidí. Najdeme jeden proces s nejrychlejší návratností, postavíme na něj agenta a ručíme za jeho provoz i bezpečnost.",
+      lead: "Stavíme AI agenty i software na míru. Pro středně velké firmy, kde rutina žere čas lidí. Najdeme jeden proces s nejrychlejší návratností, postavíme na něj agenta a ručíme za jeho provoz i bezpečnost.",
       primary: CTA_DIAGNOSTICS.label,
       secondary: CTA_ESTIMATE.label,
       cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
