@@ -64,7 +64,7 @@ export const en: Site = {
     },
     hero: {
       title: ["AI solutions that make money.", "And that no one can misuse."],
-      lead: "For mid-sized companies where routine eats people's time. We find the one process with the fastest payback, build an agent for it and stand behind its operation and security.",
+      lead: "We build AI agents and custom software. For mid-sized companies where routine eats people's time. We find the one process with the fastest payback, build an agent for it and stand behind its operation and security.",
       primary: CTA_DIAGNOSTICS.label,
       secondary: CTA_ESTIMATE.label,
       cta: [CTA_DIAGNOSTICS, CTA_ESTIMATE],
