@@ -1,0 +1,160 @@
+---
+import Icon from "../Icon.astro";
+import type { Locale } from "@/i18n/config";
+import { CONSENT, FIELD, LIMITS } from "@/lib/enquiry/fields";
+import { PEOPLE, PRIVACY_POLICY_URL } from "@/lib/site";
+
+// The enquiry dialog: one per page (Shell.astro), opened by every call to action (EnquiryButton.astro).
+// A native modal <dialog>: the rest of the page is inert while it is open (focus stays inside), Escape
+// closes it, and enquiry-dialog.ts moves focus in, back to the button afterwards, and closes on a backdrop
+// click. The form posts to /api/poptavka (src/lib/server/enquiry.ts), which stores the enquiry in D1 and
+// e-mails mirek@ and matous@. Validation is shared with the server (src/lib/enquiry/fields.ts).
+interface Props {
+  lang: Locale;
+}
+const { lang } = Astro.props;
+const consent = CONSENT[lang];
+const [, accountManager] = PEOPLE;
+
+const TEXT = {
+  cs: {
+    title: "Poptávka",
+    lead: "Napište nám pár vět o tom, co řešíte. Ozveme se vám co nejdříve.",
+    name: "Jméno a příjmení",
+    email: "E-mail",
+    company: "Firma",
+    optional: "nepovinné",
+    message: "Zpráva",
+    messageHint: "Například jakou práci chcete ušetřit, kolik lidí na ní dnes pracuje a jaké systémy používáte.",
+    required: "Pole označená * jsou povinná.",
+    details: "Podrobnosti:",
+    privacy: "Zásady zpracování osobních údajů",
+    submit: "Odeslat poptávku",
+    close: "Zavřít",
+    successTitle: "Děkujeme, poptávku jsme přijali",
+    success: "Ozveme se vám co nejdříve na e-mail, který jste uvedli.",
+    unavailable: "Formulář je teď nedostupný. Napište nám prosím na",
+  },
+  en: {
+    title: "Enquiry",
+    lead: "Tell us in a few sentences what you are dealing with. We will get back to you as soon as possible.",
+    name: "Full name",
+    email: "Email",
+    company: "Company",
+    optional: "optional",
+    message: "Message",
+    messageHint: "For example, which work you want to save, how many people do it today and which systems you use.",
+    required: "Fields marked * are required.",
+    details: "Details:",
+    // The privacy policy exists in Czech only
+    privacy: "Privacy policy (in Czech)",
+    submit: "Send enquiry",
+    close: "Close",
+    successTitle: "Thank you, we have received your enquiry",
+    success: "We will get back to you as soon as possible at the email address you gave.",
+    unavailable: "The form is unavailable right now. Please write to us at",
+  },
+}[lang];
+
+// Public, read at build time (.env locally, a build variable in Workers Builds). Without it a built site
+// could never send a Turnstile token and production would refuse every enquiry, so the dialog shows the
+// e-mail address instead of the form. Only `astro dev` keeps the form without the widget; there the server
+// has no secret and skips the check.
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY?.trim();
+const formAvailable = Boolean(turnstileSiteKey) || import.meta.env.DEV;
+if (!formAvailable) console.warn("[enquiry] PUBLIC_TURNSTILE_SITE_KEY is not set: the enquiry dialog shows the e-mail address instead of the form");
+
+const fields = [
+  { name: FIELD.name, label: TEXT.name, type: "text", autocomplete: "name", required: true, minlength: LIMITS.name.min, maxlength: LIMITS.name.max },
+  { name: FIELD.email, label: TEXT.email, type: "email", autocomplete: "email", required: true, maxlength: LIMITS.email.max },
+  { name: FIELD.company, label: TEXT.company, type: "text", autocomplete: "organization", required: false, minlength: LIMITS.company.min, maxlength: LIMITS.company.max },
+] as const;
+---
+<dialog class="enq" id="enquiry" aria-modal="true" aria-labelledby="enquiry-title" aria-describedby="enquiry-lead" data-enquiry-dialog>
+  <div class="enq-inner">
+    <div class="enq-head">
+      <h2 class="enq-title" id="enquiry-title" data-enquiry-title>{TEXT.title}</h2>
+      <button class="enq-close" type="button" aria-label={TEXT.close} data-enquiry-close><Icon name="close" /></button>
+    </div>
+
+    {!formAvailable && (
+      <p class="enq-lead" id="enquiry-lead">{TEXT.unavailable} <a href={`mailto:${accountManager.email}`}>{accountManager.email}</a>.</p>
+    )}
+
+    {formAvailable && (
+      <div data-enquiry-body>
+        <p class="enq-lead" id="enquiry-lead">{TEXT.lead}</p>
+        <form class="enq-form" method="post" action="/api/poptavka" novalidate data-enquiry-form>
+          <p class="enq-required">{TEXT.required}</p>
+          <div class="enq-fields">
+            {fields.map((field) => (
+              <div class="enq-field">
+                <label for={`enq-${field.name}`}>
+                  {field.label}
+                  {field.required ? <span aria-hidden="true"> *</span> : <span class="enq-optional"> ({TEXT.optional})</span>}
+                </label>
+                <input
+                  id={`enq-${field.name}`}
+                  name={field.name}
+                  type={field.type}
+                  autocomplete={field.autocomplete}
+                  required={field.required}
+                  minlength={"minlength" in field ? field.minlength : undefined}
+                  maxlength={field.maxlength}
+                  aria-describedby={`enq-${field.name}-error`}
+                />
+                <p class="enq-error" id={`enq-${field.name}-error`}></p>
+              </div>
+            ))}
+            <div class="enq-field enq-field-wide">
+              <label for="enq-message">{TEXT.message}<span aria-hidden="true"> *</span></label>
+              <textarea id="enq-message" name={FIELD.message} rows="5" required minlength={LIMITS.message.min} maxlength={LIMITS.message.max} aria-describedby="enq-message-hint enq-message-error"></textarea>
+              <p class="enq-hint" id="enq-message-hint">{TEXT.messageHint}</p>
+              <p class="enq-error" id="enq-message-error"></p>
+            </div>
+          </div>
+
+          {/* Honeypot: invisible to people and screen readers; bots that fill it are dropped */}
+          <div class="enq-trap" aria-hidden="true">
+            <label for="enq-website">Web</label>
+            <input id="enq-website" name={FIELD.website} type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <input type="hidden" name={FIELD.consentVersion} value={consent.version} />
+          <input type="hidden" name={FIELD.lang} value={lang} />
+          {/* Set when the dialog opens: which button, where on the page, which page */}
+          <input type="hidden" name={FIELD.cta} data-enquiry-field="cta" />
+          <input type="hidden" name={FIELD.ctaPlace} data-enquiry-field="place" />
+          <input type="hidden" name={FIELD.page} data-enquiry-field="page" />
+
+          <div class="enq-consent">
+            <input id="enq-consent" name={FIELD.consent} type="checkbox" value="on" required aria-describedby="enq-consent-error" />
+            <label for="enq-consent">{consent.text} {TEXT.details} <a href={PRIVACY_POLICY_URL} target="_blank" rel="noopener" hreflang={lang === "cs" ? undefined : "cs"}>{TEXT.privacy}</a><span aria-hidden="true"> *</span></label>
+            <p class="enq-error" id="enq-consent-error"></p>
+          </div>
+
+          {/* Turnstile renders here when the dialog first opens (turnstile.ts); the height is reserved */}
+          {turnstileSiteKey && <div class="enq-turnstile" data-turnstile-sitekey={turnstileSiteKey}></div>}
+
+          <div class="enq-submit">
+            <button class="btn" type="submit">{TEXT.submit}</button>
+            <p class="enq-status" role="status" aria-live="polite" data-enquiry-status></p>
+          </div>
+        </form>
+      </div>
+    )}
+
+    <div class="enq-success" tabindex="-1" hidden data-enquiry-success>
+      <span class="enq-success-icon"><Icon name="check" /></span>
+      <p class="enq-success-title">{TEXT.successTitle}</p>
+      <p>{TEXT.success}</p>
+      <button class="btn" type="button" data-enquiry-close>{TEXT.close}</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { setupEnquiryDialog } from "../enquiry-dialog";
+
+  const dialog = document.querySelector<HTMLDialogElement>("[data-enquiry-dialog]");
+  if (dialog) setupEnquiryDialog(dialog);
+</script>

@@ -4,6 +4,7 @@ import Sheet from "./Sheet.astro";
 import Questions from "./Questions.astro";
 import Steps from "./Steps.astro";
 import ContactBlock from "./ContactBlock.astro";
+import EnquiryButton from "./EnquiryButton.astro";
 import { localePath, type Locale } from "@/i18n/config";
 import { ORGANIZATION_ID, SITE_URL, breadcrumbJsonLd } from "@/lib/site";
 import { getService, getSite, type ServiceKey } from "@/site";
@@ -53,7 +54,7 @@ const jsonLd = [
         <h1 class="display display-2" id="hero-title">{page.title}</h1>
         <p class="lead">{page.lead}</p>
         <div class="actions">
-          <a class="btn" href="#contact">{cta}</a>
+          <EnquiryButton label={cta} place="hero" />
         </div>
       </div>
       <Sheet sheet={page.sheet} note={t.shared.sample} />

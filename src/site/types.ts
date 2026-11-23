@@ -16,7 +16,8 @@ export type Sheet = {
 export type Question = { q: string; a: string };
 export type Step = { title: string; text: string };
 export type Link = { href: string; label: string };
-/** A call to action that opens an e-mail with the enquiry type as its subject (meetingHref in src/lib/site.ts). */
+/** A call to action: a button that opens the enquiry dialog (EnquiryButton.astro). The label is stored with the
+    enquiry as its source; `subject` names the enquiry type. */
 export type Cta = { label: string; subject: string };
 /** A row of an index: a named offer, what it is and what the client gets. */
 export type IndexItem = { title: string; href?: string; text: string; points: string[] };
@@ -86,7 +87,7 @@ export type Site = {
       lead: string;
       primary: string;
       secondary: string;
-      /** When set, the two buttons open an enquiry e-mail instead of scrolling to a section */
+      /** When set, the two buttons open the enquiry dialog instead of scrolling to a section */
       cta?: [Cta, Cta];
     };
     /** The first section under the hero: what an agent does instead of people, shown on one everyday routine
@@ -155,7 +156,6 @@ export type Site = {
     companyLabel: string;
     contactLabel: string;
     privacy: string;
-    operatedBy: string;
     seatLabel: string;
     idLabel: string;
     registry: string;

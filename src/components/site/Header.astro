@@ -1,6 +1,7 @@
 ---
 import BrandLogo from "../BrandLogo.astro";
 import Icon from "../Icon.astro";
+import EnquiryButton from "./EnquiryButton.astro";
 import type { Locale } from "@/i18n/config";
 import { getSite } from "@/site";
 
@@ -30,7 +31,7 @@ const links: { href: string; label: string; covers?: string[] }[] = t.menu?.main
       </ul>
       <div class="top-actions">
         <a class="top-lang" href={switchHref} hreflang={switchLang} lang={switchLang} title={t.langSwitch.title} data-lang-switch={switchLang} data-lang-home={switchToHome ? "" : undefined}>{t.langSwitch.label}</a>
-        <a class="btn btn-small" href={`${homeHref}#${t.home.contact.id}`} data-close-menu>{t.nav.cta}</a>
+        <EnquiryButton label={t.nav.cta} place="header" class="btn btn-small" data-close-menu />
       </div>
     </nav>
     <button class="top-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label={t.nav.open} data-label-open={t.nav.open} data-label-close={t.nav.close}>

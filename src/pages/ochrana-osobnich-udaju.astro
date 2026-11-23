@@ -13,8 +13,9 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 // The Google Analytics retention is stated without a number ("podle nastavení služby"): the repository
 // holds no record of the property's actual retention setting. State the period once it is documented.
 // Kept out of search engines (noindex) until then. Linked from the footer and the cookie banner.
-// The enquiry form was removed from the site together with its page; the API (/api/poptavka), the database
-// and the retention cron stay, so the policy still covers the enquiries sent while the form existed.
+// The enquiry form is the dialog every call to action opens (src/components/site/EnquiryDialog.astro), the
+// same in both languages. Rows from the earlier training form (removed in November 2026) may still hold
+// a phone number, participant count and note until the 24-month retention deletes them.
 // It describes what the code does; change both together:
 //  - fields and columns: src/lib/enquiry/fields.ts, src/lib/server/store.ts, migrations/
 //  - rate limit and retention: src/lib/server/rate-limit.ts, src/lib/server/store.ts (pruneEnquiries),
@@ -30,16 +31,16 @@ import { ENQUIRY_RETENTION_MONTHS } from "@/lib/server/store";
 // IČO 23010282, Krajský soud v Ostravě, oddíl C, vložka 98925.
 // Notifications: Cloudflare Email Service (src/lib/server/notify.ts) into Google Workspace mailboxes.
 // Open legal point for Mirek: the Google Analytics retention setting.
-// The form's checkbox was an acknowledgement, not consent (CONSENT in fields.ts, one wording and version per language).
-// The stored `source` records which language version of the form an enquiry came from.
+// The form's checkbox is an acknowledgement, not consent (CONSENT in fields.ts, one wording and version per language).
+// The stored `source` records the language, the page and the button the form was opened from (enquirySource in fields.ts).
 const contact = PRIVACY_CONTACT_EMAIL;
 const windowMinutes = WINDOW_MS / 60_000;
 const mail = `<a href="mailto:${contact}">${contact}</a>`;
 
 const html = `
-<p>Tyto zásady popisují, jak zpracováváme osobní údaje návštěvníků webu www.sivak.ai. Poptávkový formulář,
-který na webu dříve byl, jsme odstranili. Údaje z poptávek odeslaných před jeho odstraněním zpracováváme
-dál tak, jak popisujeme níže.</p>
+<p>Tyto zásady popisují, jak zpracováváme osobní údaje návštěvníků webu www.sivak.ai, především údaje
+z poptávkového formuláře. Formulář se otevře po kliknutí na tlačítko s poptávkou (například „Odhad návratnosti
+zdarma“). Na českých i anglických stránkách je stejný a údaje z něj zpracováváme stejně.</p>
 
 <h2>Kdo údaje zpracovává</h2>
 <p>Správcem osobních údajů je ${COMPANY.legalName}, IČO ${COMPANY.ico}, se sídlem ${seatAddress("cs")},
@@ -48,21 +49,24 @@ značkou sivak.ai (dále „my“).</p>
 <p>S dotazy ke zpracování osobních údajů a s uplatněním svých práv se obracejte na e-mail ${mail}.</p>
 
 <h2>Jaké údaje zpracováváme</h2>
-<h3>Údaje z dříve odeslaných poptávek</h3>
+<h3>Údaje z poptávkového formuláře</h3>
 <ul>
-  <li>jméno a příjmení, firma a e-mail (povinné),</li>
-  <li>telefon, počet účastníků a poznámka nebo preferovaný termín (nepovinné),</li>
+  <li>jméno a příjmení, e-mail a text zprávy (povinné),</li>
+  <li>název firmy (nepovinné),</li>
   <li>čas odeslání a verze textu u zaškrtávacího pole, které jste potvrdili,</li>
-  <li>ze které jazykové verze formuláře jste poptávku odeslali (česká, nebo anglická).</li>
+  <li>na které stránce a kterým tlačítkem jste formulář otevřeli a v jaké jazykové verzi webu (česká, nebo
+    anglická).</li>
 </ul>
+<p>U poptávek odeslaných dříve formulářem ke školení, který jsme z webu odstranili, mohou být uloženy také
+telefon, počet účastníků a poznámka nebo preferovaný termín.</p>
 <h3>Odkud jste na stránku přišli</h3>
 <ul>
   <li>parametry kampaně z adresy stránky (utm_source, utm_medium, utm_campaign, utm_term, utm_content),</li>
   <li>identifikátor kliknutí na reklamu Google (gclid), pokud ho adresa obsahuje,</li>
   <li>adresa stránky, na kterou jste na web přišli (cesta a parametry, bez domény).</li>
 </ul>
-<p>Tyto údaje připojil k poptávce váš prohlížeč, nebo jsme je přečetli z adresy předchozí stránky, kterou
-prohlížeč poslal s formulářem.</p>
+<p>Tyto údaje čteme z adresy stránky, na které jste formulář odeslali; prohlížeč ji posílá spolu
+s formulářem.</p>
 <h3>Technické údaje</h3>
 <ul>
   <li>identifikace prohlížeče (user agent), uložená s poptávkou;</li>
@@ -83,9 +87,9 @@ nepoužíváme.</p>
 
 <h2>Proč a na jakém právním základě</h2>
 <ul>
-  <li><strong>Vyřízení poptávky</strong> – ozveme se vám, domluvíme program, termín a nabídku. Právním
+  <li><strong>Vyřízení poptávky</strong> – ozveme se vám, domluvíme další postup a připravíme nabídku. Právním
     základem je čl. 6 odst. 1 písm. b) GDPR: provedení opatření přijatých před uzavřením smlouvy na vaši
-    žádost. Údaje poskytujete dobrovolně; bez jména, firmy a e-mailu ale poptávku vyřídit nemůžeme.</li>
+    žádost. Údaje poskytujete dobrovolně; bez jména, e-mailu a zprávy ale poptávku vyřídit nemůžeme.</li>
   <li><strong>Vyhodnocení, odkud poptávky přicházejí</strong> (parametry kampaně, gclid, vstupní stránka) –
     oprávněný zájem na vyhodnocení naší propagace, čl. 6 odst. 1 písm. f) GDPR.</li>
   <li><strong>Ochrana formuláře před zneužitím a spamem</strong> (Turnstile, omezení počtu odeslání,
@@ -100,13 +104,13 @@ nepoužíváme.</p>
   <li><strong>Uložení vaší volby v liště cookies</strong> – nezbytné pro fungování lišty, ukládá se jen ve vašem
     prohlížeči (§ 89 odst. 3 zákona o elektronických komunikacích, výjimka pro nezbytné ukládání).</li>
 </ul>
-<p>Zaškrtávací pole ve formuláři potvrzovalo, že jste se s těmito zásadami seznámili; nešlo o souhlas se
+<p>Zaškrtávací pole ve formuláři potvrzuje, že jste se s těmito zásadami seznámili; nejde o souhlas se
 zpracováním. Proti zpracování na základě oprávněného zájmu můžete vznést námitku (viz Vaše práva).
 Automatizované rozhodování ani profilování neprovádíme.</p>
 
 <h2>Jak dlouho údaje uchováváme</h2>
 <ul>
-  <li><strong>Poptávky</strong> v databázi formuláře uchováváme ${ENQUIRY_RETENTION_MONTHS} měsíců od odeslání,
+  <li><strong>Poptávky</strong> v databázi formuláře (Cloudflare D1) uchováváme ${ENQUIRY_RETENTION_MONTHS} měsíců od odeslání,
     potom je automaticky mažeme. E-mailová oznámení o poptávce mažeme ze schránek ve stejné lhůtě.
     Pokud z poptávky vznikne smlouva, údaje potřebné k jejímu plnění převezmeme do smluvní dokumentace
     a uchováváme je po dobu trvání smlouvy a po dobu, kterou nám ukládají právní předpisy (například
@@ -144,7 +148,8 @@ subjektům, kromě těchto zpracovatelů a příjemců:</p>
 <ul>
   <li><strong>Cloudflare, Inc.</strong> – provoz webu (Cloudflare Workers), databáze poptávek (Cloudflare D1,
     vytvořená v regionu západní Evropa), ochrana formuláře (Cloudflare Turnstile) a odesílání e-mailových
-    oznámení o nové poptávce (Cloudflare Email Service). Oznámení obsahují údaje z formuláře a souhrn
+    oznámení o nové poptávce (Cloudflare Email Service). Oznámení odcházejí z adresy web@sivak.ai do schránek
+    našich pracovníků a obsahují údaje z formuláře, stránku a tlačítko, ze kterých jste ho odeslali, a souhrn
     parametrů kampaně;</li>
   <li><strong>Google (Google Workspace)</strong> – e-mailové schránky našich pracovníků, do kterých oznámení
     o poptávkách přicházejí;</li>

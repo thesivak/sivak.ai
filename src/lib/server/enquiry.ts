@@ -1,5 +1,5 @@
 import type { Locale } from "@/i18n/config";
-import { FIELD, STALE_FORM_ANCHOR, STALE_FORM_MESSAGES, SUPPORTED_CONSENT_VERSIONS, TRACKING_KEYS, formLang, validateEnquiry, type FieldErrors } from "@/lib/enquiry/fields";
+import { FIELD, STALE_FORM_MESSAGES, SUPPORTED_CONSENT_VERSIONS, TRACKING_KEYS, enquirySource, formLang, validateEnquiry, type FieldErrors } from "@/lib/enquiry/fields";
 import { hmacSha256Hex } from "./crypto";
 import { siteMode, type ServerEnv } from "./env";
 import { errorCode } from "./log";
@@ -9,30 +9,25 @@ import { allowAttempt } from "./rate-limit";
 import { insertEnquiry, markNotified } from "./store";
 import { TEST_TOKEN, isTestSecret, verifyTurnstile } from "./turnstile";
 
-// POST /api/poptavka — the training form on /ai-skoleni and on its English twin /en/ai-training.
-// The form's hidden `lang` field picks the language of the answer and of the redirects; until the body is
-// parsed (configuration errors, size, rate limit) the Referer path does ("/en/…" = English).
-// With JavaScript the form sends `Accept: application/json` and shows the answer in place;
-// without it the browser posts the form and gets a redirect to the thank-you page (or an error page).
+// POST /api/poptavka — the enquiry form in the dialog that every call to action opens
+// (src/components/site/EnquiryDialog.astro, on every page of both languages).
+// The form's hidden `lang` field picks the language of the answer; until the body is parsed (configuration
+// errors, size, rate limit) the Referer path does ("/en…" = English).
+// The dialog sends `Accept: application/json` and shows the answer in place. The dialog needs JavaScript
+// (and so does Turnstile); a plain form post still gets a short HTML page, never a redirect to a form page.
 //
 // Order: configuration, body size, rate limit (cheap, before anything is parsed), parsing and validation,
 // Turnstile, the D1 insert. The visitor only hears "accepted" once the row is stored.
 // Production and the public preview ("strict") refuse submissions rather than run without IP_HASH_SALT
 // or a working rate limit; only SITE_ENV=development may skip them (with a logged warning).
 // Logs carry the enquiry id, a reason and error codes, never what the visitor typed, their IP or user agent.
-// Messages name no e-mail address: on the training pages the form is the only contact path.
 
-// The form page and the thank-you page (without JavaScript) of each language; the form's section id
-const PAGES: Record<Locale, { form: string; thankYou: string; formId: string }> = {
-  cs: { form: "/ai-skoleni", thankYou: "/ai-skoleni/odeslano", formId: "poptavka" },
-  en: { form: "/en/ai-training", thankYou: "/en/ai-training/thank-you", formId: "enquiry" },
-};
-export const THANK_YOU_PATH = PAGES.cs.thankYou;
+// The home page of each language: the link back from the HTML answer
+const HOME: Record<Locale, string> = { cs: "/", en: "/en" };
 export const MAX_BODY = 32 * 1024;
 
 type Context = { env: ServerEnv; waitUntil: (promise: Promise<unknown>) => void };
-// redirect: without JavaScript, send the browser there (303) instead of showing the error page
-type Failure = { status: number; message: string; errors?: FieldErrors; redirect?: string };
+type Failure = { status: number; message: string; errors?: FieldErrors };
 
 const MESSAGES: Record<Locale, Record<"invalid" | "tooMany" | "robot" | "unavailable" | "tooLarge" | "stale" | "failed" | "ok", string>> = {
   cs: {
@@ -40,7 +35,7 @@ const MESSAGES: Record<Locale, Record<"invalid" | "tooMany" | "robot" | "unavail
     tooMany: "Odeslali jste příliš mnoho poptávek za krátkou dobu. Zkuste to prosím znovu za pár minut.",
     robot: "Nepodařilo se ověřit, že nejste robot. Zkuste formulář odeslat znovu.",
     unavailable: "Formulář je teď dočasně nedostupný. Zkuste to prosím znovu později.",
-    tooLarge: "Poptávka je příliš dlouhá. Zkraťte prosím poznámku.",
+    tooLarge: "Poptávka je příliš dlouhá. Zkraťte prosím zprávu.",
     stale: STALE_FORM_MESSAGES.cs,
     failed: "Poptávku se teď nepodařilo uložit. Zkuste to prosím znovu později.",
     ok: "Děkujeme, poptávku jsme přijali. Ozveme se vám co nejdříve.",
@@ -50,29 +45,32 @@ const MESSAGES: Record<Locale, Record<"invalid" | "tooMany" | "robot" | "unavail
     tooMany: "You have sent too many enquiries in a short time. Please try again in a few minutes.",
     robot: "We could not verify that you are not a robot. Please try sending the form again.",
     unavailable: "The form is temporarily unavailable. Please try again later.",
-    tooLarge: "Your enquiry is too long. Please shorten the note.",
+    tooLarge: "Your enquiry is too long. Please shorten your message.",
     stale: STALE_FORM_MESSAGES.en,
     failed: "We could not save your enquiry just now. Please try again later.",
     ok: "Thank you, we have received your enquiry. We will get back to you as soon as possible.",
   },
 };
 
-// The error page without JavaScript
-const ERROR_PAGE: Record<Locale, { title: string; back: (formHref: string) => string }> = {
+// The answer page for a plain form post (no JavaScript)
+const ANSWER_PAGE: Record<Locale, { failed: string; ok: string; back: (href: string) => string }> = {
   cs: {
-    title: "Poptávku se nepodařilo odeslat",
-    back: (href) => `Vraťte se tlačítkem Zpět v prohlížeči – vyplněné údaje by tam měly zůstat – nebo <a href="${href}">otevřete formulář znovu</a>.`,
+    failed: "Poptávku se nepodařilo odeslat",
+    ok: "Poptávku jsme přijali",
+    back: (href) => `Vraťte se tlačítkem Zpět v prohlížeči, nebo <a href="${href}">přejděte na úvodní stránku</a>.`,
   },
   en: {
-    title: "Your enquiry could not be sent",
-    back: (href) => `Use your browser's Back button – what you filled in should still be there – or <a href="${href}">open the form again</a>.`,
+    failed: "Your enquiry could not be sent",
+    ok: "We have received your enquiry",
+    back: (href) => `Use your browser's Back button, or <a href="${href}">go to the home page</a>.`,
   },
 };
 
 /** The page's language before the body is read: the Referer's path ("/en/…" is English). */
 function refererLang(referer: string | null): Locale {
   try {
-    return referer && new URL(referer).pathname.startsWith("/en/") ? "en" : "cs";
+    const path = referer ? new URL(referer).pathname : "";
+    return path === "/en" || path.startsWith("/en/") ? "en" : "cs";
   } catch {
     return "cs";
   }
@@ -117,19 +115,23 @@ async function parseFields(body: Uint8Array<ArrayBuffer>, type: string): Promise
   return fields;
 }
 
-// Without JavaScript the hidden campaign fields stay empty; the Referer still carries the landing URL
-function fillTrackingFromReferer(fields: Record<string, string>, referer: string | null) {
-  if (!referer || TRACKING_KEYS.some((key) => fields[key])) return;
+// The dialog sends no campaign fields: the Referer (the page the dialog was opened on) carries them, and
+// it also stands in for the page path when the hidden `page` field is missing
+function fillFromReferer(fields: Record<string, string>, referer: string | null) {
+  if (!referer) return;
+  let url: URL;
   try {
-    const url = new URL(referer);
-    for (const key of TRACKING_KEYS) {
-      const value = url.searchParams.get(key);
-      if (value) fields[key] = value;
-    }
-    fields.landing_url ||= url.pathname + url.search;
+    url = new URL(referer);
   } catch {
-    // not a URL: nothing to copy
+    return; // not a URL: nothing to copy
   }
+  fields[FIELD.page] ||= url.pathname;
+  if (TRACKING_KEYS.some((key) => fields[key])) return;
+  for (const key of TRACKING_KEYS) {
+    const value = url.searchParams.get(key);
+    if (value) fields[key] = value;
+  }
+  fields.landing_url ||= url.pathname + url.search;
 }
 
 export async function handleEnquiry(request: Request, { env, waitUntil }: Context): Promise<Response> {
@@ -203,15 +205,14 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
     return respond(null);
   }
 
-  // The page must have shown a checkbox wording we still accept; an old cached page has to be reloaded.
-  // Without JavaScript the browser goes back to a fresh form, where :target shows the same message.
+  // The page must have shown a checkbox wording we still accept; an old cached page has to be reloaded
   const consentVersion = (fields[FIELD.consentVersion] ?? "").trim();
   if (!SUPPORTED_CONSENT_VERSIONS.includes(consentVersion)) {
     console.warn("[enquiry] unsupported consent_version; asked to reload", { missing: consentVersion === "" });
-    return respond({ status: 409, message: MESSAGES[lang].stale, redirect: `${PAGES[lang].form}#${STALE_FORM_ANCHOR}` });
+    return respond({ status: 409, message: MESSAGES[lang].stale });
   }
 
-  fillTrackingFromReferer(fields, request.headers.get("referer"));
+  fillFromReferer(fields, request.headers.get("referer"));
   const result = validateEnquiry(fields, lang);
   if (!result.ok) return respond({ status: 400, message: MESSAGES[lang].invalid, errors: result.errors });
 
@@ -231,10 +232,9 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
   const createdAt = new Date().toISOString();
   let id: number;
   try {
-    // Preview and development have their own databases; the source still says where a row came from:
-    // "ai-skoleni" (Czech page) or "ai-training" (English page), plus "-preview" / "-development"
-    const page = lang === "en" ? "ai-training" : "ai-skoleni";
-    const source = production ? page : `${page}-${mode}`;
+    // Which button on which page, e.g. "cs:/#hero:Objednat AI diagnostiku" (enquirySource in fields.ts).
+    // Preview and development have databases of their own, so the source carries no mode.
+    const source = enquirySource(enquiry.origin);
     id = await insertEnquiry(db, enquiry, { createdAt, userAgent: request.headers.get("user-agent"), ipHash, source, consentVersion });
   } catch (error) {
     console.error("[enquiry] storing failed; the visitor was asked to retry", { error: errorCode(error) });
@@ -244,7 +244,7 @@ export async function handleEnquiry(request: Request, { env, waitUntil }: Contex
 
   // The row is stored: from here on it's a success, even if the e-mail fails
   waitUntil(
-    notifyEnquiry(env, enquiry, id, new URL(request.url).origin, PAGES[lang].form)
+    notifyEnquiry(env, enquiry, id, new URL(request.url).origin)
       .then(async (sent) => {
         if (sent.sent) await markNotified(db, id, new Date().toISOString());
       })
@@ -260,23 +260,21 @@ function jsonResponse(failure: Failure | null, lang: Locale): Response {
 }
 
 function htmlResponse(failure: Failure | null, lang: Locale): Response {
-  const pages = PAGES[lang];
-  if (!failure) return new Response(null, { status: 303, headers: { Location: pages.thankYou, "Cache-Control": "no-store" } });
-  if (failure.redirect) return new Response(null, { status: 303, headers: { Location: failure.redirect, "Cache-Control": "no-store" } });
-  const errors = Object.values(failure.errors ?? {});
-  const page = ERROR_PAGE[lang];
+  const page = ANSWER_PAGE[lang];
+  const title = failure ? page.failed : page.ok;
+  const errors = Object.values(failure?.errors ?? {});
   const html = `<!doctype html>
 <html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
-<title>${page.title} – sivak.ai</title>
-<style>body{margin:0;padding:48px 20px;font:17px/1.6 system-ui,sans-serif;background:#F2F0EB;color:#0B1220}main{max-width:640px;margin:auto}h1{font-size:28px;line-height:1.2}a{color:#0B1220}li{margin:6px 0}</style>
+<title>${title} – sivak.ai</title>
+<style>body{margin:0;padding:48px 20px;font:17px/1.6 system-ui,sans-serif;background:#F4F5F2;color:#0B1220}main{max-width:640px;margin:auto}h1{font-size:28px;line-height:1.2}a{color:#0B1220}li{margin:6px 0}</style>
 </head><body><main>
-<h1>${page.title}</h1>
-<p>${escapeHtml(failure.message)}</p>
+<h1>${title}</h1>
+<p>${escapeHtml(failure ? failure.message : MESSAGES[lang].ok)}</p>
 ${errors.length ? `<ul>${errors.map((e) => `<li>${escapeHtml(e)}</li>`).join("")}</ul>` : ""}
-<p>${page.back(`${pages.form}#${pages.formId}`)}</p>
+<p>${page.back(HOME[lang])}</p>
 </main></body></html>`;
   return new Response(html, {
-    status: failure.status,
+    status: failure?.status ?? 200,
     headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },
   });
 }

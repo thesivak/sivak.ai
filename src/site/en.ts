@@ -493,7 +493,6 @@ export const en: Site = {
     companyLabel: "Company",
     contactLabel: "Contact",
     privacy: "Privacy policy (in Czech)",
-    operatedBy: "sivak.ai is operated by",
     seatLabel: "registered office",
     idLabel: "Company ID",
     registry: "Registered in the Commercial Register kept by the Regional Court in Ostrava, Section C, Insert 98925.",

@@ -1,4 +1,4 @@
-import type { Enquiry } from "@/lib/enquiry/fields";
+import { enquirySource, type Enquiry } from "@/lib/enquiry/fields";
 import { flag, isProduction, type ServerEnv } from "./env";
 import { escapeHtml } from "@/lib/escape";
 import { errorCode } from "./log";
@@ -15,43 +15,47 @@ import { errorCode } from "./log";
 export type NotifyResult = { sent: boolean; reason?: string; messageId?: string };
 
 const SENDER_NAME = "sivak.ai – poptávky";
+const LANGUAGE = { cs: "čeština", en: "angličtina" } as const;
 
-
-function rows(enquiry: Enquiry, id: number): [string, string][] {
+function rows(enquiry: Enquiry, id: number, host: string): [string, string][] {
   const t = enquiry.tracking;
+  const o = enquiry.origin;
   const campaign = [t.utm_source, t.utm_medium, t.utm_campaign, t.utm_term, t.utm_content].filter(Boolean).join(" / ");
   return [
     ["Jméno", enquiry.name],
-    ["Firma", enquiry.company],
     ["E-mail", enquiry.email],
-    ["Telefon", enquiry.phone ?? "–"],
-    ["Počet účastníků", enquiry.participants?.toString() ?? "–"],
-    ["Poznámka / termín", enquiry.note ?? "–"],
+    ...(enquiry.company ? [["Firma", enquiry.company] as [string, string]] : []),
+    ["Zpráva", enquiry.message],
+    ["Tlačítko", o.cta || "–"],
+    ["Stránka", o.page ? `${host}${o.page}${o.place ? ` (${o.place})` : ""}` : "–"],
+    ["Jazyk", LANGUAGE[o.lang]],
     ["Kampaň (utm)", campaign || "–"],
     ["gclid", t.gclid ? "ano" : "ne"],
+    ["Zdroj v databázi", enquirySource(o)],
     ["Číslo poptávky", `#${id}`],
   ];
 }
 
 // A test submission (name or company starting with "TEST") is marked in the subject
-export const isTestEnquiry = (enquiry: Pick<Enquiry, "name" | "company">) => enquiry.name.startsWith("TEST") || enquiry.company.startsWith("TEST");
+export const isTestEnquiry = (enquiry: Pick<Enquiry, "name" | "company">) => enquiry.name.startsWith("TEST") || (enquiry.company ?? "").startsWith("TEST");
 
 /**
- * `origin` is the site the form was sent from (e.g. https://www.sivak.ai) and `page` the form's page
- * (/ai-skoleni, or /en/ai-training for the English one), both named in the first line.
+ * The notification e-mail. `origin` is the site the form was sent from (e.g. https://www.sivak.ai); the
+ * subject names the call to action, the person and, when given, the company.
  */
-export function buildMessage(enquiry: Enquiry, id: number, origin: string, page = "/ai-skoleni") {
+export function buildMessage(enquiry: Enquiry, id: number, origin: string) {
   const prefix = isTestEnquiry(enquiry) ? "[TEST] " : "";
-  const english = page.startsWith("/en/") ? " (anglická stránka)" : "";
-  const subject = `${prefix}Poptávka AI školení${english}: ${enquiry.company} (${enquiry.name})`.replace(/[\r\n]+/g, " ").slice(0, 200);
-  const list = rows(enquiry, id);
+  const o = enquiry.origin;
+  const who = enquiry.company ? `${enquiry.name}, ${enquiry.company}` : enquiry.name;
+  const english = o.lang === "en" ? " [EN]" : "";
+  const subject = `${prefix}Poptávka z webu${english}: ${o.cta || "kontakt"} – ${who}`.replace(/[\r\n]+/g, " ").slice(0, 200);
   const host = new URL(origin).host;
-  const text = `Nová poptávka jednodenního AI školení z ${host}${page}\n\n${list
-    .map(([k, v]) => `${k}: ${v}`)
-    .join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\n`;
+  const list = rows(enquiry, id, host);
+  const intro = `Nová poptávka z ${host}${o.page}`;
+  const text = `${intro}\n\n${list.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nOdpovědí na tento e-mail napíšete přímo poptávajícímu.\n`;
   const html = `<!doctype html><html lang="cs"><body style="font-family:Arial,sans-serif;color:#0B1220">
-<h1 style="font-size:18px">Nová poptávka AI školení${escapeHtml(english)}</h1>
-<p style="font-size:14px">Odesláno ze stránky ${escapeHtml(`${host}${page}`)}</p>
+<h1 style="font-size:18px">Nová poptávka z webu${escapeHtml(english)}</h1>
+<p style="font-size:14px">${escapeHtml(intro)}</p>
 <table cellpadding="6" style="border-collapse:collapse;font-size:14px">${list
     .map(
       ([k, v]) =>
@@ -63,7 +67,7 @@ export function buildMessage(enquiry: Enquiry, id: number, origin: string, page 
   return { subject, text, html };
 }
 
-export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number, origin: string, page?: string): Promise<NotifyResult> {
+export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number, origin: string): Promise<NotifyResult> {
   const recipients = (env.ENQUIRY_NOTIFY_TO ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const from = env.ENQUIRY_FROM_EMAIL?.trim();
 
@@ -82,7 +86,7 @@ export async function notifyEnquiry(env: ServerEnv, enquiry: Enquiry, id: number
     return { sent: false, reason: skip ?? "not configured" };
   }
 
-  const message = buildMessage(enquiry, id, origin, page);
+  const message = buildMessage(enquiry, id, origin);
   try {
     const result = await env.EMAIL.send({
       from: { email: from, name: SENDER_NAME },

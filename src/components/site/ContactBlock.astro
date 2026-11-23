@@ -1,6 +1,7 @@
 ---
 import type { Locale } from "@/i18n/config";
-import { PEOPLE, meetingHref, telHref } from "@/lib/site";
+import EnquiryButton from "./EnquiryButton.astro";
+import { PEOPLE, telHref } from "@/lib/site";
 import { getSite, type Cta } from "@/site";
 
 interface Props {
@@ -9,7 +10,7 @@ interface Props {
   title: string;
   lead: string;
   mailSubject: string;
-  /** The buttons, the first one filled; default: the site-wide call to action with `mailSubject` */
+  /** The buttons (they open the enquiry dialog), the first one filled; default: the site-wide call to action */
   actions?: Cta[];
 }
 const { lang, id, title, lead, mailSubject } = Astro.props;
@@ -22,8 +23,8 @@ const [main, ...more] = Astro.props.actions ?? [{ label: t.nav.cta, subject: mai
       <h2 class="h2" id={`${id}-title`}>{title}</h2>
       <p class="lead">{lead}</p>
       <div class="actions">
-        <a class="btn" href={meetingHref(main.subject)}>{main.label}</a>
-        {more.map((action) => <a class="link" href={meetingHref(action.subject)}>{action.label}</a>)}
+        <EnquiryButton label={main.label} place={id} />
+        {more.map((action) => <EnquiryButton label={action.label} place={id} class="link" />)}
       </div>
     </div>
     <ul class="people">

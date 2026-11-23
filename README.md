@@ -17,7 +17,7 @@ Request ─▶ Cloudflare
                  ─▶ src/worker.ts
                       ├─ 308 to the canonical URL, 301 from a removed page (src/lib/routing.ts)
                       └─ Astro handler ─▶ prerendered page from the asset store
-                                        └─ on-demand route: POST /api/poptavka (no page posts to it now)
+                                        └─ on-demand route: POST /api/poptavka (the enquiry dialog)
                                              ├─ D1 binding DB (enquiries, rate limit)
                                              ├─ Turnstile siteverify
                                              └─ e-mail: EMAIL send_email binding (Cloudflare Email Service)
@@ -81,7 +81,7 @@ and `"<path>/*"`, or the visitor gets the 404 page instead (`tests/removed-pages
 `/en/ai-skoleni` never existed and stays a 404.
 
 What stayed on purpose: the enquiry API `POST /api/poptavka`, the D1 database with its migrations and the
-hourly retention cron (see "The enquiry API"). Nothing on the site posts to the API now.
+hourly retention cron (see "The enquiry API"). Since late November 2026 the enquiry dialog posts to it.
 
 ### Home and service pages (the 2026 redesign)
 
@@ -200,9 +200,9 @@ in Workers Builds):
 
 | Name | Purpose |
 | --- | --- |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Site key of the sivak.ai Turnstile widget, rendered in the enquiry dialog. Empty in a build = the dialog shows the e-mail address instead of the form. Locally / preview only: the visible test key `1x00000000000000000000AA`. |
 
-`PUBLIC_TURNSTILE_SITE_KEY` and `PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` belonged to the removed form and are
-read by nothing.
+`PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` belonged to the removed form and is read by nothing.
 
 Runtime (Worker). Non-secret values are in `wrangler.jsonc` → `vars`; secrets are set with
 `wrangler secret put NAME` (locally in `.dev.vars`):
@@ -257,12 +257,16 @@ Consent Mode v2**:
 
 ## The enquiry API
 
-**No page has an enquiry form any more**: it was on the removed AI training pages (see "Removed pages").
-The backend was left exactly as it was, with no migration and no table dropped: the endpoint, its
-validation and notification, the D1 tables, the bindings and the retention cron. This section describes
-that backend. Its texts and defaults still name the removed pages (the notification subject, the `source`
-values, the no-JavaScript redirect to `/ai-skoleni/odeslano`, which now lands on the home page through the
-301). Removing the endpoint, or pointing it at a new form, is a separate decision.
+**Every call to action opens the enquiry dialog** (`src/components/site/EnquiryButton.astro` →
+`EnquiryDialog.astro`, one per page in `Shell.astro`; script `src/components/enquiry-dialog.ts`, Turnstile
+loaded on first opening by `src/components/turnstile.ts`). Fields: name, e-mail, message (required),
+company (optional), the acknowledgement checkbox; hidden: `lang`, `consent_version`, the honeypot
+`website`, and `cta` / `cta_place` / `page` (the button's label, where it is, the page path). The server
+stores them as `source` = `lang:page#place:label`, e.g. `cs:/#hero:Objednat AI diagnostiku`
+(`enquirySource` in `src/lib/enquiry/fields.ts`; query with `LIKE`). No migration: `note` holds the
+message, `company` is `''` when not given (NOT NULL since 0001), `phone` / `participants` are NULL.
+The dialog is a native modal `<dialog>` with an explicit Tab trap, Escape and backdrop close, focus
+returned to the opener. Genuine contact links (people, footer, vCards, privacy contact) stay `mailto:`.
 
 `POST /api/poptavka` (`src/lib/server/enquiry.ts`), in this order. The sender gets "přijali" (200 or
 the 303) **only once the row is stored in D1**; every refusal is an error asking to try again later.
@@ -280,14 +284,14 @@ the 303) **only once the row is stored in D1**; every refusal is an error asking
    only) there is no rate limit and `ip_hash` is NULL.
 4. **Parsing**, then the **honeypot** (`website` field): filled → answered as success, nothing stored
    (the one deliberate exception, for bots).
-5. **Validation** (`src/lib/enquiry/fields.ts`, the same code the browser runs): name, company,
-   e-mail and the checkbox required; phone optional but checked; participants 1–500; length limits.
+5. **Validation** (`src/lib/enquiry/fields.ts`, the same code the browser runs): name, e-mail,
+   message (10–2000 characters) and the checkbox required; company optional (2–150 when given).
 6. **Turnstile** siteverify. Without `TURNSTILE_SECRET_KEY` the check is skipped with a logged warning
    outside production only. Cloudflare's test keys (`1x00000000000000000000AA` /
    `1x0000000000000000000000000000000AA`) work in development and preview and are refused in production.
 7. **D1** insert with the checkbox time and wording version (`CONSENT_VERSION`), `utm_*`, `gclid`,
-   landing URL, user agent and IP hash; `source` is `ai-skoleni`, or `ai-skoleni-preview` /
-   `ai-skoleni-development` outside production. Insert fails → 503 "zkuste to znovu".
+   landing URL, user agent and IP hash; `source` as above (no mode suffix: preview and development
+   have databases of their own). Insert fails → 503 "zkuste to znovu".
 8. **Notification** (after the response, `waitUntil`): see below. Its failure doesn't change the answer:
    the enquiry is stored in D1.
 
@@ -295,16 +299,14 @@ The checkbox ("Beru na vědomí…") acknowledges the privacy policy; it is not 
 basis is art. 6(1)(b). The column is still called `consent`; `consent_text_version` stores the wording
 version **the page submitted** in the hidden field `consent_version` (`2026-10-27-v2` since the change from
 "Souhlasím…"). The server accepts only `SUPPORTED_CONSENT_VERSIONS` (`fields.ts`); anything else, or no
-field (an old cached page), gets **409** "Formulář se mezitím změnil. Obnovte prosím stránku…" as JSON,
-or without JavaScript a 303 back to `/ai-skoleni#formular-zmenen`, where `:target` shows the same
-message above a fresh form. When the wording changes: bump `CONSENT_VERSION`, add it to the list, and
+field (an old cached page), gets **409** "Formulář se mezitím změnil. Obnovte prosím stránku…". When the wording changes: bump `CONSENT_VERSION`, add it to the list, and
 drop the old one once no old pages can be around.
 
 **Logs** carry the enquiry id, a reason and error class/code only: never names, company, e-mail, phone,
 note, IP, user agent, the e-mail subject or body, nor provider response bodies (`src/lib/server/log.ts`).
 
-A JSON request gets a JSON answer; a plain form post is redirected (303) to `/ai-skoleni/odeslano`, or
-gets a short error page. Campaign parameters come from the request's fields, or from the `Referer`.
+A JSON request (the dialog) gets a JSON answer; a plain form post gets a short HTML page. Campaign
+parameters and, when missing, the page path come from the `Referer`.
 
 Same-origin is enforced by Astro's `security.checkOrigin` (cross-site form posts get 403).
 
@@ -320,6 +322,8 @@ to, replyTo, subject, text, html })` (typed by `SendEmail` in `@cloudflare/worke
 - Recipients come from `ENQUIRY_NOTIFY_TO`; the binding's `allowed_destination_addresses` limits it to
   `mirek@sivak.ai` and `matous@sivak.ai` anyway. Reply-To is the enquirer's address, so a reply goes
   straight to them.
+- Subject: `Poptávka z webu: <button label> – <name>[, <company>]`, `[EN]` for the English site. The body
+  lists name, e-mail, company (if given), message, button, page, language, campaign and the stored source.
 - A name or company starting with `TEST` gets `[TEST] ` in front of the subject. The first line of the
   e-mail names the host the form was sent from (workers.dev before the cutover).
 - User input is HTML-escaped in the HTML part; line breaks are stripped from the subject.
@@ -336,7 +340,7 @@ What `/ochrana-osobnich-udaju` promises, and what does it:
 | --- | --- | --- |
 | `enquiry_attempts` (IP hash + time) | ≤ 24 hours | deleted after 23 h on every submission and by the hourly cron |
 | `enquiries` rows | 24 months | the hourly cron deletes rows with `created_at` older than 24 months (`pruneEnquiries`) |
-| Notification e-mails in the mirek@/matous@ mailboxes | 24 months | **by hand**: delete enquiry e-mails older than 24 months (e.g. a monthly mailbox search for "Poptávka AI školení" older than 24 months) |
+| Notification e-mails in the mirek@/matous@ mailboxes | 24 months | **by hand**: delete enquiry e-mails older than 24 months (e.g. a monthly mailbox search for "Poptávka z webu" or "Poptávka AI školení" older than 24 months) |
 | Anything that became a contract | as the contract and the law require | copy what's needed into the contract records before the 24 months run out |
 
 A data subject's request (access or erasure), by e-mail address, on the database in question:
@@ -363,8 +367,8 @@ and delete the matching notification e-mails from both mailboxes.
   `mirek@sivak.ai` and `matous@sivak.ai` (`allowed_destination_addresses`); no destination verification
   or Email Routing is involved.
 - **Turnstile**: one widget for `sivak.ai`, `www.sivak.ai` and `sivak-ai.onfire4yhwh.workers.dev`; its
-  secret is the Worker secret `TURNSTILE_SECRET_KEY`, checked by the enquiry API. No page shows the
-  widget now.
+  secret is the Worker secret `TURNSTILE_SECRET_KEY`, checked by the enquiry API. The enquiry dialog shows the
+  widget; its site key is the build variable `PUBLIC_TURNSTILE_SITE_KEY`.
 - Secrets on `sivak-ai`: `TURNSTILE_SECRET_KEY`, `IP_HASH_SALT`. (`ADMIN_USER` / `ADMIN_PASSWORD`, if still set
   from the removed admin, are unused and can be deleted.)
 - Google Ads: not used; no page loads an Ads tag.

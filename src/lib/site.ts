@@ -69,11 +69,6 @@ const [FOUNDER, ACCOUNT_MANAGER] = PEOPLE;
 // The controller contact in the privacy policy.
 export const PRIVACY_CONTACT_EMAIL = ACCOUNT_MANAGER.email;
 
-// Meeting requests go to the key account manager, with the founder in copy.
-export function meetingHref(subject: string): string {
-  return `mailto:${ACCOUNT_MANAGER.email}?cc=${FOUNDER.email}&subject=${encodeURIComponent(subject)}`;
-}
-
 export function telHref(phone: string): string {
   return `tel:${phone.replaceAll(" ", "")}`;
 }

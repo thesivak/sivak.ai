@@ -4,6 +4,7 @@ import "@/styles/site.css";
 import Document from "@/layouts/Document.astro";
 import Header from "./Header.astro";
 import Footer from "./Footer.astro";
+import EnquiryDialog from "./EnquiryDialog.astro";
 import { localePath, type Locale } from "@/i18n/config";
 import { getSite } from "@/site";
 import { SITE_URL } from "@/lib/site";
@@ -51,4 +52,5 @@ const switchHref = twinPath ?? localePath(other);
   <Header lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} switchToHome={!twinPath} />
   <main id="main"><slot /></main>
   <Footer lang={lang} homeHref={homeHref} switchHref={switchHref} switchLang={other} switchToHome={!twinPath} />
+  <EnquiryDialog lang={lang} />
 </Document>

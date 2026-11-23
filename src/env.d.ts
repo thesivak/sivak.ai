@@ -24,3 +24,8 @@ declare namespace Cloudflare {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- the global Env the adapter's types expect
 interface Env extends Cloudflare.Env {}
 
+interface ImportMetaEnv {
+  /** Turnstile site key of the enquiry dialog (.env / a Workers Builds build variable); public */
+  readonly PUBLIC_TURNSTILE_SITE_KEY?: string;
+}
+
