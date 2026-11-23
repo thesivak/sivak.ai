@@ -49,7 +49,7 @@ export const en: Site = {
       { href: HOW_WE_WORK_PATH, label: "AI diagnostics and pilot" },
       { href: "/en/security", label: "Security review" },
       { href: "/en/ai-solutions", label: "AI solutions" },
-      { href: "/en/software-development", label: "Software development" },
+      { href: "/en/software-development", label: "Custom software" },
     ],
     footerCompany: [
       { href: "/en#case-study", label: "Our work" },
@@ -104,6 +104,11 @@ export const en: Site = {
       title: "Who we work for",
       lead: "Mid-sized companies where a lot of time is lost to routine work: orders, quotes, invoices, customer support, testing. Roughly 20 to 500 people, where the owner or management decides.",
       items: INDUSTRIES,
+    },
+    pillars: {
+      id: "what-we-do",
+      title: "What we do",
+      lead: "Three things in one team: AI agents for routine work, custom software with AI already at work inside it, and security that tests both before an attacker does.",
     },
     services: {
       id: "services",
@@ -249,15 +254,15 @@ export const en: Site = {
     {
       key: "software",
       path: "/en/software-development",
-      name: "Software development",
+      name: "Custom software",
       metadata: {
-        title: "Custom software development for companies | sivak.ai",
+        title: "Custom software with AI built in | sivak.ai",
         description:
-          "Web applications, internal systems, integrations and modernisation of old software. Short releases, each one tested and reviewed before a person approves it.",
+          "Internal systems, CRM, portals and ERP integrations built around your process. From brief to prototype, milestones and operation, with AI where it saves work.",
       },
-      title: "Custom software for the systems your company runs on",
-      lead: "We design, build and operate applications, internal systems and integrations. Each release is tested in a real browser and reviewed before a person approves it.",
-      summary: "Custom applications, internal systems and integrations. Built in short releases, each one tested before launch.",
+      title: "We build custom software with AI already at work inside it",
+      lead: "Internal systems, CRM, portals for customers and partners, and ERP integrations. We design them around how your company actually works, build them in milestones and keep running them.",
+      summary: "We build custom software with AI already at work inside it: internal systems, CRM, portals and ERP integrations. From brief to prototype to operation.",
       sheet: {
         caption: "Example of a release report",
         title: "Release 4.12",
@@ -274,33 +279,67 @@ export const en: Site = {
         title: "What we build",
         items: [
           {
-            title: "Web applications and portals",
-            text: "Applications your customers, partners and employees use every day, on a computer and on a phone.",
-            points: ["Customer portals", "Ordering systems", "Applications for field teams"],
-          },
-          {
             title: "Internal systems",
-            text: "Tools built for your process where standard software does not fit.",
+            text: "Tools built for your process where off-the-shelf software falls short or forces you to work its way.",
             points: ["Planning and records", "Approvals", "Reports for management"],
           },
           {
-            title: "Integrations",
-            text: "We connect systems that don't talk to each other. Data moves on its own, with no retyping.",
-            points: ["ERP and CRM", "Accounting", "E-shop and warehouse"],
+            title: "Custom CRM",
+            text: "Customers, enquiries and orders in a system that matches how you actually sell. AI prepares the groundwork, your salesperson decides.",
+            points: ["Customers and orders", "Quotes", "Communication history"],
           },
           {
-            title: "Modernisation of old software",
-            text: "We replace or extend systems no one wants to touch, step by step, while operations continue.",
-            points: ["Step-by-step replacement", "Data migration", "No stop in operations"],
+            title: "Portals for customers and partners",
+            text: "Orders, bookings, order status and documents in one place, on a computer and on a phone.",
+            points: ["Customer portals", "Orders and bookings", "E-shops with a configurator"],
+          },
+          {
+            title: "ERP integrations",
+            text: "We connect new software to your ERP, accounting and warehouse. Data moves on its own, with no retyping from one window to another.",
+            points: ["ERP and accounting", "Warehouse and e-shop", "Step-by-step replacement of old systems"],
           },
         ],
       },
       blocks: [
         {
+          kind: "prose",
+          title: "Where AI works inside the software",
+          text: [
+            "We don't add AI for show. We build it into the places where a person retypes, looks things up or compares today: a draft quote in the CRM, sorting a request in a portal, checking a document before it goes into the ERP.",
+            "The same rules apply as for our agents: AI prepares, a person decides. It only gets the permissions its job requires, and every step it takes is recorded. Where AI doesn't save work, we leave it out.",
+          ],
+          link: { href: "/en/ai-solutions", label: "How we build AI agents" },
+        },
+        {
+          kind: "compare",
+          title: "From our work",
+          lead: "Two projects where we designed and built the software. We don't name our clients.",
+          columns: [
+            {
+              title: "An e-shop with a product configurator",
+              text: "For a furniture manufacturer, we built an e-shop where customers put the product together themselves: they choose the dimensions, material and finish, and order exactly their version.",
+              rows: [
+                ["For", "A furniture manufacturer"],
+                ["What it is", "E-shop with a configurator"],
+              ],
+              fit: "Similar brief: made-to-order products you sell through emails and spreadsheets today.",
+            },
+            {
+              title: "A platform for cabins and short-term rentals",
+              text: "In the accommodation sector, we built a web platform that brings cabin and short-term rental listings, bookings and their management together in one place.",
+              rows: [
+                ["For", "Cabins and short-term rentals"],
+                ["What it is", "Web platform"],
+              ],
+              fit: "Similar brief: bookings and management that run across several separate tools today.",
+            },
+          ],
+        },
+        {
           kind: "points",
           title: "How we deliver",
           items: [
-            { title: "Short releases", text: "You see working software early and often, not one large delivery at the end." },
+            { title: "In milestones", text: "You see working software early and often, not one large delivery at the end." },
             { title: "Tested before each launch", text: "Our own AI agents try each release in a real browser, the way a tester would, and save video as evidence." },
             { title: "Independent code review", text: "Each code change is reviewed independently. A person approves and deploys it." },
             { title: "Checked by attackers", text: "Our security team tests what we build before it goes live." },
@@ -309,23 +348,26 @@ export const en: Site = {
       ],
       steps: {
         title: "How a software project runs",
+        lead: "From brief to operation. At the end of each phase, you decide whether to go on.",
         items: [
-          { title: "Discovery", text: "We map the process, the users and the systems the software must work with." },
-          { title: "Scope and estimate", text: "You get a written scope, a plan of releases and an estimate before we start." },
-          { title: "Build and test", text: "We deliver in short releases. Each one is tested, reviewed and approved by a person." },
-          { title: "Operation and growth", text: "We run and monitor the software and develop it further as your company changes." },
+          { title: "Brief", text: "We go through the process, the people who will use the software and the systems it must connect to. You get a written brief." },
+          { title: "Prototype", text: "Your people try a clickable prototype of the main screens before we start building. With it, you get a milestone plan and an estimate." },
+          { title: "Milestones", text: "We build in milestones. At the end of each, you see a working part of the system, tested and approved by a person." },
+          { title: "Operation", text: "We run, monitor and keep developing the software as your company changes. In the cloud or on your own servers." },
         ],
       },
       questions: [
+        { q: "Does the software need AI?", a: "No. We use AI where it saves work. Many systems only need good, reliable software." },
+        { q: "Will you replace our ERP?", a: "Usually not. We keep your ERP and connect the new software to it. We build custom systems where an off-the-shelf tool doesn't fit your process." },
         { q: "Can you take over software that another supplier built?", a: "Yes. We start with a review of the code and the operation, then propose what to keep, fix or replace." },
         { q: "Do you work with our internal IT team?", a: "Yes. We can deliver the whole project or work as part of your team." },
-        { q: "Does the software need AI?", a: "No. We use AI where it saves work. Many systems only need good, reliable software." },
         { q: "Where does the software run?", a: "In the cloud or on your own servers. You decide." },
+        { q: "Do you work with companies outside the Czech Republic?", a: "Yes. We run projects in English or Czech, and most of the collaboration works remotely." },
       ],
       contact: {
         title: "Tell us what your systems cannot do today",
-        lead: "In the first meeting, we go through your process and systems and propose the first release.",
-        mailSubject: "Meeting: software development",
+        lead: "In the first meeting, we go through your process and systems and propose what the prototype should show.",
+        mailSubject: "Meeting: custom software",
         cta: "Book a meeting",
       },
     },
