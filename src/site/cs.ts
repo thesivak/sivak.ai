@@ -496,7 +496,6 @@ export const cs: Site = {
     companyLabel: "Firma",
     contactLabel: "Kontakt",
     privacy: "Ochrana osobních údajů",
-    operatedBy: "sivak.ai provozuje",
     seatLabel: "se sídlem",
     idLabel: "IČO",
     registry: "Zapsaná v obchodním rejstříku vedeném Krajským soudem v Ostravě, oddíl C, vložka 98925.",

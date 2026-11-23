@@ -27,7 +27,7 @@
     //  - the service pages of the earlier site, redirected to their replacements (MOVED_PAGES);
     //  - the removed pages and everything under them, redirected with 301 to the home page of their
     //    language (REMOVED_PAGES); no static file exists for them any more, so only the Worker can answer;
-    //  - the enquiry API /api/poptavka (on-demand; no page posts to it any more);
+    //  - the enquiry API /api/poptavka (on-demand; the enquiry dialog on every page posts to it);
     //  - /robots.txt, which the Worker answers with "Disallow: /" on *.workers.dev only.
     // "*" matches across "/", so "/*/" is every path ending in a slash.
     "run_worker_first": ["/", "/en", "/ai-reseni", "/en/ai-solutions", "/vyvoj-softwaru", "/en/software-development", "/bezpecnost", "/en/security", "/jak-pracujeme", "/en/how-we-work", "/ai-agenti", "/en/ai-agents", "/ai-automatizace", "/en/ai-automation", "/pilotni-projekt", "/en/pilot-project", "/ai-bezpecnost", "/en/ai-security", "/ai-skoleni", "/ai-skoleni/*", "/en/ai-training", "/en/ai-training/*", "/cs", "/cs/*", "/*/", "/*.html", "/api/*", "/robots.txt"]
@@ -46,7 +46,8 @@
 
   // Non-secret settings. Secrets (TURNSTILE_SECRET_KEY, IP_HASH_SALT) are set with
   // `wrangler secret put` in production and in .dev.vars locally — see .dev.vars.example.
-  // No Turnstile test key belongs here: production refuses them.
+  // No Turnstile test key belongs here: production refuses them. The Turnstile site key is not a Worker
+  // variable: the static pages need it at build time (PUBLIC_TURNSTILE_SITE_KEY, .env.example).
   "vars": {
     // "production" makes the form refuse to skip Turnstile; .dev.vars sets "development"
     "SITE_ENV": "production",

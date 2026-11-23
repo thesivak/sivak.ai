@@ -2,7 +2,8 @@
 // Run with `npm test`. The AI training pages (/ai-skoleni, /en/ai-training) were removed without a
 // replacement: nothing of them is left in the site, every URL they had answers with a 301 to the home page
 // of its language, and the Worker really runs on those URLs (wrangler.jsonc → run_worker_first), because
-// no static file exists for them any more. The enquiry API they posted to stays as it was.
+// no static file exists for them any more. The enquiry API they posted to stays; the enquiry dialog that
+// every call to action opens posts to it now (tests/enquiry.test.mjs).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -24,8 +25,6 @@ const bundle = async (entry) => {
 };
 const { TWIN_PAGES, SITEMAP_PAGES, CZECH_ONLY_PAGES, MOVED_PAGES, REMOVED_PAGES, removedPageTarget, pageIn } = await bundle("src/i18n/pages.ts");
 const { canonicalRedirect } = await bundle("src/lib/routing.ts");
-const { CONSENT, SUPPORTED_CONSENT_VERSIONS, formLang, validateEnquiry } = await bundle("src/lib/enquiry/fields.ts");
-const { buildMessage } = await bundle("src/lib/server/notify.ts");
 const read = (path) => readFileSync(`${root}${path}`, "utf8");
 const respond = (path) => canonicalRedirect(new Request(`https://www.sivak.ai${path}`));
 
@@ -111,11 +110,11 @@ test("no page, component, copy or share image of the removed pages is left", () 
     "public/og/ai-skoleni.png",
     "public/og/en-ai-training.png",
   ]) assert.ok(!existsSync(`${root}${path}`), path);
-  // No page of the site posts to the enquiry API any more
+  // The only form on the site is the enquiry dialog's; nothing links to the removed pages
   const sources = readdirSync(`${root}src`, { recursive: true }).filter((file) => /\.(astro|ts|css)$/.test(file));
   for (const file of sources.filter((name) => /^(pages|components|layouts|site|styles)[\\/]/.test(name) && !/^pages[\\/]api[\\/]/.test(name))) {
     const source = read(`src/${file}`);
-    assert.doesNotMatch(source, /<form\b|(action=|fetch\()[^\n]*\/api\/poptavka/, file);
+    if (!/EnquiryDialog\.astro$/.test(file)) assert.doesNotMatch(source, /<form\b|action=[^\n]*\/api\/poptavka/, file);
     assert.doesNotMatch(source, /href=["'{`]*\/(ai-skoleni|en\/ai-training)/, file);
   }
 });
@@ -124,28 +123,4 @@ test("the privacy policy no longer links to the removed pages and keeps its effe
   const policy = read("src/pages/ochrana-osobnich-udaju.astro");
   assert.ok(!policy.includes('href="/ai-skoleni"') && !policy.includes('href="/en/ai-training"'));
   assert.match(policy, /účinné od 1\. 11\. 2026/);
-});
-
-// The enquiry API (POST /api/poptavka), its validation, notification and the database are unchanged
-test("the enquiry API is still there and validates in the requested language", () => {
-  assert.ok(existsSync(`${root}src/pages/api/poptavka.ts`) && existsSync(`${root}migrations/0001_enquiries.sql`));
-  assert.equal(formLang({ lang: "en" }), "en");
-  assert.equal(formLang({}), "cs");
-  assert.ok(SUPPORTED_CONSENT_VERSIONS.includes(CONSENT.en.version) && SUPPORTED_CONSENT_VERSIONS.includes(CONSENT.cs.version));
-  const en = validateEnquiry({ email: "x" }, "en");
-  assert.equal(en.ok, false);
-  assert.equal(en.errors.email, "Please enter a valid email address.");
-  assert.equal(en.errors.name, "Please enter your name.");
-  assert.equal(validateEnquiry({ email: "x" }).errors.email, "Zadejte platnou e-mailovou adresu.");
-  const valid = { name: "Jane Doe", company: "Acme", email: "jane@example.com", consent: "on" };
-  assert.equal(validateEnquiry(valid, "en").ok, true);
-});
-
-test("the enquiry notification still names the page the enquiry came from", () => {
-  const enquiry = { name: "Jane Doe", company: "Acme", email: "jane@example.com", phone: null, participants: null, note: null, consent: true, tracking: {}, landingUrl: null };
-  const en = buildMessage(enquiry, 1, "https://www.sivak.ai", "/en/ai-training");
-  assert.match(en.subject, /anglická stránka/);
-  assert.ok(en.text.includes("www.sivak.ai/en/ai-training") && en.html.includes("www.sivak.ai/en/ai-training"));
-  const cs = buildMessage(enquiry, 2, "https://www.sivak.ai");
-  assert.ok(cs.html.includes("www.sivak.ai/ai-skoleni") && !cs.subject.includes("anglická"));
 });

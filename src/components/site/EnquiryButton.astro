@@ -1,0 +1,14 @@
+---
+// A call to action: opens the enquiry dialog (EnquiryDialog.astro, one per page in Shell.astro).
+// The label and `place` (where on the page the button is: hero, contact, header…) go with the enquiry
+// and become its stored source, e.g. "cs:/#hero:Objednat AI diagnostiku" (enquirySource in fields.ts).
+interface Props {
+  label: string;
+  place: string;
+  /** "btn" (filled), "btn btn-small" or "link" */
+  class?: string;
+  [attribute: `data-${string}`]: string | boolean | undefined;
+}
+const { label, place, class: className = "btn", ...data } = Astro.props;
+---
+<button type="button" class={className} aria-haspopup="dialog" aria-controls="enquiry" data-enquiry-open data-enquiry-cta={label} data-enquiry-place={place} {...data}>{label}</button>

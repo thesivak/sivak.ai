@@ -55,7 +55,7 @@ const f = t.footer;
     </div>
     {/* § 435 of the Czech Civil Code: name, seat, company ID and register entry */}
     <div class="foot-legal">
-      <p>{f.operatedBy} {COMPANY.legalName}, {f.seatLabel} {seatAddress(lang)}, {f.idLabel}{" "}{COMPANY.ico}. {f.registry}</p>
+      <p>{COMPANY.legalName}, {f.seatLabel} {seatAddress(lang)}, {f.idLabel}{" "}{COMPANY.ico}. {f.registry}</p>
       <p>
         © {new Date().getFullYear()} {COMPANY.legalName}
         {/* Reopens the cookie banner to change or withdraw consent; cookie-consent.ts unhides it */}

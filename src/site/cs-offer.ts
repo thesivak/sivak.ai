@@ -3,7 +3,7 @@ import type { Block, Cta, IndexItem, Question, Step } from "./types";
 // Nabídka sivak.ai: to, co se opakuje na více českých stránkách (cs.ts, pages.ts), je tady
 // jednou, aby si web neodporoval. Web neuvádí žádné ceny: klient je dostane v nabídce.
 
-/** Dvě výzvy k akci celého webu. Otevírají e-mail s typem poptávky v předmětu (meetingHref v src/lib/site.ts). */
+/** Dvě výzvy k akci celého webu. Otevírají poptávkový dialog (EnquiryButton.astro); text tlačítka se uloží s poptávkou. */
 export const CTA_DIAGNOSTICS: Cta = { label: "Objednat AI diagnostiku", subject: "Objednávka: AI diagnostika" };
 export const CTA_ESTIMATE: Cta = { label: "Odhad návratnosti zdarma", subject: "Odhad návratnosti zdarma" };
 export const CTA_SECURITY: Cta = { label: "Domluvit bezpečnostní prověrku", subject: "Poptávka: bezpečnostní prověrka" };

@@ -4,9 +4,10 @@ import Sheet from "./Sheet.astro";
 import Questions from "./Questions.astro";
 import Steps from "./Steps.astro";
 import ContactBlock from "./ContactBlock.astro";
+import EnquiryButton from "./EnquiryButton.astro";
 import { localePath, type Locale } from "@/i18n/config";
 import { pageIn } from "@/i18n/pages";
-import { ORGANIZATION_ID, SITE_URL, breadcrumbJsonLd, meetingHref } from "@/lib/site";
+import { ORGANIZATION_ID, SITE_URL, breadcrumbJsonLd } from "@/lib/site";
 import { getPage, getSite, type PageKey } from "@/site";
 
 // A page outside the three services (src/site/pages.ts): the industry pages, how we work, results, about.
@@ -46,8 +47,8 @@ const jsonLd = [
         <h1 class="display display-2" id="hero-title">{page.title}</h1>
         <p class="lead">{page.lead}</p>
         <div class="actions">
-          <a class="btn" href={meetingHref(main.subject)}>{main.label}</a>
-          {more.map((action) => <a class="link" href={meetingHref(action.subject)}>{action.label}</a>)}
+          <EnquiryButton label={main.label} place="hero" />
+          {more.map((action) => <EnquiryButton label={action.label} place="hero" class="link" />)}
         </div>
       </div>
       {page.sheet && <Sheet sheet={page.sheet} note={t.shared.sample} />}

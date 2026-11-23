@@ -5,7 +5,7 @@ import type { Block, Cta, IndexItem, Question, Step } from "./types";
 // The industry pages, the results page and the founder's manifesto exist in Czech only, so the three
 // industries and the starter offers are plain rows here, without links.
 
-/** The site's calls to action. Each opens an e-mail with the enquiry type as its subject. */
+/** The site's calls to action. Each opens the enquiry dialog; its label is stored with the enquiry. */
 export const CTA_DIAGNOSTICS: Cta = { label: "Order AI diagnostics", subject: "Order: AI diagnostics" };
 export const CTA_ESTIMATE: Cta = { label: "Free payback estimate", subject: "Free payback estimate" };
 export const CTA_SECURITY: Cta = { label: "Arrange a security review", subject: "Enquiry: security review" };

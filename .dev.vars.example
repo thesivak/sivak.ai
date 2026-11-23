@@ -8,7 +8,8 @@
 # Outside development a failing rate limit refuses the submission (503); development lets it through.
 SITE_ENV=development
 
-# Cloudflare Turnstile secret key, checked by the enquiry API (POST /api/poptavka; no page has a form now).
+# Cloudflare Turnstile secret key, checked by the enquiry API (POST /api/poptavka, the enquiry dialog on every page).
+# Its site key is the build-time PUBLIC_TURNSTILE_SITE_KEY in .env.
 # Cloudflare's test secret that always passes: 1x0000000000000000000000000000000AA
 TURNSTILE_SECRET_KEY=
 
